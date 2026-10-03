@@ -30,8 +30,6 @@ export function mountForm(): () => void {
     el.addEventListener(type, fn);
     offs.push(() => el.removeEventListener(type, fn));
   };
-  const css = getComputedStyle(document.documentElement);
-  const accent = css.getPropertyValue('--color-signal').trim();
 
   const plans = [...form.querySelectorAll<HTMLInputElement>('input[name="plan"]')];
   const segLabels = plans.map((input) => input.nextElementSibling as HTMLElement | null);
@@ -50,8 +48,9 @@ export function mountForm(): () => void {
     plans.forEach((input, i) => {
       input.checked = input.value === plan;
       const text = segLabels[i];
-      // The chosen option's text turns dark on the accent thumb, in step with the thumb.
-      if (text) gsap.to(text, { color: i === index ? css.getPropertyValue('--color-void').trim() : css.getPropertyValue('--ui-fg').trim(), duration: dur.base, ease: ease.out, overwrite: 'auto' });
+      // The chosen option's text turns dark on the accent thumb, in step with the thumb; the
+      // stylesheet mixes the colour from --on (PERF-04).
+      if (text) gsap.to(text, { '--on': i === index ? 1 : 0, duration: dur.base, ease: ease.out, overwrite: 'auto' });
     });
     if (thumb) gsap.to(thumb, { opacity: index < 0 ? 0 : 1, xPercent: Math.max(0, index) * 100, duration: dur.base, ease: ease.out, overwrite: 'auto' });
   };
@@ -90,7 +89,7 @@ export function mountForm(): () => void {
     gsap.to(t.field, { '--ph': focused && !filled ? 1 : 0, duration: d, ease: ease.out, overwrite: 'auto' });
     if (t.fill) {
       const ok = filled && t.valid();
-      gsap.to(t.fill, { scaleX: up ? 1 : 0, backgroundColor: ok ? accent : css.getPropertyValue('--ui-fg').trim(), transformOrigin: '0% 50%', duration: d, ease: up ? ease.out : ease.in, overwrite: 'auto' });
+      gsap.to(t.fill, { scaleX: up ? 1 : 0, '--ok': ok ? 1 : 0, transformOrigin: '0% 50%', duration: d, ease: up ? ease.out : ease.in, overwrite: 'auto' });
     }
   };
   for (const t of texts) {

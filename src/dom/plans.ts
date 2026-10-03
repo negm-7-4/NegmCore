@@ -22,8 +22,6 @@ export function mountPlans(): () => void {
     el.addEventListener(type, fn);
     offs.push(() => el.removeEventListener(type, fn));
   };
-  const css = getComputedStyle(document.documentElement);
-  const color = (name: string): string => css.getPropertyValue(name).trim();
   const planOf = (el: Element | null): PlanId | null => {
     const value = el?.closest<HTMLElement>('.plan')?.dataset.plan;
     return isPlan(value) ? value : null;
@@ -56,7 +54,8 @@ export function mountPlans(): () => void {
       if (id !== plan && id !== previous) continue;
       const on = id === plan;
       const ring = card.querySelector('.plan-ring');
-      if (ring) gsap.to(ring, { borderColor: color(on || id === store.get('selectedPlan') ? '--ui-accent' : '--ui-fg-2'), scale: on ? 1.15 : 1, duration: dur.quick, ease: on ? ease.out : ease.in, overwrite: 'auto' });
+      // The ring's colours are mixed in CSS from --hot and --chosen (PERF-04).
+      if (ring) gsap.to(ring, { '--hot': on ? 1 : 0, scale: on ? 1.15 : 1, duration: dur.quick, ease: on ? ease.out : ease.in, overwrite: 'auto' });
       // Keyboard focus tilts a little toward the reader, the same state the pointer reaches.
       if (tiltable && document.activeElement && card.contains(document.activeElement)) gsap.effects.tilt(card, { rx: on ? -distance.tiltMaxDeg / 2 : 0, ry: 0 });
     }
@@ -89,7 +88,7 @@ export function mountPlans(): () => void {
       if (input) input.checked = on;
       c.classList.toggle('is-chosen', on);
       const ring = c.querySelector('.plan-ring');
-      if (ring) gsap.to(ring, { backgroundColor: on ? color('--ui-accent') : 'transparent', borderColor: color(on ? '--ui-accent' : '--ui-fg-2'), duration: dur.base, ease: ease.out, overwrite: 'auto' });
+      if (ring) gsap.to(ring, { '--chosen': on ? 1 : 0, duration: dur.base, ease: ease.out, overwrite: 'auto' });
       gsap.to(c.querySelector('.plan-choose'), { opacity: on ? 0 : 1, duration: dur.quick, ease: on ? ease.in : ease.out, overwrite: 'auto' });
       gsap.to(c.querySelector('.plan-chosen'), { opacity: on ? 1 : 0, duration: dur.quick, ease: on ? ease.out : ease.in, overwrite: 'auto' });
     }

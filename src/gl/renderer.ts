@@ -37,6 +37,15 @@ export function createRenderer(canvas: HTMLCanvasElement, dpr: number, onLost: (
   const scene = new Scene();
   const camera = new PerspectiveCamera(32, 1, 0.02, 120);
   const size = { width: 0, height: 0 };
+  // The frame loop never reads layout (PERF-05): a ResizeObserver reports the canvas box and
+  // `resize()` only compares numbers. The first measure happens once, here.
+  const next = { width: canvas.clientWidth, height: canvas.clientHeight };
+  const observer = new ResizeObserver(([entry]) => {
+    const box = entry.contentBoxSize[0];
+    next.width = Math.round(box.inlineSize);
+    next.height = Math.round(box.blockSize);
+  });
+  observer.observe(canvas);
 
   canvas.addEventListener(
     'webglcontextlost',
@@ -58,8 +67,7 @@ export function createRenderer(canvas: HTMLCanvasElement, dpr: number, onLost: (
       renderer.setSize(size.width, size.height, false);
     },
     resize() {
-      const width = canvas.clientWidth;
-      const height = canvas.clientHeight;
+      const { width, height } = next;
       if (width === size.width && height === size.height) return false;
       size.width = width;
       size.height = height;
@@ -69,6 +77,7 @@ export function createRenderer(canvas: HTMLCanvasElement, dpr: number, onLost: (
       return true;
     },
     dispose() {
+      observer.disconnect();
       renderer.dispose();
     },
   };

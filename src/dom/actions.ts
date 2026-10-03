@@ -1,6 +1,8 @@
 // src/dom/actions.ts — the primary actions (UI-02): the header's "Book a trial session" and the
 // form's submit. Magnetic within 80 px of the button by at most 10 px (the `magnet` effect,
 // fine pointers only); hover and focus lift the fill toward white; pressing scales to 0.96.
+// Colour states tween a 0..1 custom property (--lift) that the stylesheet mixes from the world
+// tokens, so DOM motion stays on transforms, opacity and custom properties (PERF-04).
 // The submit's busy and success icons belong to form.ts. The back-to-top link (UI-08) shares
 // the hover, focus and pressed treatment.
 import { gsap } from 'gsap';
@@ -15,35 +17,22 @@ export function mountActions(): () => void {
   const actions = [...document.querySelectorAll<HTMLElement>('[data-magnet]')];
   if (!actions.length) return () => undefined;
   const offs: Array<() => void> = [];
-  const css = getComputedStyle(document.documentElement);
-  const signal = css.getPropertyValue('--color-signal').trim();
-  const flare = css.getPropertyValue('--color-flare').trim();
-  const lifted = gsap.utils.interpolate(signal, flare, 0.4) as string;
+  const lift = (el: HTMLElement, on: boolean): void => {
+    gsap.to(el, { '--lift': on ? 1 : 0, duration: dur.quick, ease: on ? ease.out : ease.in, overwrite: 'auto' });
+  };
 
   for (const el of actions) {
     let hovered = false;
     let focused = false;
-    const lift = (): void => {
-      const on = hovered || focused;
-      gsap.to(el, {
-        backgroundColor: on ? lifted : signal,
-        duration: dur.quick,
-        ease: on ? ease.out : ease.in,
-        overwrite: 'auto',
-        // Hand the colour back to the stylesheet at rest, so world tokens keep driving it.
-        onComplete: () => {
-          if (!hovered && !focused) gsap.set(el, { clearProps: 'backgroundColor' });
-        },
-      });
-    };
+    const paint = (): void => lift(el, hovered || focused);
     const press = (down: boolean): void => {
       gsap.to(el, { scale: down ? PRESS : 1, duration: down ? dur.instant : dur.quick, ease: down ? ease.out : ease.settle, overwrite: 'auto' });
     };
     const handlers: Array<[string, EventListener]> = [
-      ['pointerenter', () => ((hovered = true), lift())],
-      ['pointerleave', () => ((hovered = false), lift(), press(false))],
-      ['focus', () => ((focused = true), lift())],
-      ['blur', () => ((focused = false), lift())],
+      ['pointerenter', () => ((hovered = true), paint())],
+      ['pointerleave', () => ((hovered = false), paint(), press(false))],
+      ['focus', () => ((focused = true), paint())],
+      ['blur', () => ((focused = false), paint())],
       ['pointerdown', () => press(true)],
       ['pointerup', () => press(false)],
       ['keydown', (e) => (e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ' ? press(true) : undefined],
@@ -57,19 +46,9 @@ export function mountActions(): () => void {
   // pressing scales it like the primary actions.
   const toTop = document.querySelector<HTMLElement>('.to-top');
   if (toTop) {
-    const [r, g, b] = gsap.utils.splitColor(flare) as [number, number, number];
     let hovered = false;
     let focused = false;
-    const paint = (): void => {
-      const on = hovered || focused;
-      gsap.to(toTop, {
-        backgroundColor: `rgba(${r}, ${g}, ${b}, ${on ? 0.1 : 0})`,
-        borderColor: on ? flare : css.getPropertyValue('--ui-line').trim(),
-        duration: dur.quick,
-        ease: on ? ease.out : ease.in,
-        overwrite: 'auto',
-      });
-    };
+    const paint = (): void => lift(toTop, hovered || focused);
     const press = (down: boolean): void => {
       gsap.to(toTop, { scale: down ? PRESS : 1, duration: down ? dur.instant : dur.quick, ease: down ? ease.out : ease.settle, overwrite: 'auto' });
     };

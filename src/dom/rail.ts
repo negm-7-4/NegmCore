@@ -18,8 +18,6 @@ export function mountRail(): () => void {
   const path = nav?.querySelector<SVGPathElement>('.rail-path');
   if (!nav || !links.length) return () => undefined;
   const offs: Array<() => void> = [];
-  const css = getComputedStyle(document.documentElement);
-  const color = (name: string): string => css.getPropertyValue(name).trim();
   // The overlay (narrow or coarse) shows every label; the desktop rail reveals them on demand.
   const overlay = (): boolean => device.narrow || !device.finePointer;
 
@@ -32,7 +30,8 @@ export function mountRail(): () => void {
       if (on) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
       const plate = link.querySelector('.rail-plate');
-      if (plate) gsap.to(plate, { borderColor: color(on ? '--ui-accent-mark' : '--ui-fg-2'), duration: instant ? 0 : dur.base, ease: ease.out, overwrite: 'auto' });
+      // The plate's border is mixed in CSS from --lit (PERF-04).
+      if (plate) gsap.to(plate, { '--lit': on ? 1 : 0, duration: instant ? 0 : dur.base, ease: ease.out, overwrite: 'auto' });
     }
     const next = Math.max(0, ORDER.indexOf(store.get('chapter')));
     if (pin && path && !overlay()) {

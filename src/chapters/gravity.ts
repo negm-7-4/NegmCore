@@ -178,7 +178,6 @@ export const gravity: ChapterModule = {
     // Landscape: each card follows its plate's projected position (at most 64 px either way),
     // through the CSS `translate` property so GSAP's own x stays free for the exit.
     if (!c.portrait && c.panel) {
-      const canvas = c.world.renderer.domElement;
       const camera = c.world.camera;
       const v = new Vector3();
       let centres = cards.map(() => 0);
@@ -199,7 +198,7 @@ export const gravity: ChapterModule = {
           camera.updateMatrixWorld();
           cards.forEach((_, i) => {
             v.set(G.x + PLAN_STAND.x[i], 0, G.z + PLAN_STAND.z).project(camera);
-            const x = ((v.x + 1) / 2) * canvas.clientWidth;
+            const x = ((v.x + 1) / 2) * c.world.size.width; // cached size, no layout read (PERF-05)
             // Whole pixels: no sub-pixel shimmer on the text, and a still card stays still.
             cards[i].style.translate = `${Math.round(gsap.utils.clamp(-distance.lg, distance.lg, x - centres[i]))}px 0`;
           });

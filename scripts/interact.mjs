@@ -122,8 +122,9 @@ const center = async (page, sel) => {
   check('UI-02', 'magnet pulls within 80 px by at most 10 px', pulled < 0 && pulled >= -10, `x ${pulled.toFixed(2)}`);
   await page.mouse.move(action.x, action.y);
   await settle(page, 800);
-  const lifted = await page.$eval('.chrome .action', (el) => el.style.backgroundColor);
-  check('UI-02', 'hover lifts the fill (tweened inline colour)', lifted !== '', lifted);
+  // PERF-04: the lift tweens a 0..1 custom property; the stylesheet mixes the colour from it.
+  const lifted = await page.$eval('.chrome .action', (el) => ({ lift: el.style.getPropertyValue('--lift'), bg: getComputedStyle(el).backgroundColor, inline: el.style.backgroundColor }));
+  check('UI-02', 'hover lifts the fill (--lift tweened, no inline colour)', Number(lifted.lift) > 0.99 && lifted.inline === '', JSON.stringify(lifted));
   await page.mouse.down();
   await settle(page, 800);
   const pressed = await page.$eval('.chrome .action', (el) => new DOMMatrix(getComputedStyle(el).transform).a);
@@ -161,6 +162,8 @@ const center = async (page, sel) => {
   const pinAfter = await page.$eval('.rail-pin', (el) => el.getBoundingClientRect().top);
   check('UI-04', 'pin travels along the rail to the current chapter', pinAfter > pinBefore + 100, `${pinBefore.toFixed(0)} -> ${pinAfter.toFixed(0)}`);
   check('UI-04', 'aria-current on the current plate', (await attr(page, '.rail-link[href="#orbit"]', 'aria-current')) === 'true');
+  const lit = await page.$$eval('.rail-plate', (els) => els.map((el) => Number(el.style.getPropertyValue('--lit') || 0)));
+  check('UI-04', 'only the current plate is lit (--lit tweened)', lit[4] > 0.99 && lit.filter((v) => v > 0.01).length === 1, lit.join(','));
 
   // UI-09 ambient toggle.
   await page.click('.ambient-btn');
@@ -173,6 +176,30 @@ const center = async (page, sel) => {
   await settle(page, 2500);
   const marquee2 = await transform(page, '.marquee-track');
   check('UI-09', 'marquee drift frozen while paused', marquee1 === marquee2);
+  // PERF-06: paused and untouched, the page stops rendering; a pointer move wakes it; a hidden
+  // tab renders nothing even when woken.
+  const renders = () => page.evaluate(() => window.__qa.debug().renders);
+  const idle1 = await renders();
+  await settle(page, 3000);
+  const idle2 = await renders();
+  check('PERF-06', 'idle page (ambient paused, no input) renders nothing', idle2 === idle1, `${idle1} -> ${idle2}`);
+  await page.mouse.move(600, 420, { steps: 3 });
+  await settle(page, 3000);
+  const woke = await renders();
+  check('PERF-06', 'pointer movement renders on demand', woke > idle2, `${idle2} -> ${woke}`);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  const hidden1 = await renders();
+  await page.mouse.move(640, 400, { steps: 3 });
+  await settle(page, 3000);
+  const hidden2 = await renders();
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  check('PERF-06', 'hidden tab renders nothing', hidden2 === hidden1, `${hidden1} -> ${hidden2}`);
   await page.click('.ambient-btn');
   await settle(page, 1500);
   check('UI-09', 'aria-pressed false after resuming', (await attr(page, '.ambient-btn', 'aria-pressed')) === 'false');
@@ -200,8 +227,8 @@ const center = async (page, sel) => {
   await settle(page, 1500);
   const tilt = await transform(page, '.plan[data-plan="15"]');
   check('UI-05', 'hover tilts the card (matrix3d)', tilt.startsWith('matrix3d'), tilt.slice(0, 40));
-  const ring = await page.$eval('.plan[data-plan="15"] .plan-ring', (el) => getComputedStyle(el).borderColor);
-  check('UI-05', 'ring lit on hover', ring !== '', ring);
+  const ring = await page.$eval('.plan[data-plan="15"] .plan-ring', (el) => ({ hot: el.style.getPropertyValue('--hot'), border: getComputedStyle(el).borderTopColor }));
+  check('UI-05', 'ring lit on hover (--hot tweened)', Number(ring.hot) > 0.99, JSON.stringify(ring));
   await page.screenshot({ path: `${out}/desktop-plan-hover.png` });
   await page.click('.plan[data-plan="15"]');
   await settle(page, 1500);
@@ -241,8 +268,11 @@ const center = async (page, sel) => {
   await page.fill('#f-name', 'Ahmed Ali');
   await page.fill('#f-phone', '01012345678');
   await settle(page, 1200);
-  const accent = await page.$eval('#f-phone', (el) => getComputedStyle(el.closest('.field').querySelector('.field-bar-fill')).backgroundColor);
-  check('UI-06', 'valid field turns its bar to the accent', /155, 248, 159|9bf89f/i.test(accent), accent);
+  const accent = await page.$eval('#f-phone', (el) => {
+    const fill = el.closest('.field').querySelector('.field-bar-fill');
+    return { ok: fill.style.getPropertyValue('--ok'), bg: getComputedStyle(fill).backgroundColor };
+  });
+  check('UI-06', 'valid field turns its bar to the accent (--ok tweened)', Number(accent.ok) > 0.99, JSON.stringify(accent));
   await page.click('.submit');
   await page.waitForTimeout(400);
   check('UI-02', 'busy state (aria-busy)', (await attr(page, '.submit', 'aria-busy')) === 'true');
@@ -278,8 +308,8 @@ const center = async (page, sel) => {
   check('UI-08', 'back-to-top is on screen at the end of the page', footerInView);
   await page.focus('.to-top');
   await settle(page, 1500);
-  const focusedBg = await page.$eval('.to-top', (el) => el.style.backgroundColor);
-  check('UI-08', 'back-to-top focus state (tweened fill)', focusedBg !== '', focusedBg);
+  const focusedBg = await page.$eval('.to-top', (el) => ({ lift: el.style.getPropertyValue('--lift'), bg: getComputedStyle(el).backgroundColor }));
+  check('UI-08', 'back-to-top focus state (--lift tweened)', Number(focusedBg.lift) > 0.99, JSON.stringify(focusedBg));
   // Lenis owns the scroll position, so a synthetic click avoids Playwright re-scrolling the page.
   await page.$eval('.to-top', (el) => el.click());
   await settle(page, 4000);

@@ -187,7 +187,8 @@ html:not(.js) .skip-link:focus-visible {
   padding-inline: var(--spacing-s3);
   border: 0;
   border-radius: var(--radius);
-  background: var(--ui-accent-fill);
+  /* actions.ts tweens --lift (0..1); the colour stays a function of the world tokens (PERF-04). */
+  background: color-mix(in oklab, var(--ui-accent-fill), var(--color-flare) calc(var(--lift, 0) * 40%));
   color: var(--ui-on-accent);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
@@ -282,12 +283,13 @@ html:not(.js) .menu-btn {
 .rail-plate {
   inline-size: 2.25rem;
   block-size: 0.5rem;
-  border: var(--hair) solid var(--ui-fg-2);
+  /* rail.ts tweens --lit (0..1) on the current plate (PERF-04). */
+  border: var(--hair) solid color-mix(in oklab, var(--ui-fg-2), var(--ui-accent-mark) calc(var(--lit, 0) * 100%));
   flex: none;
 }
-/* Without script the current plate is lit by CSS; rail.ts tweens it otherwise (UI-12). */
+/* Without script the current plate is lit by CSS (UI-12). */
 html:not(.js) .rail-link[aria-current='true'] .rail-plate {
-  border-color: var(--ui-accent-mark);
+  --lit: 1;
 }
 .rail-label {
   position: relative;

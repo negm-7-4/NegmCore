@@ -74,10 +74,13 @@ export const orbit: ChapterModule = {
     const copy = c.section.querySelector<HTMLElement>('.copy');
     const at = labels.map(() => ({ x: 0, y: 0 }));
 
+    // Projection target size: the canvas box measured on refresh, then the world's cached size
+    // inside the frame loop, which never reads layout (PERF-05).
+    const view = { width: 0, height: 0 };
     const toScreen = (cm: PerspectiveCamera, x: number, z: number): Vector3 => {
       v.set(x, 0, z).project(cm);
-      v.x = ((v.x + 1) / 2) * canvas.clientWidth;
-      v.y = ((1 - v.y) / 2) * canvas.clientHeight;
+      v.x = ((v.x + 1) / 2) * view.width;
+      v.y = ((1 - v.y) / 2) * view.height;
       return v;
     };
     const measure = (cm: PerspectiveCamera): void => {
@@ -113,7 +116,9 @@ export const orbit: ChapterModule = {
       cm.up.set(0, 1, 0);
       cm.lookAt(pose.look);
       // The live camera may not be sized yet at build time; size the copy from the canvas.
-      const portrait = frameViewport(cm, canvas.clientWidth, canvas.clientHeight);
+      view.width = canvas.clientWidth;
+      view.height = canvas.clientHeight;
+      const portrait = frameViewport(cm, view.width, view.height);
       cm.fov = pose.fov * (portrait ? PORTRAIT_FOV : 1);
       cm.updateProjectionMatrix();
       cm.updateMatrixWorld();
@@ -123,7 +128,7 @@ export const orbit: ChapterModule = {
       height = labels[0]?.offsetHeight ?? 0;
       // Labels never cross the copy column (landscape) or the screen edge (portrait).
       leftLimit = !portrait && copy ? copy.getBoundingClientRect().right + distance.md : distance.md;
-      rightLimit = canvas.clientWidth - (portrait ? distance.md : distance.lg + distance.md); // clear of the rail
+      rightLimit = view.width - (portrait ? distance.md : distance.lg + distance.md); // clear of the rail
     };
     holdCamera();
 
@@ -168,6 +173,8 @@ export const orbit: ChapterModule = {
     // Pin the rings and labels to the 3D scene every frame while they are on screen.
     const unpin = loop.onUpdate(() => {
       if (pin.on < 0.5) return;
+      view.width = c.world.size.width;
+      view.height = c.world.size.height;
       camera.updateMatrixWorld();
       measure(camera);
       paint();

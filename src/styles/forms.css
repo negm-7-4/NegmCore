@@ -37,8 +37,20 @@
 .plan-ring {
   inline-size: 1.25rem;
   block-size: 1.25rem;
-  border: var(--hair) solid var(--ui-fg-2);
+  /* plans.ts tweens --hot (hover or focus) and --chosen, both 0..1 (PERF-04). */
+  border: var(--hair) solid color-mix(in oklab, var(--ui-fg-2), var(--ui-accent) calc(max(var(--hot, 0), var(--chosen, 0)) * 100%));
   border-radius: 50%;
+  background: color-mix(in oklab, transparent, var(--ui-accent) calc(var(--chosen, 0) * 100%));
+}
+/* Without script a checked plan shows its chosen state from CSS (UI-12). */
+html:not(.js) .plan:has(input:checked) .plan-ring {
+  --chosen: 1;
+}
+html:not(.js) .plan:has(input:checked) .plan-choose {
+  opacity: 0;
+}
+html:not(.js) .plan:has(input:checked) .plan-chosen {
+  opacity: 1;
 }
 .plan-name {
   font-size: var(--text-lede);
@@ -153,7 +165,8 @@
 .field-bar-fill {
   position: absolute;
   inset: -0.5px 0;
-  background: var(--ui-fg);
+  /* form.ts tweens --ok (0..1) when the field becomes valid (PERF-04). */
+  background: color-mix(in oklab, var(--ui-fg), var(--color-signal) calc(var(--ok, 0) * 100%));
   transform: scaleX(0);
 }
 .field-error {
@@ -186,15 +199,19 @@
   text-transform: uppercase;
   cursor: pointer;
 }
+/* The chosen option's text turns dark on the accent thumb: form.ts tweens --on (PERF-04). */
+.seg-option > span {
+  color: color-mix(in oklab, var(--ui-fg), var(--color-void) calc(var(--on, 0) * 100%));
+}
 .seg-option:has(input:focus-visible) {
   outline: 2px solid var(--ui-accent);
   outline-offset: 3px;
 }
-/* With script the thumb slides and form.ts tweens the text colour; without it the checked
-   option carries the fill itself. */
+/* With script the thumb slides and form.ts tweens --on; without it the checked option
+   carries the fill itself. */
 html:not(.js) .seg-option:has(input:checked) {
   background: var(--ui-accent-fill);
-  color: var(--color-void);
+  --on: 1;
 }
 .seg-thumb {
   position: absolute;
@@ -286,8 +303,10 @@ html:not(.js) .seg-option:has(input:checked) {
   align-items: center;
   min-block-size: 44px;
   padding-inline: var(--spacing-s3);
-  border: var(--hair) solid var(--ui-line);
+  /* actions.ts tweens --lift (0..1): a faint flare fill and a firm flare border (PERF-04). */
+  border: var(--hair) solid color-mix(in oklab, var(--ui-line), var(--color-flare) calc(var(--lift, 0) * 100%));
   border-radius: var(--radius);
+  background: color-mix(in oklab, transparent, var(--color-flare) calc(var(--lift, 0) * 10%));
   color: var(--ui-fg);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);

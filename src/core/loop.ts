@@ -16,6 +16,7 @@ let frameCount = 0;
 let renderFn: (() => void) | null = null;
 let lastActivity = 0;
 let forced = 0;
+let renders = 0;
 let sampleFn: ((frameMs: number, dt: number) => void) | null = null;
 const frameWaiters: Array<() => void> = [];
 
@@ -46,7 +47,10 @@ function frame(_time: number, deltaMs: number): void {
   const ambientRunning = clock.ambientScale > 0.001 && !store.get('ambientPaused');
   const idle = !ambientRunning && performance.now() - lastActivity > 2500 && forced === 0;
   for (const update of updaters) update(dt, clock.ambientTime);
-  if (!idle && renderFn) renderFn();
+  if (!idle && renderFn) {
+    renderFn();
+    renders += 1;
+  }
   if (forced > 0) forced -= 1;
   while (frameWaiters.length) frameWaiters.shift()?.();
 }
@@ -101,6 +105,11 @@ export const loop = {
   invalidate(frames = 2): void {
     activity();
     forced = Math.max(forced, frames);
+  },
+
+  /** Frames rendered since boot (PERF-06: an idle page stops counting). */
+  renders(): number {
+    return renders;
   },
 
   /** Resolves after the next rendered tick. */

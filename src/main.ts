@@ -194,7 +194,12 @@ async function boot(): Promise<void> {
       await preloader.milestone(3);
 
       [p.origin.group, p.programs.group, p.orbit.group, p.gravity.group].forEach((g) => (g.visible = true));
+      // Compile against the composer's input buffer: the scene always renders into it (linear
+      // output), so compiling for the screen (sRGB) would double every program (PERF-02).
+      const screen = world.renderer.getRenderTarget();
+      world.renderer.setRenderTarget(world.post.composer.inputBuffer);
       await world.renderer.compileAsync(world.scene, world.camera);
+      world.renderer.setRenderTarget(screen);
       mark('shaders');
       await preloader.milestone(4);
 
@@ -252,6 +257,8 @@ installQAHook({
     pose: gl ? { pos: gl.rig.pose.pos.toArray(), look: gl.rig.pose.look.toArray(), fov: gl.rig.pose.fov, roll: gl.rig.pose.roll } : null,
     // The adaptive quality state, for the RESP-02 check.
     quality: qualityRef ? { ...qualityRef.live } : null,
+    // Frames actually rendered since boot, for the on-demand rendering check (PERF-06).
+    renders: loop.renders(),
   }),
   renderStats: () => {
     const info = gl?.renderer.info;
