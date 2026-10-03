@@ -1,0 +1,1354 @@
+{
+  "entries": {
+    "ARCH-01": {
+      "status": "verified",
+      "evidence": "package.json:12-17 dependencies = three 0.186.1, gsap 3.15.0, lenis 1.3.26, postprocessing 6.39.5 (A.1 pins); npm install ok",
+      "updated": "2026-10-03T14:28:37.303Z",
+      "id": "ARCH-01",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Runtime dependencies are exactly three, gsap, lenis and postprocessing at the Appendix A.1 versions."
+    },
+    "ARCH-02": {
+      "status": "verified",
+      "evidence": "npm run build -> single dist/index.html 923.75 kB (singlefile inlined JS+CSS+fonts); qa.mjs request listener (scripts/qa.mjs) logged 0 non-file/data requests in gate run",
+      "updated": "2026-10-03T14:28:37.380Z",
+      "id": "ARCH-02",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "npm run build emits one self-contained dist/index.html with JavaScript, CSS and fonts inlined, and the page makes zero network requests at r"
+    },
+    "ARCH-03": {
+      "status": "verified",
+      "evidence": "src/{core,motion,gl,chapters,qa,styles} only (+chapters/context.ts registry); largest file src/main.ts 134 lines (wc -l)",
+      "updated": "2026-10-03T14:28:37.443Z",
+      "id": "ARCH-03",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Source files live only in the folders of this layout, each module has one responsibility, and no source file exceeds 400 lines."
+    },
+    "ARCH-04": {
+      "status": "verified",
+      "evidence": "src/core/loop.ts:56-58 Lenis prioritised, lagSmoothing(0), frame() added last; grep requestAnimationFrame|setInterval|setTimeout in src -> only a comment",
+      "updated": "2026-10-03T14:28:37.505Z",
+      "id": "ARCH-04",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "One clock: each frame runs Lenis, then GSAP, then the scene update, then the render, all inside gsap.ticker; no other requestAnimationFrame "
+    },
+    "ARCH-05": {
+      "status": "verified",
+      "evidence": "src/core/scroll.ts:24 Lenis is the only scroller; grep ScrollSmoother|normalizeScroll|ScrollToPlugin|scroll-behavior -> none",
+      "updated": "2026-10-03T14:28:37.562Z",
+      "id": "ARCH-05",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Lenis is the only smooth-scroll engine and the only API for programmatic scrolling; ScrollSmoother, normalizeScroll, ScrollToPlugin and CSS "
+    },
+    "ARCH-06": {
+      "status": "verified",
+      "evidence": "src/styles/components.css .is-gl .stage position:sticky; grep 'pin:' in src -> none; hero trigger start top/end bottom only",
+      "updated": "2026-10-03T14:28:37.620Z",
+      "id": "ARCH-06",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Chapters are CSS position: sticky stages inside tall sections; ScrollTrigger measures progress and never pins."
+    },
+    "ARCH-07": {
+      "status": "verified",
+      "evidence": "src/chapters/hero.ts:20-22 scrollTrigger on a top-level gsap.timeline, chapters built in page order (main.ts buildChapters)",
+      "updated": "2026-10-03T14:28:37.677Z",
+      "id": "ARCH-07",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Every ScrollTrigger sits on a top-level timeline or tween, created in page order; none is nested inside a parent timeline."
+    },
+    "ARCH-08": {
+      "status": "verified",
+      "evidence": "hero.ts exports build/dispose in gsap.context (hero.ts:19); main.ts:50 root gsap.matchMedia; p0check: triggers 1->0, tweens 5->1 (ScrollTrigger internal) after dispose via static mode",
+      "updated": "2026-10-03T14:28:37.736Z",
+      "id": "ARCH-08",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Each chapter module exports build(ctx) and dispose(), runs inside its own gsap.context(), and the root uses gsap.matchMedia() for breakpoint"
+    },
+    "ARCH-09": {
+      "status": "verified",
+      "evidence": "src/core/store.ts: typed State {world,tier,reducedMotion,ambientPaused,selectedPlan,chapter,staticMode} with get/set/on",
+      "updated": "2026-10-03T14:28:37.799Z",
+      "id": "ARCH-09",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "One typed store holds world, tier, reducedMotion, ambientPaused, selectedPlan and chapter; modules subscribe to it and never reach into anot"
+    },
+    "ARCH-10": {
+      "status": "verified",
+      "evidence": "index.html canvas#gl first in body; components.css:4-9 fixed z-index 0; main/sections carry no z-index/transform/filter/opacity; qa/desktop/hero-50.png shows h1 inverted over cube",
+      "updated": "2026-10-03T14:28:37.870Z",
+      "id": "ARCH-10",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "DOM layering: the canvas is first in the document, position: fixed; z-index: 0; no ancestor of a blended .stage creates a stacking context ("
+    },
+    "ARCH-11": {
+      "status": "verified",
+      "evidence": "tsconfig.json:7 strict; npm run typecheck 0 errors (TS 7.0.2); grep any/@ts-ignore/@ts-expect-error -> none",
+      "updated": "2026-10-03T14:28:37.933Z",
+      "id": "ARCH-11",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "TypeScript strict mode passes with zero errors, and the source has no any, @ts-ignore or @ts-expect-error."
+    },
+    "ARCH-12": {
+      "status": "verified",
+      "evidence": "QA_MODE=nowebgl and QA_MODE=lost runs exit 0 with html.is-static (renderer.ts:42 webglcontextlost -> main.ts enterStaticMode); errors collected by qa/hook.ts installErrorCollector",
+      "updated": "2026-10-03T14:28:37.995Z",
+      "id": "ARCH-12",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "If WebGL is unavailable, or on webglcontextlost, the page switches to static mode (§13) instead of going blank, and runtime errors are colle"
+    },
+    "ARCH-13": {
+      "status": "verified",
+      "evidence": "grep localStorage|sessionStorage|indexedDB in src -> none; page needs no storage",
+      "updated": "2026-10-03T14:28:38.051Z",
+      "id": "ARCH-13",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "The page needs no storage to work; any localStorage access is wrapped in try/catch."
+    },
+    "ARCH-14": {
+      "status": "verified",
+      "evidence": "src/styles/base.css:5-6 @import tailwindcss source('..') + @source '../../index.html' (paths relative to src/styles/, equivalent to the brief's src/ + index.html); grep arbitrary colour utilities -> none",
+      "updated": "2026-10-03T14:28:38.109Z",
+      "id": "ARCH-14",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "Tailwind's source detection is limited to src/ and index.html (@import \"tailwindcss\" source(\"../src\"); and @source \"../index.html\"; at the t"
+    },
+    "QA-01": {
+      "status": "verified",
+      "evidence": "p0check: __qa keys ready,chapters,seek,stats,set,errors(+debug); stats returned calls,triangles,geometries,textures,programs,dpr,tier,world,chapter,fps,frameMsP95",
+      "updated": "2026-10-03T14:28:38.167Z",
+      "id": "QA-01",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "window.__qa exposes ready (a promise resolved when boot has finished, the preloader has exited and one frame has rendered), chapters (id, st"
+    },
+    "QA-02": {
+      "status": "verified",
+      "evidence": "#qa: loop.ts:26 ambientScale 0, context.ts:32 scrub true, quality.ts:24 tier HIGH@1440 / LOW@390 (gate output tier=HIGH/LOW); md5 of qa/desktop/hero-50.png identical across two runs",
+      "updated": "2026-10-03T14:28:38.228Z",
+      "id": "QA-02",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "With the #qa hash, time-based ambient motion is frozen, scrub is true, entrance tweens complete at once and the tier is forced (HIGH at 1440"
+    },
+    "QA-03": {
+      "status": "verified",
+      "evidence": "package.json gate = typecheck && build && qa; stub runs: console error exit=1, app error exit=1, overflow exit=1, clean exit=0",
+      "updated": "2026-10-03T14:28:38.284Z",
+      "id": "QA-03",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "npm run gate runs typecheck, build and scripts/qa.mjs, and exits non-zero on any console error, application error or horizontal overflow."
+    },
+    "QA-04": {
+      "status": "verified",
+      "evidence": "scripts/qa.mjs stops from __qa.chapters at 10/50/90; wrote qa/desktop/hero-{10,50,90}.png and qa/mobile/hero-{10,50,90}.png",
+      "updated": "2026-10-03T14:28:38.342Z",
+      "id": "QA-04",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "scripts/qa.mjs shoots every entry of __qa.chapters at 10 %, 50 % and 90 % of its range, at 1440×900 and 390×844, and saves qa/<viewport>/<ch"
+    },
+    "QA-05": {
+      "status": "verified",
+      "evidence": "node scripts/ledger.mjs init -> 150 requirements (docs/BRIEF.md reconstructed from the pasted brief: fences/tables restored, text unchanged)",
+      "updated": "2026-10-03T14:28:38.404Z",
+      "id": "QA-05",
+      "phase": 0,
+      "userCheckAllowed": false,
+      "summary": "node scripts/ledger.mjs init reports exactly 150 requirements; any other number means docs/BRIEF.md is not a byte-exact copy of this file."
+    },
+    "BRAND-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "BRAND-01",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "The page tells the §5 story in the §8 chapter order with no added, removed or reordered chapter."
+    },
+    "BRAND-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "BRAND-02",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Honesty: the footer shows the concept note from §7; the page has no address, phone, map, price, testimonial, member count, named coach, part"
+    },
+    "BRAND-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "BRAND-03",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Every number on the page is an IWF equipment fact from §7.3, a value the visitor drives (load counter, chosen plan), or a plan detail shown "
+    },
+    "BRAND-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "BRAND-04",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Brand mark: an inline SVG of a plate seen end-on (two concentric rings) whose bore is a four-point star, drawn in currentColor so it inverts"
+    },
+    "BRAND-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "BRAND-05",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "docs/DESIGN.md exists before any P1 code: tokens, type roles, an ASCII wireframe per chapter for desktop and mobile, and a critique naming e"
+    },
+    "COLOR-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-01",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Tokens are exactly this table, defined once (Tailwind @theme plus CSS variables); no hex literal appears outside the token file and the GL m"
+    },
+    "COLOR-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-02",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "The two worlds are true #000000 and #FFFFFF; no tinted near-black or off-white stands in for them."
+    },
+    "COLOR-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-03",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Two named gradients exist: Ignite (black to white) and Collapse (white to black), interpolated in OKLab and dithered; in CSS as linear-gradi"
+    },
+    "COLOR-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-04",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Green budget: signal covers at most 8 % of any viewport at rest and marks only the primary action, the current state, live numerals, the foc"
+    },
+    "COLOR-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-05",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "In the white world, green text and lines use ink; signal appears on white only as a fill behind black text."
+    },
+    "COLOR-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-06",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Greys come only from the iron ramp, in materials, secondary text and borders."
+    },
+    "COLOR-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-07",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "All monochrome type sits in a layer with mix-blend-mode: difference and white ink, so it inverts per pixel against whatever is behind it: th"
+    },
+    "COLOR-08": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-08",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Text contrast is at least 4.5:1 (3:1 for text of 24 px bold and larger), measured at rest in both worlds, using only the pairs in the table."
+    },
+    "COLOR-09": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COLOR-09",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "One CSS variable --world (0 black, 1 white) drives every world-aware token in unblended UI; whatever changes the world sets it (the section "
+    },
+    "COPY-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COPY-01",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Visible copy is exactly the Arabic column of §7.2: nothing added, nothing reworded, no placeholder text."
+    },
+    "COPY-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COPY-02",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "An action keeps one name through its flow: the button احجز حصة تجريبية, the busy state جارٍ الحجز…, the result تم الحجز التجريبي."
+    },
+    "COPY-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COPY-03",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Error messages state the problem and the fix, with no apology; they are the §7.2 strings."
+    },
+    "COPY-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "COPY-04",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Readouts and engravings use Latin units (KG, MM); sentences spell the unit out in Arabic (كيلوغرام)."
+    },
+    "LAYOUT-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-01",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "The document is lang=\"ar\" dir=\"rtl\"; CSS uses logical properties only, with physical left/right allowed solely for anchors projected from 3D"
+    },
+    "LAYOUT-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-02",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "A 12-column grid with a side gutter of clamp(16px, 5vw, 96px); each chapter has a text-safe zone on the side opposite its 3D subject (§8), a"
+    },
+    "LAYOUT-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-03",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Fixed chrome is three pieces inside the safe-area insets: the wordmark at inline-start, the action and ambient toggle at inline-end, and the"
+    },
+    "LAYOUT-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-04",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "The chapter rail is a weight stack: seven plates and a signal selector pin on the current chapter; choosing a plate scrolls to that chapter "
+    },
+    "LAYOUT-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-05",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Without JavaScript, or before enhancement, every section's copy is visible in normal flow; elements are hidden for reveals only under an .is"
+    },
+    "LAYOUT-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-06",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "The page works from 360 px to 2560 px wide with no horizontal scroll; stage heights use svh and the canvas uses lvh."
+    },
+    "LAYOUT-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-07",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Each chapter section holds two layers: a sticky .stage (blended, monochrome type only) and a .panel (unblended; everything green or interact"
+    },
+    "LAYOUT-08": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "LAYOUT-08",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Semantic HTML: header, nav, main, one section per chapter with its heading, footer; exactly one h1; the canvas is aria-hidden."
+    },
+    "TYPE-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-01",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Exactly these two families, self-hosted from @fontsource-variable/alexandria and @fontsource-variable/big-shoulders; only three files are in"
+    },
+    "TYPE-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-02",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Each family has a real fallback stack and font-display: swap, and anything that measures text (splits, docking rectangles) waits for documen"
+    },
+    "TYPE-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-03",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "The scale is exactly the table above; no other font size appears."
+    },
+    "TYPE-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-04",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Arabic text has letter-spacing: 0, is never upper-cased, is never split into characters, and keeps the line heights above."
+    },
+    "TYPE-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-05",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Numerals are Latin digits in Big Shoulders with tabular-nums, wrapped in dir=\"ltr\", with a no-break space before the unit; Arabic-Indic digi"
+    },
+    "TYPE-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-06",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "text-wrap: balance is used on headings that are not split and never on elements SplitText touches; ledes are at most 34 characters wide."
+    },
+    "TYPE-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "TYPE-07",
+      "phase": 1,
+      "userCheckAllowed": false,
+      "summary": "Brand names carry translate=\"no\"."
+    },
+    "GL-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-01",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "THREE.WebGLRenderer on WebGL2 (not WebGPU) with antialias: false, sRGB output, NoToneMapping on the renderer, clear alpha 0, and renderer.in"
+    },
+    "GL-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-02",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Scene units are metres and the bar and plates use the dimensions above."
+    },
+    "GL-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-03",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "No model, texture or HDRI file is loaded; identical objects are drawn with InstancedMesh."
+    },
+    "GL-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-04",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Barbell: a shaft with two knurled zones and a smooth centre (procedural bump or normal map drawn on a canvas), collars, sleeves with end cap"
+    },
+    "GL-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-05",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Plate: a LatheGeometry profile with hub, recessed face, rim lip and bore, at 96, 64 or 48 radial segments by tier."
+    },
+    "GL-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-06",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Plate lettering: a flat annulus made with LatheGeometry from two points (its U runs around the ring and its V along the radius), textured wi"
+    },
+    "GL-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-07",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Kettlebell (lathe body, tube handle) and dumbbell (two heads, knurled handle), each one draw call."
+    },
+    "GL-08": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-08",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "The Core: an emissive sphere with a fresnel halo shader, colour core, the only object allowed to bloom strongly."
+    },
+    "GL-09": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-09",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Chalk motes: one Points object with a soft sprite generated on a canvas; counts 4000, 2000 or 800 by tier."
+    },
+    "GL-10": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-10",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Materials are exactly this table, with colours read from the token file."
+    },
+    "GL-11": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-11",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Lighting is two procedural environments built from emissive softbox meshes and PMREMGenerator.fromScene: DARK (narrow strips and one green k"
+    },
+    "GL-12": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-12",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "In the white world objects are grounded by contact shadows made of blob planes with a radial falloff; no shadow maps anywhere."
+    },
+    "GL-13": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-13",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "One EffectComposer (pmndrs postprocessing, half-float buffers) with RenderPass then the effects in this order: Bloom (mipmap blur), Chromati"
+    },
+    "GL-14": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-14",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "The backdrop is composited after tone mapping: at rest, the mean of a 200 px square of empty background is at most 3 (of 255) in the black w"
+    },
+    "GL-15": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-15",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "Camera rig: one PerspectiveCamera; each shot is a position curve, a look-at curve, FOV and roll driven by one scrubbed parameter; pointer pa"
+    },
+    "GL-16": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "GL-16",
+      "phase": 2,
+      "userCheckAllowed": false,
+      "summary": "The frame loop allocates nothing (vectors and matrices are reused), and a dispose path frees geometries, materials, textures and render targ"
+    },
+    "MOTION-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-01",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "GSAP is the only animation engine: no CSS @keyframes, no CSS transition (including Tailwind transition- utilities) except on the focus ring,"
+    },
+    "MOTION-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-02",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "One vocabulary: things arrive along the depth axis and leave along the inline axis; heavy things accelerate when they fall and settle with a"
+    },
+    "MOTION-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-03",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Every interaction tween is interruptible: it uses overwrite: \"auto\", starts from the current value, and never blocks input."
+    },
+    "MOTION-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-04",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The token file defines exactly this table and the named eases are registered once at start-up."
+    },
+    "MOTION-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-05",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Reusable effects are registered with gsap.registerEffect: reveal (masked lines), counter (snapped number), magnet (pointer attraction), tilt"
+    },
+    "MOTION-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-06",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "No GSAP plugin outside this table is imported or registered."
+    },
+    "MOTION-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-07",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Text reveals use SplitText.create with type: \"lines,words\", mask: \"lines\", autoSplit: true, aria: \"auto\" and the animation returned from onS"
+    },
+    "MOTION-08": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-08",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Pointer-driven motion (cursor, parallax, tilt, magnet) uses gsap.quickTo and exists only under (hover: hover) and (pointer: fine)."
+    },
+    "MOTION-09": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-09",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Scroll velocity from Lenis drives four things, clamped and smoothed, all zero at rest: display type skew, marquee speed and direction, chrom"
+    },
+    "MOTION-10": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "MOTION-10",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Lifecycle: a hidden tab stops rendering and ambient motion and resumes with no time jump; resize is debounced and ends in a short settle twe"
+    },
+    "SCENE-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-01",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Scroll lengths are hero 150, mass 220, ignite 150, programs 270, orbit 180, gravity 220, join 130 svh (1320 in total) followed by a footer o"
+    },
+    "SCENE-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-02",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Each chapter has a hold of at least 12 % of its length in which its composed frame rests and nothing but ambient motion moves."
+    },
+    "SCENE-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-03",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Scrub is 0.6 on fine pointers and true on touch; every scrubbed position track uses ease: \"none\"; impacts are one-shot tweens fired when a l"
+    },
+    "SCENE-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-04",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "No readable text overlaps a world sweep between 20 % and 80 % of the sweep; outgoing copy has left and incoming copy has not arrived."
+    },
+    "SCENE-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-05",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Camera continuity: adjacent chapters share their boundary pose (position, target, FOV, roll); the only teleport happens at peak white in cha"
+    },
+    "SCENE-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-06",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "On portrait viewports the 3D subject occupies the top 55 %, the text the bottom 45 %, with FOV 46 instead of 32."
+    },
+    "SCENE-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-07",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Warm-up: before the preloader exits, renderer.compileAsync has run and every chapter's key pose has been rendered once off-screen, so the fi"
+    },
+    "SCENE-10": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-10",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Black screen, the brand mark, the label and a counter in kilograms from 0 to 100 bound to five real milestones (fonts ready, geometry built,"
+    },
+    "SCENE-11": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-11",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Camera starts at (0, 0.28, 3.3) looking at the origin, FOV 32, and drifts to a slight three-quarter angle; an unloaded bar floats level and "
+    },
+    "SCENE-12": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-12",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Leaving the hero, the h1 scales down and docks into the fixed wordmark position (rects measured on refresh), and the scroll cue leaves."
+    },
+    "SCENE-13": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-13",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The camera trucks to the inline-end sleeve and closes in until knurling and plate lettering are readable; three pairs of 20 kg plates slide "
+    },
+    "SCENE-14": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-14",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "DOM beats: title and body reveal; the four spec rows reveal in order; the load counter reads 20, then 60, 100, 140 exactly as each pair land"
+    },
+    "SCENE-15": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-15",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The camera swings onto the bar's axis beyond the sleeve end so the plates read as concentric rings; the outermost plate slides off the sleev"
+    },
+    "SCENE-16": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-16",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The camera dollies through the 50 mm bore while FOV opens from 32 to about 58; as it crosses the plate's plane the Ignite sweep takes the wo"
+    },
+    "SCENE-17": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-17",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Timing inside the chapter: 0–35 % align and release the plate, 35–75 % the dolly and the sweep, 75–100 % settle; title and body are gone bef"
+    },
+    "SCENE-18": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-18",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Three stations along the camera's path, one third of the chapter each: a barbell (القوة), a kettlebell (التحمّل), a dumbbell (الكور); the ca"
+    },
+    "SCENE-19": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-19",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Each station's card (name, sentence, tool name) arrives from depth with a 3D tilt under perspective, holds, and leaves toward the camera; th"
+    },
+    "SCENE-20": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-20",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The camera cranes to a top-down view; six plates orbit the Core on three concentric rings (one, two and three plates) at different speeds; S"
+    },
+    "SCENE-21": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-21",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "In the last third the Collapse sweep takes the world from white to black, the black returning from the bottom so that mid-sweep the frame re"
+    },
+    "SCENE-22": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-22",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The camera drops to floor level; a loaded bar falls 1.2 m on a gravity curve over the first 30 % of the chapter; crossing the impact label f"
+    },
+    "SCENE-23": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-23",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Three plan plates (10, 15, 20) stand in a row facing the camera with their plan cards anchored to them; hovering or focusing a plan tips its"
+    },
+    "SCENE-24": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-24",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "The camera pulls back to the hero framing; the bar now carries the chosen plan's plates and collars and rolls slowly; the closing line revea"
+    },
+    "SCENE-25": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-25",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "A valid submit shows the busy state, then the success message while the collars spin and lock and the Core pulses once; no network request i"
+    },
+    "SCENE-26": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SCENE-26",
+      "phase": 3,
+      "userCheckAllowed": false,
+      "summary": "Footer: a wordmark marquee, the concept note, the credit and a back-to-top control that scrolls to 0 through Lenis."
+    },
+    "UI-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-01",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Cursor: a ring and a dot following with different lag; states for link (ring grows), draggable (ring morphs to a horizontal grip), text fiel"
+    },
+    "UI-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-02",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Primary action: magnetic within 80 px by at most 10 px; hover, focus, pressed (scale 0.96), busy (collar icon spinning), success (icon morph"
+    },
+    "UI-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-03",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Navigation: links underline with an SVG bar that draws from inline-start and gains two end caps; the brand mark's star morphs to a circle on"
+    },
+    "UI-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-04",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Chapter rail: the pin travels along its path as chapters change; hovering or focusing a plate shows its chapter name; the current plate is m"
+    },
+    "UI-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-05",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Plan selector: a radio group; hover and focus share one state (tilt of at most 8°, ring lit); the chosen state uses Flip; arrow keys move be"
+    },
+    "UI-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-06",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Form fields: label floats on focus or when filled; an underline bar grows from inline-start; error shakes at most 6 px with rattle and slide"
+    },
+    "UI-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-07",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Load counter and spec rows: numbers tween with snap: 1 and tabular figures; unit labels scramble in; rows reveal with ScrollTrigger.batch."
+    },
+    "UI-08": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-08",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Footer marquee: loops the wordmark; speed and direction follow scroll velocity; back-to-top has hover, focus and pressed states."
+    },
+    "UI-09": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-09",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Ambient toggle: a button with aria-pressed whose icon morphs between pause and play; it freezes idle rotation, particle drift, Core pulse an"
+    },
+    "UI-10": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-10",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Programs object: draggable to rotate with inertia on fine pointers, with arrow-key rotation when focused and a visible hint; it returns to i"
+    },
+    "UI-11": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-11",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "Every plugin in the §9.3 table performs its listed job somewhere on the page."
+    },
+    "UI-12": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "UI-12",
+      "phase": 4,
+      "userCheckAllowed": false,
+      "summary": "No un-animated change: every change of visibility, position, size, colour, content or state that a visitor can cause or see is tweened, chec"
+    },
+    "FX-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-01",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "Bore-shot flash: bloom intensity and exposure peak as the camera crosses the plate, with a chromatic aberration pulse, tied to scroll progre"
+    },
+    "FX-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-02",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "World sweeps run through the Backdrop effect's mix and direction: Ignite in chapter 3 (white enters from the bottom; mid-sweep the frame rea"
+    },
+    "FX-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-03",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "Bloom is tuned so that only the Core and specular peaks bloom (luminance threshold at least 0.85) and the white world shows no haze."
+    },
+    "FX-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-04",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "Impact one-shots (plates landing, bar drop, plan chosen, form success) each combine an object motion, a camera shake of at most 0.01 rad, a "
+    },
+    "FX-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-05",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "Preloader exit is a match cut: the SVG bar and the 3D bar occupy the same screen rectangle within 4 px at the moment of the swap, revealed t"
+    },
+    "FX-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-06",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "Chalk motes drift slowly at rest, streak with scroll velocity, and are paused by the ambient toggle."
+    },
+    "FX-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "FX-07",
+      "phase": 5,
+      "userCheckAllowed": false,
+      "summary": "The Core's halo pulses slowly at rest and brightens with the bore shot and the form success."
+    },
+    "ACCESS-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-01",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Under prefers-reduced-motion: reduce (through gsap.matchMedia and Lenis's respectReducedMotion), the camera cuts between chapter key poses w"
+    },
+    "ACCESS-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-02",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "The ambient toggle is always reachable and stops all motion that runs for more than five seconds without user input."
+    },
+    "ACCESS-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-03",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Keyboard: a skip link is the first focusable element; tab order follows the visual order; every control has a visible :focus-visible ring (2"
+    },
+    "ACCESS-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-04",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Assistive technology: split text keeps its accessible name (aria: \"auto\"); one polite live region announces the form result and the final lo"
+    },
+    "ACCESS-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-05",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Form: visible labels, autocomplete, inputmode=\"tel\" on the phone field, the pattern ^01[0125]\\d{8}$, inline errors next to their field, focu"
+    },
+    "ACCESS-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-06",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Touch targets are at least 44 by 44 px, touch-action: manipulation is set on controls, and zoom is not disabled."
+    },
+    "ACCESS-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-07",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Static mode (no WebGL, or forced through the QA hook): each section takes its world as a CSS background (hero and mass black, ignite the Ign"
+    },
+    "ACCESS-08": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "ACCESS-08",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Nothing on the page flashes more than three times in one second, and both world sweeps are single monotonic transitions."
+    },
+    "RESP-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "RESP-01",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "The tier is chosen once at start by this table and is exposed in __qa.stats()."
+    },
+    "RESP-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "RESP-02",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "Adaptive quality: if the smoothed frame time stays above 20 ms for 1.5 s, lower DPR by 0.25 (floor 1.0, or 0.85 on LOW), then disable bloom,"
+    },
+    "RESP-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "RESP-03",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "On coarse pointers Lenis leaves touch scrolling native (syncTouch: false), there is no custom cursor, no hover-only information and no drag-"
+    },
+    "RESP-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "RESP-04",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "ScrollTrigger.config({ ignoreMobileResize: true }) is set, and the canvas is sized in lvh, so the browser's address bar showing or hiding ne"
+    },
+    "RESP-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "RESP-05",
+      "phase": 6,
+      "userCheckAllowed": false,
+      "summary": "At 390×844 every chapter follows the portrait blocking of SCENE-06, the navigation is the overlay, and plans stack vertically."
+    },
+    "PERF-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "PERF-01",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "dist/index.html is at most 1.6 MB raw and 550 KB gzipped (the bare stack with three font files measured 901 KB and 310 KB)."
+    },
+    "PERF-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "PERF-02",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "At every QA stop, draw calls are at most 80 on HIGH and 50 on LOW, triangles at most 350 000 and 120 000, textures at most 24, shader progra"
+    },
+    "PERF-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "PERF-03",
+      "phase": 7,
+      "userCheckAllowed": true,
+      "summary": "On the user's laptop with a discrete GPU the page holds 60 fps (95th-percentile frame at most 16.7 ms), and on a mid-range Android phone at "
+    },
+    "PERF-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "PERF-04",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "DOM animation changes only transforms, opacity and CSS custom properties; no layout property is animated, and will-change is present only wh"
+    },
+    "PERF-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "PERF-05",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "The frame loop performs no layout reads; rectangles are measured on refresh and resize and cached."
+    },
+    "PERF-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "PERF-06",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "Rendering stops when the tab is hidden, and when nothing is moving (no scroll velocity, no pointer movement, ambient paused) the page render"
+    },
+    "POLISH-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "POLISH-01",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "The remove-one pass: for each chapter, one decorative element that does not serve the story is removed, and docs/DESIGN.md lists what was re"
+    },
+    "POLISH-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "POLISH-02",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "Arabic copy is proofread against §7.2 character by character, including hamza, tanween and the ellipsis character …."
+    },
+    "POLISH-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "POLISH-03",
+      "phase": 7,
+      "userCheckAllowed": false,
+      "summary": "The shipped file contains no ScrollTrigger markers, GSDevTools, console.log, commented-out code or TODO notes."
+    },
+    "SHIP-01": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-01",
+      "phase": 8,
+      "userCheckAllowed": false,
+      "summary": "dist/index.html runs unchanged from file:// and from any static host."
+    },
+    "SHIP-02": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-02",
+      "phase": 8,
+      "userCheckAllowed": false,
+      "summary": "If the Artifact tool exists: scripts/make-artifact.mjs writes dist/artifact.html following the page contract in artifact-design (content onl"
+    },
+    "SHIP-03": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-03",
+      "phase": 8,
+      "userCheckAllowed": false,
+      "summary": "The published page obeys the artifact frame: no external request of any kind, no mailto: or tel: actions, no alert or confirm, the form hand"
+    },
+    "SHIP-04": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-04",
+      "phase": 8,
+      "userCheckAllowed": false,
+      "summary": "A source zip without node_modules and a README.md covering run, build, deploy to a static host, where to change copy and tokens, the QA and "
+    },
+    "SHIP-05": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-05",
+      "phase": 8,
+      "userCheckAllowed": false,
+      "summary": "The final audit of §4.4 has run and every FAIL is fixed or recorded as a deviation."
+    },
+    "SHIP-06": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-06",
+      "phase": 8,
+      "userCheckAllowed": true,
+      "summary": "Real-device check: if a browser on the user's computer is reachable, open the published page there, confirm the canvas renders and the conso"
+    },
+    "SHIP-07": {
+      "status": "todo",
+      "evidence": "",
+      "updated": "",
+      "id": "SHIP-07",
+      "phase": 8,
+      "userCheckAllowed": false,
+      "summary": "node scripts/ledger.mjs check --final exits 0 and the final report (§16.2) is delivered."
+    }
+  }
+}

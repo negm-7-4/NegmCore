@@ -1,0 +1,41 @@
+/* src/styles/components.css — layout layers and components. */
+
+#gl {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 100vw;
+  block-size: 100lvh;
+  z-index: 0;
+  display: none;
+}
+.is-gl #gl {
+  display: block;
+}
+
+.is-scroll-locked {
+  overflow: clip;
+}
+
+.is-gl .chapter#hero {
+  block-size: 150svh;
+}
+
+.stage {
+  position: relative;
+  min-block-size: 100svh;
+  padding-inline: var(--gutter);
+  color: var(--color-flare);
+  mix-blend-mode: difference;
+}
+.is-gl .stage {
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100svh;
+}
+
+h1 {
+  font-size: var(--text-display);
+  line-height: var(--text-display--line-height);
+  font-weight: 900;
+}

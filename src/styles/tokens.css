@@ -1,0 +1,74 @@
+/*
+ * src/styles/tokens.css — the only place colour, type and motion-adjacent tokens are defined.
+ * `@theme static` emits every variable even when no utility uses it, because the GL
+ * materials read their colours from these same variables at runtime (GL-10): one source.
+ */
+@theme static {
+  --color-*: initial;
+  --color-void: #000000;
+  --color-flare: #ffffff;
+  --color-iron-950: #0b0e0c;
+  --color-iron-900: #191b19;
+  --color-iron-800: #2c2f2c;
+  --color-iron-700: #454946;
+  --color-iron-600: #676a67;
+  --color-iron-500: #8a8d8a;
+  --color-iron-400: #aeb2af;
+  --color-iron-300: #ced2cf;
+  --color-iron-200: #e5e9e6;
+  --color-iron-100: #f2f6f3;
+  --color-signal: #9bf89f;
+  --color-core: #34da56;
+  --color-ink: #03642b;
+  --color-ink-mid: #1ca045;
+
+  --font-*: initial;
+  --font-ar: 'Alexandria Variable', 'Noto Kufi Arabic', 'Segoe UI', 'Geeza Pro', Tahoma, sans-serif;
+  --font-num: 'Big Shoulders Variable', 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
+
+  --text-*: initial;
+  --text-display: clamp(3.5rem, 14vw, 13rem);
+  --text-display--line-height: 1.15;
+  --text-title: clamp(2.5rem, 9vw, 8rem);
+  --text-title--line-height: 1.15;
+  --text-lede: clamp(1.125rem, 1.6vw, 1.5rem);
+  --text-lede--line-height: 1.6;
+  --text-body: clamp(1rem, 0.94rem + 0.25vw, 1.125rem);
+  --text-body--line-height: 1.7;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.4;
+  --text-numeral: clamp(2rem, 6vw, 6rem);
+  --text-numeral--line-height: 1;
+
+  --spacing-gutter: clamp(16px, 5vw, 96px);
+}
+
+:root {
+  /* 0 = black world, 1 = white world. Set by the backdrop tween (GL) or per section (static). */
+  --world: 0;
+  --w: calc(var(--world) * 100%);
+
+  /* World-aware tokens for unblended UI (COLOR-09). At rest --world is exactly 0 or 1,
+     so every value resolves to a pair from the token table (COLOR-08). */
+  --ui-bg: color-mix(in oklab, var(--color-void), var(--color-flare) var(--w));
+  --ui-fg: color-mix(in oklab, var(--color-flare), var(--color-void) var(--w));
+  --ui-fg-2: color-mix(in oklab, var(--color-iron-400), var(--color-iron-700) var(--w));
+  --ui-line: color-mix(in oklab, var(--color-iron-800), var(--color-iron-300) var(--w));
+  --ui-raised: color-mix(in oklab, var(--color-iron-950), var(--color-iron-100) var(--w));
+  --ui-accent: color-mix(in oklab, var(--color-signal), var(--color-ink) var(--w));
+  --ui-accent-mark: color-mix(in oklab, var(--color-signal), var(--color-ink-mid) var(--w));
+  /* signal stays signal on white only as a fill behind black text (COLOR-05). */
+  --ui-accent-fill: var(--color-signal);
+  --ui-on-accent: var(--color-void);
+
+  --gutter: var(--spacing-gutter);
+  --chrome-h: 4.5rem;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-s: env(safe-area-inset-right, 0px); /* inline-start in RTL */
+  --safe-e: env(safe-area-inset-left, 0px); /* inline-end in RTL */
+
+  /* Named gradients (COLOR-03). OKLab interpolation, dithered by the grain layer. */
+  --gradient-ignite: linear-gradient(in oklab to bottom, var(--color-void), var(--color-flare));
+  --gradient-collapse: linear-gradient(in oklab to bottom, var(--color-flare), var(--color-void));
+}
