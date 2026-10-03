@@ -27,6 +27,8 @@ export const scroll = {
       anchors: false,
     });
     lenis.on('scroll', ScrollTrigger.update);
+    // Layout modes (.is-gl, static) change the page height; Lenis re-measures with every refresh.
+    ScrollTrigger.addEventListener('refreshInit', () => lenis?.resize());
     // The address bar showing or hiding never refreshes triggers or jumps the scene (RESP-04).
     ScrollTrigger.config({ ignoreMobileResize: true });
     return lenis;

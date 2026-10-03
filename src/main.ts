@@ -9,6 +9,10 @@ import { loop } from './core/loop';
 import { chooseTier, QualityController } from './core/quality';
 import { scroll } from './core/scroll';
 import { store } from './core/store';
+import { mountNav } from './dom/nav';
+import { mountPanels } from './dom/panels';
+import { mountRail } from './dom/rail';
+import { mountWorld } from './dom/world';
 import { createRenderer, type GLCore } from './gl/renderer';
 import { registerMotion } from './motion/tokens';
 import { installErrorCollector, installQAHook, reportError } from './qa/hook';
@@ -30,8 +34,15 @@ function enterStaticMode(): void {
   gl = null;
   root.classList.remove('is-gl');
   root.classList.add('is-static');
+  unmountPanels();
+  unmountPanels = () => undefined;
+  unmountWorld();
+  unmountWorld = mountWorld();
   ScrollTrigger.refresh();
 }
+
+let unmountPanels: () => void = () => undefined;
+let unmountWorld: () => void = () => undefined;
 
 function buildChapters(core: GLCore): void {
   for (const chapter of chapters) {
@@ -98,9 +109,17 @@ async function boot(): Promise<void> {
     enterStaticMode();
   }
 
+  mountNav();
+  mountRail();
+  if (!store.get('staticMode')) {
+    unmountWorld = mountWorld();
+    unmountPanels = mountPanels();
+  }
+
   await document.fonts.ready;
   ScrollTrigger.refresh();
   await loop.nextFrame();
+  root.classList.add('is-ready'); // replaced by the preloader exit in P3
 }
 
 const ready = boot().catch((error: unknown) => {

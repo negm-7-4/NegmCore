@@ -61,3 +61,18 @@ export function chapterRanges(): ChapterRange[] {
 export function chapterTrigger(id: ChapterId): ScrollTrigger | undefined {
   return triggers.get(id);
 }
+
+const rests = new Map<ChapterId, number>();
+
+/** Where inside its range a chapter's composed frame rests (0..1), for navigation targets. */
+export function registerChapterRest(id: ChapterId, progress: number): void {
+  rests.set(id, progress);
+}
+
+/** Scroll position (px) of a chapter's resting frame; the section top when it has no trigger. */
+export function chapterRestY(id: ChapterId): number {
+  const t = triggers.get(id);
+  if (t) return t.start + (t.end - t.start) * (rests.get(id) ?? 0.5);
+  const section = document.getElementById(id);
+  return section ? section.offsetTop : 0;
+}

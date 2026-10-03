@@ -6,6 +6,9 @@
 @source '../../index.html';
 @import './tokens.css';
 @import './components.css';
+@import './chapters.css';
+@import './forms.css';
+@import './modes.css';
 
 /* Three woff2 files only (TYPE-01). Subset ranges match Fontsource's own. */
 @font-face {

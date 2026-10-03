@@ -4,17 +4,275 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
+    <meta name="description" content="النجم كور" />
     <title>النجم كور</title>
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
     <canvas id="gl" aria-hidden="true"></canvas>
-    <main id="main">
-      <section id="hero" class="chapter" aria-labelledby="hero-title">
+    <a class="skip-link" href="#main">تخطَّ إلى المحتوى</a>
+
+    <svg class="defs" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="lineart-bar" viewBox="0 0 1100 160">
+          <path d="M0 80h1100" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+          <path d="M342 64h16v32h-16zM742 64h16v32h-16z" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+          <path d="M150 72h192v16H150zM758 72h192v16H758z" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+          <path d="M392 77h70M638 77h70M392 83h70M638 83h70" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" vector-effect="non-scaling-stroke" />
+        </symbol>
+        <symbol id="lineart-load" viewBox="0 0 1100 160">
+          <path d="M282 8h26v144h-26zM254 8h26v144h-26zM226 8h26v144h-26zM792 8h26v144h-26zM820 8h26v144h-26zM848 8h26v144h-26z" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+          <path d="M210 62h14v36h-14zM876 62h14v36h-14z" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <div class="preloader" aria-hidden="true">
+      <svg class="preloader-mark mark" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path class="mark-star" d="M12 7.5L12.9 11.1L16.5 12L12.9 12.9L12 16.5L11.1 12.9L7.5 12L11.1 11.1Z" fill="currentColor" />
+      </svg>
+      <p class="preloader-label">جارٍ التحميل…</p>
+      <p class="preloader-count" dir="ltr"><span class="num" data-preload-count>0</span>&nbsp;<span class="unit">KG</span></p>
+      <svg class="preloader-bar" viewBox="0 0 1100 160" preserveAspectRatio="none">
+        <path class="pl-bar" d="M0 80H1100" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" />
+        <path class="pl-plate" d="M282 8v144" fill="none" stroke="currentColor" stroke-width="8" />
+        <path class="pl-plate" d="M818 8v144" fill="none" stroke="currentColor" stroke-width="8" />
+        <path class="pl-plate" d="M254 8v144" fill="none" stroke="currentColor" stroke-width="8" />
+        <path class="pl-plate" d="M846 8v144" fill="none" stroke="currentColor" stroke-width="8" />
+        <path class="pl-plate" d="M226 8v144" fill="none" stroke="currentColor" stroke-width="8" />
+      </svg>
+      <div class="preloader-iris"></div>
+    </div>
+
+    <header class="chrome">
+      <a class="wordmark" href="#hero" translate="no">
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5" />
+          <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
+          <path class="mark-star" d="M12 7.5L12.9 11.1L16.5 12L12.9 12.9L12 16.5L11.1 12.9L7.5 12L11.1 11.1Z" fill="currentColor" />
+        </svg>
+        <span class="wordmark-text">النجم كور</span>
+      </a>
+      <div class="chrome-actions">
+        <a class="action" href="#join" data-magnet>
+          <span class="action-label">احجز حصة تجريبية</span>
+        </a>
+        <button class="icon-btn ambient-btn" type="button" aria-pressed="false" data-label-on="شغّل الحركة المحيطة" data-label-off="أوقف الحركة المحيطة">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="ambient-icon" d="M8 6h3v12H8zM13 6h3v12h-3z" fill="currentColor" /></svg>
+          <span class="sr-only ambient-label">أوقف الحركة المحيطة</span>
+        </button>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="chapter-nav" data-label-open="إغلاق" data-label-closed="القائمة">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="menu-icon" d="M4 8h16v2H4zM4 14h16v2H4z" fill="currentColor" /></svg>
+          <span class="menu-label">القائمة</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="rail" id="chapter-nav">
+      <svg class="rail-spine" viewBox="0 0 12 336" aria-hidden="true" preserveAspectRatio="none">
+        <path class="rail-path" d="M6 24V312" fill="none" stroke="currentColor" stroke-width="1" />
+      </svg>
+      <span class="rail-pin" aria-hidden="true"></span>
+      <ol class="rail-list">
+        <li><a class="rail-link" href="#hero"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">القلب</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+        <li><a class="rail-link" href="#mass"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">الكتلة</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+        <li><a class="rail-link" href="#ignite"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">الاشتعال</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+        <li><a class="rail-link" href="#programs"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">البرامج</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+        <li><a class="rail-link" href="#orbit"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">المدار</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+        <li><a class="rail-link" href="#gravity"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">الجاذبية</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+        <li><a class="rail-link" href="#join"><span class="rail-plate" aria-hidden="true"></span><span class="rail-label">انضم</span><svg class="rail-underline" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="u-bar" d="M100 4H0" /><path class="u-cap" d="M100 0v8M0 0v8" /></svg></a></li>
+      </ol>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <section id="hero" class="chapter" data-world="0" aria-labelledby="hero-title">
         <div class="stage">
-          <h1 id="hero-title" translate="no">النجم كور</h1>
+          <svg class="lineart" viewBox="0 0 1100 160" aria-hidden="true"><use href="#lineart-bar" /></svg>
+          <h1 id="hero-title" class="display" translate="no">النجم كور</h1>
+          <div class="hero-meta">
+            <p class="latin" lang="en" dir="ltr" translate="no">EL NEGM CORE</p>
+            <p class="lede" data-reveal>الحديد وُلِد في قلب نجم. وهنا، تحمله أنت.</p>
+            <p class="readout" dir="ltr"><span class="num">20</span>&nbsp;<span class="unit">KG</span></p>
+          </div>
+          <p class="cue">مرِّر للنزول إلى القلب</p>
+        </div>
+      </section>
+
+      <section id="mass" class="chapter" data-world="0" aria-labelledby="mass-title">
+        <div class="stage">
+          <svg class="lineart" viewBox="0 0 1100 160" aria-hidden="true"><use href="#lineart-bar" /><use href="#lineart-load" /></svg>
+          <div class="copy">
+            <h2 id="mass-title" class="title" data-reveal>الكتلة</h2>
+            <p class="body" data-reveal>عشرون كيلوغرامًا من الفولاذ قبل أن تضيف قرصًا واحدًا. كل قرص بعد ذلك قرار.</p>
+            <dl class="specs">
+              <div class="spec"><dt>الوزن</dt><dd dir="ltr"><span class="num">20</span>&nbsp;<span class="unit">KG</span></dd></div>
+              <div class="spec"><dt>الطول</dt><dd dir="ltr"><span class="num">2200</span>&nbsp;<span class="unit">MM</span></dd></div>
+              <div class="spec"><dt>قطر القبضة</dt><dd dir="ltr"><span class="num">28</span>&nbsp;<span class="unit">MM</span></dd></div>
+              <div class="spec"><dt>قطر القرص</dt><dd dir="ltr"><span class="num">450</span>&nbsp;<span class="unit">MM</span></dd></div>
+            </dl>
+            <p class="counter-label" id="load-label">الحِمل الآن</p>
+          </div>
+        </div>
+        <div class="panel">
+          <p class="counter" aria-labelledby="load-label">
+            <span class="counter-value" dir="ltr"><span class="num" data-load>20</span>&nbsp;<span class="unit">KG</span></span>
+          </p>
+        </div>
+      </section>
+
+      <section id="ignite" class="chapter" data-world="0" aria-labelledby="ignite-title">
+        <div class="stage">
+          <div class="copy">
+            <h2 id="ignite-title" class="title" data-reveal>الاشتعال</h2>
+            <p class="body" data-reveal>في قلب النجم يتحوّل الضغط إلى ضوء. وتحت البار يتحوّل إلى قوة.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="programs" class="chapter" data-world="1" aria-labelledby="programs-title">
+        <div class="stage">
+          <div class="copy programs-intro">
+            <h2 id="programs-title" class="title" data-reveal>البرامج</h2>
+            <p class="lede" data-reveal>ثلاثة مسارات. اختر واحدًا، أو امشِ فيها كلها.</p>
+          </div>
+          <ol class="programs">
+            <li class="program">
+              <h3 class="program-name">القوة</h3>
+              <p class="body">سكوات، ديدليفت، بنش. ثلاث رفعات، وتقدّم يُقاس بالكيلوغرام.</p>
+            </li>
+            <li class="program">
+              <h3 class="program-name">التحمّل</h3>
+              <p class="body">كيتل بل ودورات قصيرة. نبض أعلى ونَفَس أطول.</p>
+            </li>
+            <li class="program">
+              <h3 class="program-name">الكور</h3>
+              <p class="body">كل رفعة تبدأ من المركز. نبنيه أولًا.</p>
+            </li>
+          </ol>
+        </div>
+        <div class="panel">
+          <div class="drag-proxy" tabindex="0" aria-describedby="drag-hint"></div>
+          <p class="drag-hint" id="drag-hint">اسحب لتدوير القطعة</p>
+        </div>
+      </section>
+
+      <section id="orbit" class="chapter" data-world="1" aria-labelledby="orbit-title">
+        <div class="stage">
+          <div class="copy">
+            <h2 id="orbit-title" class="title" data-reveal>المدار</h2>
+            <p class="body" data-reveal>التقدّم يدور في مدار ثابت: حِمل، ثم تعافٍ، ثم حِمل أثقل.</p>
+          </div>
+          <svg class="orbit-rings" aria-hidden="true">
+            <ellipse class="orbit-ring" fill="none" stroke="currentColor" stroke-width="1" />
+            <ellipse class="orbit-ring" fill="none" stroke="currentColor" stroke-width="1" />
+            <ellipse class="orbit-ring" fill="none" stroke="currentColor" stroke-width="1" />
+          </svg>
+          <ul class="orbit-labels">
+            <li class="orbit-label">حِمل</li>
+            <li class="orbit-label">تعافٍ</li>
+            <li class="orbit-label">زيادة</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="gravity" class="chapter" data-world="0" aria-labelledby="gravity-title">
+        <div class="stage">
+          <div class="copy">
+            <h2 id="gravity-title" class="title" data-reveal>الجاذبية</h2>
+            <p class="body" data-reveal>الجاذبية واحدة للجميع. اختر كم ستقاوم منها.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <fieldset class="plans">
+            <legend class="plans-label">باقات تصوّرية</legend>
+            <label class="plan" data-plan="10">
+              <input class="sr-only" type="radio" name="plan-pick" value="10" />
+              <span class="plan-ring" aria-hidden="true"></span>
+              <span class="plan-name">خفيف</span>
+              <span class="plan-detail"><span class="num" dir="ltr">8</span> حصص في الشهر</span>
+              <span class="plan-state"><span class="plan-choose">اختر هذه الباقة</span><span class="plan-chosen">تم اختيار الباقة</span></span>
+            </label>
+            <label class="plan" data-plan="15">
+              <input class="sr-only" type="radio" name="plan-pick" value="15" />
+              <span class="plan-ring" aria-hidden="true"></span>
+              <span class="plan-name">ثابت</span>
+              <span class="plan-detail"><span class="num" dir="ltr">12</span> حصة في الشهر</span>
+              <span class="plan-state"><span class="plan-choose">اختر هذه الباقة</span><span class="plan-chosen">تم اختيار الباقة</span></span>
+            </label>
+            <label class="plan" data-plan="20">
+              <input class="sr-only" type="radio" name="plan-pick" value="20" />
+              <span class="plan-ring" aria-hidden="true"></span>
+              <span class="plan-name">كامل</span>
+              <span class="plan-detail">دخول مفتوح وبرنامج شخصي</span>
+              <span class="plan-state"><span class="plan-choose">اختر هذه الباقة</span><span class="plan-chosen">تم اختيار الباقة</span></span>
+            </label>
+          </fieldset>
+        </div>
+      </section>
+
+      <section id="join" class="chapter" data-world="0" aria-labelledby="join-title">
+        <div class="stage">
+          <svg class="lineart" viewBox="0 0 1100 160" aria-hidden="true"><use href="#lineart-bar" /><use href="#lineart-load" /></svg>
+          <h2 id="join-title" class="title join-title" data-reveal>احمل نصيبك من النجم.</h2>
+        </div>
+        <div class="panel">
+          <form class="join-form" method="dialog" novalidate>
+            <div class="field" data-field="name">
+              <label class="field-label" for="f-name">الاسم</label>
+              <input class="field-input" id="f-name" name="name" type="text" autocomplete="name" required placeholder="مثال: أحمد علي…" aria-describedby="e-name" />
+              <span class="field-bar" aria-hidden="true"><span class="field-bar-fill"></span></span>
+              <p class="field-error" id="e-name">اكتب اسمك.</p>
+            </div>
+            <div class="field" data-field="phone">
+              <label class="field-label" for="f-phone">رقم الهاتف</label>
+              <input class="field-input field-input-num" id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required pattern="^01[0125]\d{8}$" placeholder="مثال: 01012345678…" aria-describedby="e-phone" />
+              <span class="field-bar" aria-hidden="true"><span class="field-bar-fill"></span></span>
+              <p class="field-error" id="e-phone">اكتب رقم هاتف من <span class="num" dir="ltr">11</span> رقمًا، مثل <span class="num" dir="ltr">01012345678</span>.</p>
+            </div>
+            <fieldset class="field field-plan" data-field="plan" aria-describedby="e-plan">
+              <legend class="field-label">الباقة</legend>
+              <div class="seg">
+                <label class="seg-option"><input class="sr-only" type="radio" name="plan" value="10" required /><span>خفيف</span></label>
+                <label class="seg-option"><input class="sr-only" type="radio" name="plan" value="15" /><span>ثابت</span></label>
+                <label class="seg-option"><input class="sr-only" type="radio" name="plan" value="20" /><span>كامل</span></label>
+                <span class="seg-thumb" aria-hidden="true"></span>
+              </div>
+              <p class="field-error" id="e-plan">اختر باقة.</p>
+            </fieldset>
+            <button class="action submit" type="submit" data-magnet>
+              <svg class="submit-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="submit-shape" d="M12 4a8 8 0 1 0 0.01 0ZM12 8a4 4 0 1 1-0.01 0Z" fill="currentColor" fill-rule="evenodd" />
+              </svg>
+              <span class="submit-label" data-busy="جارٍ الحجز…">احجز حصة تجريبية</span>
+            </button>
+            <p class="form-status">تم الحجز التجريبي. هذا مشروع تصوّري، وبياناتك لم تُرسَل إلى أي مكان.</p>
+          </form>
         </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span class="marquee-item"><span class="latin" lang="en" translate="no">EL NEGM CORE</span><svg class="mark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M12 7.5L12.9 11.1L16.5 12L12.9 12.9L12 16.5L11.1 12.9L7.5 12L11.1 11.1Z" fill="currentColor" /></svg><span translate="no">النجم كور</span></span>
+        </div>
+      </div>
+      <div class="footer-row">
+        <p class="footer-note">مشروع تصوّري. لا يوجد فرع فعلي لهذا الجيم.</p>
+        <p class="footer-credit">تصميم وتطوير: محمد نجم</p>
+        <a class="to-top" href="#hero">عُد إلى السطح</a>
+      </div>
+    </footer>
+
+    <p class="sr-only" id="live" aria-live="polite"></p>
+    <div class="cursor" aria-hidden="true">
+      <svg class="cursor-ring" viewBox="0 0 48 48"><path class="cursor-ring-path" d="M24 6a18 18 0 1 0 0.01 0Z" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+      <span class="cursor-dot"></span>
+    </div>
   </body>
 </html>

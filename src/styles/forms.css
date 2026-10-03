@@ -1,0 +1,243 @@
+/* src/styles/forms.css — the join form, the footer and the cursor. */
+
+/* ---------- join: form ---------- */
+.join-title {
+  grid-column: 1 / span 7;
+}
+.join-form {
+  display: grid;
+  gap: 0.75rem;
+  max-inline-size: 26rem;
+}
+.field {
+  position: relative;
+  display: grid;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.field-label {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  color: var(--ui-fg-2);
+  pointer-events: none;
+}
+.field-plan .field-label {
+  position: static;
+  float: inline-start;
+  inline-size: 100%;
+  padding: 0;
+  margin-block-end: 0.5rem;
+}
+.field-input {
+  min-block-size: 44px;
+  padding: 0.5rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ui-fg);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  text-align: start;
+}
+.field-input-num {
+  font-family: var(--font-num), var(--font-ar);
+  font-weight: 800;
+  text-align: match-parent;
+  /* Typed digits run left to right; the Arabic placeholder keeps its own direction. */
+  unicode-bidi: plaintext;
+}
+.field-input-num::placeholder {
+  unicode-bidi: plaintext;
+  font-family: var(--font-ar);
+  font-weight: 400;
+}
+.field-input::placeholder {
+  color: var(--ui-fg-2);
+  opacity: 1;
+}
+.field-input:focus-visible {
+  outline-offset: 6px;
+}
+.field-bar {
+  position: relative;
+  display: block;
+  block-size: 1px;
+  background: var(--ui-line);
+}
+.field-bar-fill {
+  position: absolute;
+  inset: -0.5px 0;
+  background: var(--ui-fg);
+  transform: scaleX(0);
+}
+.field-error {
+  min-block-size: 1.4em;
+  padding-block-start: 0.375rem;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  color: var(--ui-fg);
+  opacity: 0;
+  visibility: hidden;
+}
+.seg {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+}
+.seg-option {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-block-size: 44px;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  cursor: pointer;
+}
+.seg-option:has(input:focus-visible) {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 3px;
+}
+.seg-option:has(input:checked) {
+  color: var(--color-void);
+}
+.seg-thumb {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: calc(100% / 3);
+  background: var(--ui-accent-fill);
+  opacity: 0;
+}
+.submit {
+  justify-self: start;
+  margin-block-start: 0.5rem;
+}
+.submit-icon {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+}
+.form-status {
+  min-block-size: 3em;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  color: var(--ui-fg);
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ---------- footer ---------- */
+.footer {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  padding: 4rem calc(var(--gutter) + var(--safe-s)) calc(2rem + var(--safe-b)) calc(var(--gutter) + var(--safe-e));
+  background: var(--color-void);
+  color: var(--color-flare);
+  overflow: clip;
+}
+.is-gl .footer {
+  background: transparent;
+}
+.marquee {
+  overflow: clip;
+  mix-blend-mode: difference;
+  color: var(--color-flare);
+}
+.marquee-track {
+  display: flex;
+  inline-size: max-content;
+}
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  padding-inline-end: 0.5em;
+  font-size: var(--text-title);
+  line-height: var(--text-title--line-height);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.marquee-item .latin {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: 800;
+}
+.marquee-item .mark {
+  inline-size: 0.6em;
+  block-size: 0.6em;
+}
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+}
+.footer-note,
+.footer-credit {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  color: var(--color-flare);
+  mix-blend-mode: difference;
+}
+.to-top {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding-inline: 1rem;
+  border: 1px solid var(--ui-line);
+  border-radius: 2px;
+  color: var(--ui-fg);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ---------- cursor (fine pointers only, set by script) ---------- */
+.cursor {
+  display: none;
+}
+.has-cursor .cursor {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-end: 100%;
+  z-index: 100;
+  display: block;
+  pointer-events: none;
+  color: var(--color-flare);
+  mix-blend-mode: difference;
+}
+.has-cursor,
+.has-cursor a,
+.has-cursor button,
+.has-cursor label,
+.has-cursor input {
+  cursor: none;
+}
+.cursor-ring {
+  position: absolute;
+  inset-block-start: -24px;
+  inset-inline-start: -24px;
+  inline-size: 48px;
+  block-size: 48px;
+  overflow: visible;
+}
+.cursor-dot {
+  position: absolute;
+  inset-block-start: -3px;
+  inset-inline-start: -3px;
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}

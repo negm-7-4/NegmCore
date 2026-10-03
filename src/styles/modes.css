@@ -1,0 +1,275 @@
+/* src/styles/modes.css — static and no-JS worlds, GL sticky stages, narrow screens. */
+
+/* ---------- static and no-JS worlds (ACCESS-07, COLOR-09) ---------- */
+html:not(.is-gl) .chapter {
+  min-block-size: 100svh;
+}
+html:not(.is-gl) .stage {
+  min-block-size: 0;
+  padding-block: calc(var(--chrome-h) + var(--safe-t) + 3rem) 3rem;
+}
+html:not(.is-gl) #hero .stage {
+  min-block-size: 100svh;
+}
+html:not(.is-gl) #hero,
+html:not(.is-gl) #mass,
+html:not(.is-gl) #gravity,
+html:not(.is-gl) #join {
+  background: var(--color-void);
+}
+html:not(.is-gl) #programs {
+  --world: 1;
+  background: var(--color-flare);
+}
+/* Copy sits in the solid head of each gradient, so text is always on pure black or white
+   (COLOR-08); the sweep happens below it. */
+html:not(.is-gl) #ignite {
+  background: var(--gradient-ignite);
+}
+html:not(.is-gl) #orbit {
+  --world: 1;
+  background: var(--gradient-collapse);
+}
+html:not(.is-gl) #ignite .stage,
+html:not(.is-gl) #orbit .stage {
+  align-content: start;
+}
+/* A fine grain over the two gradients, dithering the OKLab ramp (COLOR-03). */
+html:not(.is-gl) #ignite::before,
+html:not(.is-gl) #orbit::before {
+  content: '';
+  position: absolute;
+  inset: 45% 0 0; /* only over the sweep: the solid heads stay true #000 / #FFF (COLOR-02) */
+  opacity: 0.07;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- GL mode: sticky stages over the canvas, fixed panels ---------- */
+.is-gl #hero {
+  block-size: 150svh;
+}
+.is-gl #mass {
+  block-size: 220svh;
+}
+.is-gl #ignite {
+  block-size: 150svh;
+}
+.is-gl #programs {
+  block-size: 270svh;
+}
+.is-gl #orbit {
+  block-size: 180svh;
+}
+.is-gl #gravity {
+  block-size: 220svh;
+}
+.is-gl #join {
+  block-size: 130svh;
+}
+.is-gl .stage {
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100svh;
+  min-block-size: 0;
+}
+.is-gl .panel {
+  position: fixed;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.is-gl .panel.is-active {
+  pointer-events: auto;
+}
+.is-gl #mass .panel {
+  inset-block-end: calc(2.5rem + var(--safe-b));
+  inset-inline-start: calc(var(--gutter) + var(--safe-s));
+}
+.is-gl .programs {
+  grid-area: 1 / 1 / 2 / span 5;
+  align-self: center;
+}
+.is-gl .programs-intro {
+  grid-area: 1 / 1 / 2 / span 5;
+}
+.is-gl .program {
+  grid-area: 1 / 1;
+}
+.is-gl #programs .programs {
+  display: grid;
+  grid-template: 1fr / 1fr;
+}
+.is-gl #programs .panel {
+  inset-block: 18svh 14svh;
+  inset-inline-end: calc(var(--gutter) + var(--safe-e) + 3.5rem);
+  inline-size: 40vw;
+  display: grid;
+  align-content: end;
+  justify-items: center;
+}
+.is-gl .drag-proxy {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+}
+.is-gl .drag-hint {
+  display: block;
+  position: relative;
+}
+.is-gl .orbit-rings {
+  display: block;
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.is-gl .orbit-labels {
+  display: block;
+}
+.is-gl .orbit-label {
+  position: absolute;
+  inset-block-start: 0;
+  left: 0;
+  white-space: nowrap;
+}
+.is-gl #gravity .stage {
+  align-content: start;
+}
+.is-gl #gravity .panel {
+  inset-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e) + 3.5rem);
+  inset-block-end: calc(2rem + var(--safe-b));
+}
+.is-gl #join .stage {
+  align-content: end;
+}
+.is-gl #join .panel {
+  inset-block-end: calc(2.5rem + var(--safe-b));
+  inset-inline-end: calc(var(--gutter) + var(--safe-e) + 3.5rem);
+  inline-size: min(26rem, 40vw);
+}
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 47.99rem) {
+  :root {
+    --chrome-h: 4rem;
+  }
+  .stage {
+    padding-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e));
+    row-gap: 1rem;
+  }
+  .panel {
+    padding-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e));
+  }
+  .copy,
+  .programs,
+  .orbit-labels,
+  .join-title,
+  .hero-meta,
+  .cue {
+    grid-column: 1 / -1;
+  }
+  .wordmark-text,
+  .is-gl .wordmark-text {
+    font-size: var(--text-label);
+  }
+  .chrome-actions .action {
+    display: none;
+  }
+  #hero .stage {
+    grid-template-rows: 1fr auto auto auto;
+  }
+  #hero .lineart {
+    grid-row: 1;
+  }
+  .display {
+    grid-row: 2;
+  }
+  .hero-meta {
+    grid-row: 3;
+    justify-items: start;
+    text-align: start;
+  }
+  .cue {
+    grid-row: 4;
+    justify-self: start;
+  }
+  .plans {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .plan {
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 0.75rem;
+    padding: 0.625rem 0.875rem;
+  }
+  .plan-detail {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+  .plan-ring {
+    grid-row: 1 / span 2;
+  }
+  .plan-name {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+  /* Portrait blocking: subject in the top 55 %, text in the bottom 45 % (SCENE-06). */
+  .is-gl .stage {
+    grid-template-rows: 55svh auto;
+    align-content: start;
+    padding-block-start: 0;
+  }
+  .is-gl .stage > * {
+    grid-row: 2;
+  }
+  .is-gl #hero .stage {
+    grid-template-rows: 55svh auto auto auto;
+  }
+  .is-gl #hero .display {
+    grid-row: 2;
+  }
+  .is-gl #hero .hero-meta {
+    grid-row: 3;
+  }
+  .is-gl #hero .cue {
+    grid-row: 4;
+  }
+  .is-gl #mass .panel {
+    inset-block-end: auto;
+    inset-block-start: calc(55svh - 4.5rem);
+    inset-inline-start: calc(var(--gutter) + var(--safe-s));
+  }
+  .is-gl #programs .panel {
+    inset-block: calc(var(--chrome-h) + var(--safe-t)) 45svh;
+    inset-inline: var(--gutter);
+    inline-size: auto;
+  }
+  .is-gl #gravity .stage {
+    grid-template-rows: auto;
+    padding-block-start: calc(var(--chrome-h) + var(--safe-t));
+  }
+  .is-gl #gravity .stage > * {
+    grid-row: 1;
+  }
+  .is-gl #gravity .panel {
+    inset-inline: var(--gutter);
+  }
+  .is-gl #join .stage {
+    grid-template-rows: 50svh auto;
+  }
+  .is-gl #join .panel {
+    inset-inline: var(--gutter);
+    inline-size: auto;
+    inset-block-end: calc(1rem + var(--safe-b));
+  }
+  .join-form {
+    gap: 0.25rem;
+  }
+}

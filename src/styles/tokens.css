@@ -46,6 +46,23 @@
 :root {
   /* 0 = black world, 1 = white world. Set by the backdrop tween (GL) or per section (static). */
   --world: 0;
+  --gutter: var(--spacing-gutter);
+  --chrome-h: 4.5rem;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-s: env(safe-area-inset-right, 0px); /* inline-start in RTL */
+  --safe-e: env(safe-area-inset-left, 0px); /* inline-end in RTL */
+
+  /* Named gradients (COLOR-03). OKLab interpolation, dithered by the grain layer.
+     Static sections hold the start colour for the first 45 % so copy sits on a solid world. */
+  --gradient-ignite: linear-gradient(in oklab to bottom, var(--color-void) 0 45%, var(--color-flare) 100%);
+  --gradient-collapse: linear-gradient(in oklab to bottom, var(--color-flare) 0 45%, var(--color-void) 100%);
+}
+
+/* World-aware tokens are recomputed on every chapter, so a static section that sets its own
+   --world (programs, orbit) re-tints its unblended UI; the root copy serves the fixed chrome. */
+:root,
+.chapter {
   --w: calc(var(--world) * 100%);
 
   /* World-aware tokens for unblended UI (COLOR-09). At rest --world is exactly 0 or 1,
@@ -60,15 +77,4 @@
   /* signal stays signal on white only as a fill behind black text (COLOR-05). */
   --ui-accent-fill: var(--color-signal);
   --ui-on-accent: var(--color-void);
-
-  --gutter: var(--spacing-gutter);
-  --chrome-h: 4.5rem;
-  --safe-t: env(safe-area-inset-top, 0px);
-  --safe-b: env(safe-area-inset-bottom, 0px);
-  --safe-s: env(safe-area-inset-right, 0px); /* inline-start in RTL */
-  --safe-e: env(safe-area-inset-left, 0px); /* inline-end in RTL */
-
-  /* Named gradients (COLOR-03). OKLab interpolation, dithered by the grain layer. */
-  --gradient-ignite: linear-gradient(in oklab to bottom, var(--color-void), var(--color-flare));
-  --gradient-collapse: linear-gradient(in oklab to bottom, var(--color-flare), var(--color-void));
 }

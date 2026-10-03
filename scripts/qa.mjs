@@ -36,7 +36,8 @@ const report = { file, generatedAt: new Date().toISOString(), runs: [], ok: true
 
 for (const vp of viewports) {
   const { name, ...contextOptions } = vp;
-  const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, ...contextOptions });
+  // QA_MODE=nojs proves the page reads completely without JavaScript (P1 gate, LAYOUT-05).
+  const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, ...contextOptions, javaScriptEnabled: mode !== 'nojs' });
   const page = await context.newPage();
   const consoleErrors = [];
   page.on('console', (m) => m.type() === 'error' && consoleErrors.push(m.text()));
@@ -47,6 +48,21 @@ for (const vp of viewports) {
     if (!url.startsWith('file:') && !url.startsWith('data:') && !url.startsWith('blob:')) consoleErrors.push(`network request: ${url}`);
   });
   if (mode === 'reduced') await page.emulateMedia({ reducedMotion: 'reduce' });
+  if (mode === 'nojs') {
+    await page.goto(`file://${file}`);
+    await page.evaluate(() => document.fonts.ready);
+    mkdirSync(`${outDir}/${name}-nojs`, { recursive: true });
+    const shot = `${outDir}/${name}-nojs/full.png`;
+    await page.screenshot({ path: shot, fullPage: true });
+    const sections = await page.$$eval('section.chapter, footer', (els) => els.map((el) => el.id || 'footer'));
+    for (const id of sections) await page.locator(id === 'footer' ? 'footer' : `#${id}`).screenshot({ path: `${outDir}/${name}-nojs/${id}.png` });
+    const overflowX = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    const run = { viewport: `${name}-nojs`, consoleErrors, appErrors: [], frames: [{ stop: 0, label: 'full', shot, overflowX, stats: {} }] };
+    if (consoleErrors.length || overflowX > 0) report.ok = false;
+    report.runs.push(run);
+    await context.close();
+    continue;
+  }
   await page.goto(`file://${file}#qa`);
   await page.waitForFunction(() => window.__qa !== undefined, null, { timeout: 30_000 });
   await page.evaluate(() => window.__qa.ready);
