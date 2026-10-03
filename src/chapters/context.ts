@@ -159,21 +159,3 @@ export function exitAt(ct: ChapterTimeline, el: HTMLElement | null, at: number):
   const r = revealer(el);
   ct.beat(at, () => r.exit(), () => r.show());
 }
-
-/** TEMPORARY (P3 build-out): a chapter that only claims its scroll range. */
-export function stubChapter(id: ChapterId): ChapterModule {
-  let ctx: gsap.Context | null = null;
-  return {
-    id,
-    build(c) {
-      ctx = gsap.context(() => {
-        chapterTimeline(c, id);
-      }, c.section);
-    },
-    dispose() {
-      ctx?.revert();
-      ctx = null;
-      unregisterChapterTrigger(id);
-    },
-  };
-}

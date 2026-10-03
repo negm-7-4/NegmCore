@@ -108,7 +108,6 @@ html:not(.is-gl) #orbit::before {
 .is-gl .programs {
   display: grid;
   grid-template: 1fr / 1fr;
-  perspective: 900px;
 }
 .is-gl .program {
   grid-area: 1 / 1;

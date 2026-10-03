@@ -94,10 +94,14 @@ dt,
   display: none;
 }
 
-/* Descenders and caps must not be cut by SplitText line masks (MOTION-07). */
+/* Descenders and caps must not be cut by SplitText line masks (MOTION-07). Sibling margins
+   collapse, so a following mask takes back both paddings: the text keeps its exact leading. */
 .split-line-mask {
   padding-block: 0.32em;
   margin-block: -0.32em;
+}
+.split-line-mask + .split-line-mask {
+  margin-block-start: -0.64em;
 }
 .split-line {
   display: block;

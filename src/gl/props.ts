@@ -75,6 +75,8 @@ export interface Props {
       dim: Record<PlanId, number>;
       mirror: number;
       coreOn: number;
+      /** Join: the plates left standing tip over and lie flat as the bar lifts (0..1). */
+      lay: number;
     };
   };
   update(dt: number, ambientTime: number, ambientScale: number, velocity: number, world: number): void;
@@ -225,7 +227,7 @@ export function createProps(world: World): Props {
       core: coreJ,
       planStanding,
       planMounted,
-      state: { fall: 0, bounce: 0, lift: 0, roll: 0, pool: 0, collar: 0, collarSpin: 0, chosen: null, choose: per(0), tip: per(0), dim: per(0), mirror: 0, coreOn: 0 },
+      state: { fall: 0, bounce: 0, lift: 0, roll: 0, pool: 0, collar: 0, collarSpin: 0, chosen: null, choose: per(0), tip: per(0), dim: per(0), mirror: 0, coreOn: 0, lay: 0 },
     },
     update: () => undefined,
     dispose() {
@@ -328,8 +330,16 @@ export function createProps(world: World): Props {
         // Euler YXZ: yaw (Y) of the roll (local X, the plate axis) of the tip (local Z).
         standing.rotation.order = 'YXZ';
         if (c <= 0) {
-          standing.position.set(standX(i), rest, STAND_Z);
-          standing.rotation.set(0, Math.PI / 2, 0.32 * s.tip[id]);
+          // Pivot on the front edge of the rim: the hover tip, then (join) the fall onto the
+          // face, accelerating like a body falling over (angle grows with lay²).
+          const a = 0.32 * s.tip[id] * (1 - s.lay) + (Math.PI / 2) * s.lay * s.lay;
+          const half = t / 2;
+          standing.position.set(
+            standX(i),
+            rest * Math.cos(a) + half * Math.sin(a),
+            STAND_Z + half + rest * Math.sin(a) - half * Math.cos(a),
+          );
+          standing.rotation.set(0, Math.PI / 2, a);
         } else {
           // Roll along the floor toward the +X sleeve end, turn, then slide onto the sleeve.
           barGroup.updateMatrix();
@@ -350,7 +360,8 @@ export function createProps(world: World): Props {
         planStanding[id].sync();
         mounted.sync();
       });
-      (pool.material as MeshBasicMaterial).opacity = s.pool * 0.2; // a pool, not a floodlight
+      // A pool, not a floodlight; it fades as the bar leaves the floor (join).
+      (pool.material as MeshBasicMaterial).opacity = s.pool * 0.2 * (1 - 0.9 * s.lift);
       pool.scale.set(1 + s.pool * 0.4, 1, 1 + s.pool * 0.4);
       coreJ.group.scale.setScalar(Math.max(0.0001, s.coreOn));
       coreJ.update(ambientTime, ambientScale, w);

@@ -6,6 +6,7 @@
 export type Tier = 'HIGH' | 'MED' | 'LOW';
 export type PlanId = '10' | '15' | '20';
 export const PLAN_IDS: readonly PlanId[] = ['10', '15', '20'];
+export type Booking = 'idle' | 'busy' | 'done';
 export type ChapterId = 'hero' | 'mass' | 'ignite' | 'programs' | 'orbit' | 'gravity' | 'join';
 
 export interface State {
@@ -17,6 +18,8 @@ export interface State {
   selectedPlan: PlanId | null;
   /** The plan under the pointer or keyboard focus (SCENE-23: its plate tips forward). */
   planFocus: PlanId | null;
+  /** The trial-session form: idle, busy (fake, no request), done (SCENE-25). */
+  booking: Booking;
   chapter: ChapterId;
   staticMode: boolean;
 }
@@ -30,6 +33,7 @@ const state: State = {
   ambientPaused: false,
   selectedPlan: null,
   planFocus: null,
+  booking: 'idle',
   chapter: 'hero',
   staticMode: false,
 };

@@ -8,6 +8,7 @@ import { gsap } from 'gsap';
 import { ZONE } from '../gl/props';
 import { Shot, type PoseDef } from '../gl/rig';
 import { forgetRevealer } from '../motion/text';
+import { distance } from '../motion/tokens';
 import { exitAt, chapterTimeline, registerChapterRest, revealAt, track, unregisterChapterTrigger, type ChapterContext, type ChapterModule } from './context';
 import { igniteSettled } from './ignite';
 
@@ -63,7 +64,9 @@ export const programs: ChapterModule = {
       const { tl } = ct;
       s.turn.fill(0);
       if (hint) gsap.set(hint, { autoAlpha: 0 });
-      gsap.set(cards, { opacity: 0, z: -420, rotationY: 24, rotationX: 6, transformOrigin: '0% 50%' });
+      // Depth and tilt stay inside the motion tokens (DOM tilt <= 8°, distances <= 64 px); a
+      // short perspective makes 64 px of depth read clearly.
+      gsap.set(cards, { opacity: 0, z: -distance.lg, rotationY: distance.tiltMaxDeg, rotationX: distance.tiltMaxDeg / 2, transformOrigin: '0% 50%', transformPerspective: 400 });
       for (let k = 0; k < 3; k += 1) {
         const t0 = k * THIRD;
         const at = (f: number): number => t0 + f * THIRD;
@@ -76,7 +79,7 @@ export const programs: ChapterModule = {
         const card = cards[k];
         if (card) {
           track(tl, card, { opacity: 1, z: 0, rotationY: 0, rotationX: 0 }, at(0.16), at(0.34));
-          track(tl, card, { opacity: 0, z: 360, rotationY: -10 }, at(0.7), at(0.84));
+          track(tl, card, { opacity: 0, z: distance.lg, rotationY: -distance.tiltMaxDeg }, at(0.7), at(0.84));
         }
         // The drag hint belongs to the hold only (UI-10 adds the drag itself in P4).
         if (hint) {

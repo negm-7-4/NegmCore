@@ -406,9 +406,9 @@
       "summary": "Semantic HTML: header, nav, main, one section per chapter with its heading, footer; exactly one h1; the canvas is aria-hidden."
     },
     "TYPE-01": {
-      "status": "deviation",
-      "evidence": "1.1 LANGUAGE=en: Alexandria latin + Big Shoulders latin only (2 woff2, audit 'TYPE-01 font files: 2'); the Arabic subset is no longer shipped because no Arabic glyph appears on the page",
-      "updated": "2026-10-03T15:12:42.037Z",
+      "status": "verified",
+      "evidence": "1.2: Barlow Condensed latin 700/800 + Barlow latin 400/600 = 4 woff2 data URIs in dist; audit 'TYPE-01 font files: 4 woff2 data URIs in dist (expected 4)', count parsed from the brief",
+      "updated": "2026-10-03T16:41:40.449Z",
       "id": "TYPE-01",
       "phase": 1,
       "userCheckAllowed": false,
@@ -848,8 +848,8 @@
     },
     "SCENE-19": {
       "status": "deviation",
-      "evidence": "Cards arrive from depth (z -420, rotateY 24, rotateX 6 under perspective 900px) 16-34 of each third, hold, leave toward the camera (z 360) 70-84; intro shows 1-10 % only (before station 1): qa/desktop/programs-17.png, -27.png, -40.png. Deviation: the copy deck (§5) has no separate tool-name string per program and COPY-01 forbids adding copy, so each card carries name + sentence; the tool is named by the 3D object itself.",
-      "updated": "2026-10-03T16:01:05.509Z",
+      "evidence": "Cards arrive from depth (z -64 px, rotateY 8°, rotateX 4° under a 400 px perspective; tokens: DOM tilt <= 8°, distances <= 64 px) 16-34 of each third, hold, leave toward the camera (z +64, rotateY -8°) 70-84; intro shows 1-10 % only (before station 1): qa/desktop/programs-{10,17,27}.png. Deviation: the copy deck (§5) has no separate tool-name string per program and COPY-01 forbids adding copy, so each card carries name + sentence; the tool is named by the 3D object itself.",
+      "updated": "2026-10-03T16:41:40.358Z",
       "id": "SCENE-19",
       "phase": 3,
       "userCheckAllowed": false,
@@ -892,27 +892,27 @@
       "summary": "Three plan plates (10, 15, 20) stand in a row facing the camera with their plan cards anchored to them; hovering or focusing a plan tips its"
     },
     "SCENE-24": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/join.ts: 0-44 the bar lifts (6-40), the chosen plan's second plate slides onto the -X sleeve (22-36), collars come on (34-44), the remaining plan plates tip over and lie flat (8-24), camera rises from gravitySettled to the hero framing re-centred on the lifted bar; roll enabled 40-50; Core up behind 12-40; closing line reveals at 46 (portrait 44-54, then the form); form arrives from depth, plan preselected via store (dom/form.ts): qa/desktop/join-{16,30,80}.png, qa/mobile/join-{50,80}.png",
+      "updated": "2026-10-03T16:40:37.772Z",
       "id": "SCENE-24",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "The camera pulls back to the hero framing; the bar now carries the chosen plan's plates and collars and rolls slowly; the closing line revea"
     },
     "SCENE-25": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "dom/form.ts + join.ts: invalid submit marks fields (aria-invalid, errors in), focuses the first; valid submit -> store.booking busy (aria-busy, label scrambles to Booking…) -> done after dur.cinematic via gsap.delayedCall: status in, announced in #live; join answers done with collars spin 4π->0 then rattle-lock, Core pulse 1->3->1, shake + chalk; zero network requests (scripted check): qa/interact/form-invalid.png, qa/interact/form-done.png",
+      "updated": "2026-10-03T16:40:37.835Z",
       "id": "SCENE-25",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "A valid submit shows the busy state, then the success message while the collars spin and lock and the Core pulses once; no network request i"
     },
     "SCENE-26": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "index.html footer: wordmark marquee, concept note, credit, 'Return to the surface' link -> nav.ts goToChapter('hero') -> scroll.to(0) through Lenis (marquee motion is UI-08, P4)",
+      "updated": "2026-10-03T16:40:37.897Z",
       "id": "SCENE-26",
       "phase": 3,
       "userCheckAllowed": false,

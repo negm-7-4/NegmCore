@@ -4,13 +4,14 @@
 import { chapterRestY } from '../chapters/context';
 import { scroll } from '../core/scroll';
 import type { ChapterId } from '../core/store';
+import { dur } from '../motion/tokens';
 
 const CHAPTERS: readonly ChapterId[] = ['hero', 'mass', 'ignite', 'programs', 'orbit', 'gravity', 'join'];
 
 /** Scrolls to a chapter's resting frame, or to the top for the hero. */
 export function goToChapter(id: ChapterId, immediate = false): void {
   const y = id === 'hero' ? 0 : chapterRestY(id);
-  scroll.to(y, { immediate, duration: immediate ? undefined : 1.4 });
+  scroll.to(y, { immediate, duration: immediate ? undefined : dur.cinematic });
 }
 
 export function isChapterId(value: string): value is ChapterId {
