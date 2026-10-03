@@ -47,7 +47,10 @@ export const mass: ChapterModule = {
     const s = c.props.origin.state;
 
     ctx = gsap.context(() => {
-      const ct = chapterTimeline(c, 'mass', () => c.world.rig.set(shot, cam.u));
+      const ct = chapterTimeline(c, 'mass', () => {
+        c.world.rig.set(shot, cam.u);
+        c.world.setWorld(0); // a black chapter: a jump back from the white world lands here
+      });
       const { tl } = ct;
       // Camera: truck and close in (0-28), slow push (28-80), hold (80-95).
       track(tl, cam, { u: 1 / 3 }, 0, 28);
@@ -84,7 +87,7 @@ export const mass: ChapterModule = {
       ct.beat(
         80,
         () => {
-          oneShot(gsap.fromTo(s, { collarSpin: 0.18 }, { collarSpin: 0, duration: dur.slow, ease: ease.rattle }));
+          oneShot(gsap.fromTo(s, { collarSpin: 0 }, { collarSpin: 0.18, duration: dur.slow, ease: ease.rattle }));
           impact(c.world, { shake: 0.004, burst: 0.25 });
         },
         () => undefined,

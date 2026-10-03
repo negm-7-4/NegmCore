@@ -122,9 +122,10 @@ export const gravity: ChapterModule = {
 
       // Cards arrive from depth after the impact and leave along the inline axis.
       const arrivals = [legend, ...cards].filter((el): el is HTMLElement => el !== null);
-      gsap.set(arrivals, { opacity: 0, z: -distance.lg, rotationX: distance.tiltMaxDeg, transformPerspective: 600 });
+      // Depth only: rotation stays free for the plan cards' hover tilt (UI-05).
+      gsap.set(arrivals, { opacity: 0, z: -distance.lg, transformPerspective: 600 });
       arrivals.forEach((el, i) => {
-        track(ct.tl, el, { opacity: 1, z: 0, rotationX: 0 }, 36 + i * 1.5, 41 + i * 1.5);
+        track(ct.tl, el, { opacity: 1, z: 0 }, 36 + i * 1.5, 41 + i * 1.5);
         track(ct.tl, el, { opacity: 0, x: -distance.md }, 90 + i, 93 + i);
       });
 

@@ -89,7 +89,7 @@ export const join: ChapterModule = {
         if (state !== 'done') return;
         const lock = gsap.timeline();
         lock.fromTo(s, { collarSpin: Math.PI * 4 }, { collarSpin: 0, duration: dur.slow, ease: ease.out });
-        lock.fromTo(s, { collarSpin: 0.18 }, { collarSpin: 0, duration: dur.slow, ease: ease.rattle });
+        lock.fromTo(s, { collarSpin: 0 }, { collarSpin: 0.18, duration: dur.slow, ease: ease.rattle });
         lock.call(() => impact(c.world, { shake: 0.004, burst: 0.6 }));
         oneShot(lock);
         const pulse = gsap.timeline();

@@ -8,8 +8,9 @@
     "typecheck": "tsc --noEmit",
     "build": "vite build",
     "qa": "node scripts/qa.mjs dist/index.html qa",
-    "gate": "npm run typecheck && npm run build && npm run qa",
-    "ledger": "node scripts/ledger.mjs"
+    "gate": "npm run typecheck && npm run build && npm run qa && npm run interact",
+    "ledger": "node scripts/ledger.mjs",
+    "interact": "node scripts/interact.mjs dist/index.html qa/interact"
   },
   "dependencies": {
     "gsap": "3.15.0",

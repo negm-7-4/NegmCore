@@ -230,7 +230,8 @@ html:not(.js) .menu-btn {
   inset-inline-end: calc(var(--safe-e) + var(--spacing-s1));
   z-index: var(--z-chrome);
   display: block;
-  translate: 0 -50%;
+  /* A transform, not the translate property: MotionPathPlugin's align reads transforms. */
+  transform: translateY(-50%);
   color: var(--ui-fg-2);
 }
 .rail-spine {
@@ -270,7 +271,8 @@ html:not(.js) .menu-btn {
   border: var(--hair) solid var(--ui-fg-2);
   flex: none;
 }
-.rail-link[aria-current='true'] .rail-plate {
+/* Without script the current plate is lit by CSS; rail.ts tweens it otherwise (UI-12). */
+html:not(.js) .rail-link[aria-current='true'] .rail-plate {
   border-color: var(--ui-accent-mark);
 }
 .rail-label {
@@ -304,7 +306,7 @@ html:not(.js) .menu-btn {
   }
   .js .rail {
     inset: 0;
-    translate: none;
+    transform: none;
     display: grid;
     align-content: center;
     padding: calc(var(--chrome-h) + var(--safe-t)) calc(var(--gutter) + var(--safe-e)) calc(var(--spacing-s4) + var(--safe-b)) calc(var(--gutter) + var(--safe-s));
@@ -318,6 +320,11 @@ html:not(.js) .menu-btn {
   .rail-pin,
   .rail-plate {
     display: none;
+  }
+  /* The chrome stays above the open overlay, so its Close button is always reachable. */
+  .wordmark,
+  .chrome-actions {
+    z-index: calc(var(--z-overlay) + 1);
   }
   .rail-list {
     gap: var(--spacing-s1);

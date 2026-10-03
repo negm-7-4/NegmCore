@@ -35,6 +35,15 @@ export interface ChapterRange {
 }
 
 const triggers = new Map<ChapterId, ScrollTrigger>();
+/** Re-applies a chapter's current frame (camera, world) when it becomes the current chapter. */
+const appliers = new Map<ChapterId, () => void>();
+
+/** The chapter that owns scroll position `y`: the last one whose range has started. */
+export function chapterAt(y: number): ChapterId | null {
+  let current: ChapterId | null = null;
+  for (const [id, t] of triggers) if (current === null || y >= t.start) current = id;
+  return current;
+}
 const rests = new Map<ChapterId, number>();
 
 export function scrubAmount(): number | true {
@@ -47,6 +56,7 @@ export function registerChapterTrigger(id: ChapterId, trigger: ScrollTrigger): v
 
 export function unregisterChapterTrigger(id: ChapterId): void {
   triggers.delete(id);
+  appliers.delete(id);
 }
 
 /** Where inside its range a chapter's composed frame rests (0..1), for navigation targets. */
@@ -113,9 +123,6 @@ export function chapterTimeline(c: ChapterContext, id: ChapterId, onProgress?: (
       end: 'bottom bottom',
       scrub: c.scrub,
       invalidateOnRefresh: true,
-      onToggle: (self) => {
-        if (self.isActive) store.set('chapter', id);
-      },
     },
     onUpdate: () => {
       const now = tl.time();
@@ -127,9 +134,12 @@ export function chapterTimeline(c: ChapterContext, id: ChapterId, onProgress?: (
         }
         prev = now;
       }
-      onProgress?.(now / 100);
+      // Every timeline moves on a jump (and they update in page order), so only the chapter
+      // that owns the scroll position may drive the shared camera and world; beats still fire.
+      if (onProgress && chapterAt(window.scrollY) === id) onProgress(now / 100);
     },
   });
+  if (onProgress) appliers.set(id, () => onProgress(tl.time() / 100));
   tl.set({}, {}, 100); // the timeline is exactly 100 units long
   if (tl.scrollTrigger) registerChapterTrigger(id, tl.scrollTrigger);
   return {
@@ -158,4 +168,25 @@ export function exitAt(ct: ChapterTimeline, el: HTMLElement | null, at: number):
   if (!el) return;
   const r = revealer(el);
   ct.beat(at, () => r.exit(), () => r.show());
+}
+
+/**
+ * The current chapter from the scroll position: the last chapter whose range has started.
+ * A toggle per chapter is not enough: at progress exactly 0 no trigger counts as active, so
+ * the top of the page would keep whatever chapter was set last.
+ */
+export function mountChapterTracker(): ScrollTrigger {
+  const update = (y: number): void => {
+    const current = chapterAt(y);
+    if (!current) return;
+    // A newly current chapter re-applies its frame, in case its timeline did not move.
+    if (current !== store.get('chapter')) appliers.get(current)?.();
+    store.set('chapter', current);
+  };
+  return ScrollTrigger.create({
+    start: 0,
+    end: 'max',
+    onUpdate: (self) => update(self.scroll()),
+    onRefresh: (self) => update(self.scroll()),
+  });
 }

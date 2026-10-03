@@ -16,7 +16,8 @@ export interface ImpactOptions {
 
 export function impact(world: World, { shake = 0.006, burst = 0.6 }: ImpactOptions = {}): void {
   if (store.get('reducedMotion')) return; // ACCESS-01: no shake, no bursts
-  const s = gsap.fromTo(world.rig.shake, { amp: Math.min(shake, 0.01) }, { amp: 0, duration: dur.slow, ease: ease.rattle, overwrite: 'auto' });
+  // A wiggle ease oscillates around the start value and returns to it: tween 0 -> amplitude.
+  const s = gsap.fromTo(world.rig.shake, { amp: 0 }, { amp: Math.min(shake, 0.01), duration: dur.slow, ease: ease.rattle, overwrite: 'auto' });
   const b = gsap.fromTo(world.motes.burst, { value: burst }, { value: 0, duration: dur.cinematic, ease: ease.out, overwrite: 'auto' });
   if (device.qa) {
     s.progress(1);

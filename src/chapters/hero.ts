@@ -62,7 +62,10 @@ export const hero: ChapterModule = {
     ctx = gsap.context(() => {
       gsap.set(wordText, { opacity: 0 });
       c.world.setWorld(0, 1);
-      const ct = chapterTimeline(c, 'hero', () => c.world.rig.set(shot, cam.u));
+      const ct = chapterTimeline(c, 'hero', () => {
+        c.world.rig.set(shot, cam.u);
+        c.world.setWorld(0); // a black chapter: a jump back from the white world lands here
+      });
       const { tl } = ct;
       // 0-13: hold (SCENE-02). 13-100: drift to the three-quarter view.
       track(tl, cam, { u: 1 }, 13, 100);

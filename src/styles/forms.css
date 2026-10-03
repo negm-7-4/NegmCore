@@ -138,7 +138,8 @@
   color: var(--ui-fg-2);
   font-family: var(--font-ar);
   font-weight: 400;
-  opacity: 1;
+  /* form.ts fades it in only under a floated label (UI-06); without script it stays visible. */
+  opacity: var(--ph, 1);
 }
 .field-input:focus-visible {
   outline-offset: 6px;
@@ -189,7 +190,10 @@
   outline: 2px solid var(--ui-accent);
   outline-offset: 3px;
 }
-.seg-option:has(input:checked) {
+/* With script the thumb slides and form.ts tweens the text colour; without it the checked
+   option carries the fill itself. */
+html:not(.js) .seg-option:has(input:checked) {
+  background: var(--ui-accent-fill);
   color: var(--color-void);
 }
 .seg-thumb {

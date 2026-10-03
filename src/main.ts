@@ -5,7 +5,7 @@ import './styles/base.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Vector3 } from 'three';
-import { chapterRestY, scrubAmount, type ChapterContext, type ChapterModule } from './chapters/context';
+import { chapterRestY, mountChapterTracker, scrubAmount, type ChapterContext, type ChapterModule } from './chapters/context';
 import { gravity } from './chapters/gravity';
 import { hero } from './chapters/hero';
 import { ignite } from './chapters/ignite';
@@ -20,6 +20,10 @@ import { chooseTier, QualityController, TIERS } from './core/quality';
 import { mountResizeSettle } from './core/resize';
 import { scroll } from './core/scroll';
 import { store } from './core/store';
+import { mountActions } from './dom/actions';
+import { mountAmbient } from './dom/ambient';
+import { mountChrome } from './dom/chrome';
+import { mountCursor } from './dom/cursor';
 import { mountForm } from './dom/form';
 import { mountMarquee } from './dom/marquee';
 import { mountNav } from './dom/nav';
@@ -101,6 +105,7 @@ function mountChapters(world: World, p: Props): void {
     const reduced = Boolean(context.conditions?.reduce) || forcedReduced;
     store.set('reducedMotion', reduced);
     buildChapters(world, p, reduced, Boolean(context.conditions?.portrait));
+    mountChapterTracker();
     ScrollTrigger.refresh();
     return () => chapters.forEach((chapter) => chapter.dispose());
   });
@@ -112,7 +117,7 @@ function mountChapters(world: World, p: Props): void {
 
 /** The hero bar's screen rectangle, for the preloader's match cut (FX-05). */
 function heroBarRect(world: World): BarRect {
-  world.rig.update(0);
+  world.rig.update();
   world.camera.updateMatrixWorld();
   const a = new Vector3(-1.1, 0, 0).add(ZONE.origin).project(world.camera);
   const b = new Vector3(1.1, 0, 0).add(ZONE.origin).project(world.camera);
@@ -170,7 +175,7 @@ async function boot(): Promise<void> {
       quality.onChange((q) => world.applyQuality(q));
       loop.onUpdate((dt, ambientTime) => {
         frameDt = dt;
-        world.rig.update(dt);
+        world.rig.update();
         p.update(dt, ambientTime, clock.ambientScale, store.get('reducedMotion') ? 0 : scroll.velocity, store.get('world'));
       });
       // Velocity effects (chromatic aberration, mote streaks) stop under reduced motion (ACCESS-01).
@@ -206,6 +211,10 @@ async function boot(): Promise<void> {
 
   mountNav();
   mountRail();
+  mountChrome();
+  mountAmbient();
+  mountActions();
+  mountCursor();
   mountPlans();
   mountForm();
   mountMarquee();

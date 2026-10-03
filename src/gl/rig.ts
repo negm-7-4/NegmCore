@@ -69,12 +69,11 @@ export class Rig {
   readonly pose: Pose = makePose();
   /** Additive pointer parallax in radians (|x|, |y| <= 0.04), written through gsap.quickTo. */
   readonly parallax = { x: 0, y: 0 };
-  /** Impact shake amplitude in radians (<= 0.01), tweened by one-shots. */
+  /** Impact shake angle in radians (|amp| <= 0.01), wiggled by one-shots and ending at 0. */
   readonly shake = { amp: 0 };
   /** Extra FOV added by effects (bore shot), in degrees. */
   readonly fovBoost = { value: 0 };
   portrait = false;
-  private shakeTime = 0;
   private lastShot: Shot | null = null;
   private lastU = -1;
 
@@ -91,7 +90,7 @@ export class Rig {
     return { shot: this.lastShot, u: this.lastU };
   }
 
-  update(dt: number): void {
+  update(): void {
     const cam = this.camera;
     const { pos, look, fov, roll } = this.pose;
     cam.position.copy(pos);
@@ -100,12 +99,12 @@ export class Rig {
     cam.rotateZ(roll);
     cam.rotateY(this.parallax.x);
     cam.rotateX(this.parallax.y);
-    if (this.shake.amp > 1e-5) {
-      this.shakeTime += dt;
-      const a = Math.min(this.shake.amp, 0.01);
-      const t = this.shakeTime * 47;
-      cam.rotateX(a * Math.sin(t) * Math.cos(t * 0.37));
-      cam.rotateY(a * Math.sin(t * 1.31 + 1.7));
+    // The shake value itself oscillates (the `rattle` wiggle ease) and ends at 0; it is a
+    // signed angle, clamped to 0.01 rad (FX-04).
+    const a = MathUtils.clamp(this.shake.amp, -0.01, 0.01);
+    if (Math.abs(a) > 1e-5) {
+      cam.rotateX(a);
+      cam.rotateY(-0.6 * a);
     }
     const target = (fov + this.fovBoost.value) * (this.portrait ? PORTRAIT_FOV : 1);
     if (Math.abs(cam.fov - target) > 1e-4) {

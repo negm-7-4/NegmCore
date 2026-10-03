@@ -4,16 +4,24 @@
 // the camera approaches (0-34 %), both hold (34-70 %, at least 30 % of the third and 12 % of
 // the chapter), then the camera passes (70-100 %). Each card arrives from depth with a 3D tilt,
 // holds, and leaves toward the camera. The intro line shows only before the first station.
+// UI-10: the station in view can be dragged round (Draggable + InertiaPlugin on fine pointers)
+// or turned with the arrow keys; released, it returns to its hero pose on `iron.settle`.
 import { gsap } from 'gsap';
+import { Draggable } from 'gsap/Draggable';
+import { device } from '../core/device';
 import { ZONE } from '../gl/props';
 import { Shot, type PoseDef } from '../gl/rig';
 import { forgetRevealer } from '../motion/text';
-import { distance } from '../motion/tokens';
+import { distance, dur, ease } from '../motion/tokens';
 import { exitAt, chapterTimeline, registerChapterRest, revealAt, track, unregisterChapterTrigger, type ChapterContext, type ChapterModule } from './context';
 import { igniteSettled } from './ignite';
 
 let ctx: gsap.Context | null = null;
+let offs: Array<() => void> = [];
 const P = ZONE.programs.x;
+/** Radians of turn per pixel dragged, and per arrow-key press. */
+const TURN_PER_PX = 0.01;
+const TURN_PER_KEY = 0.35;
 const THIRD = 100 / 3;
 
 // The camera keeps looking down the path (+X), so the stations still ahead stay between the
@@ -81,7 +89,7 @@ export const programs: ChapterModule = {
           track(tl, card, { opacity: 1, z: 0, rotationY: 0, rotationX: 0 }, at(0.16), at(0.34));
           track(tl, card, { opacity: 0, z: distance.lg, rotationY: -distance.tiltMaxDeg }, at(0.7), at(0.84));
         }
-        // The drag hint belongs to the hold only (UI-10 adds the drag itself in P4).
+        // The drag hint belongs to the hold only.
         if (hint) {
           track(tl, hint, { autoAlpha: 1 }, at(0.34), at(0.4));
           track(tl, hint, { autoAlpha: 0 }, at(0.64), at(0.7));
@@ -93,9 +101,65 @@ export const programs: ChapterModule = {
         exitAt(ct, el, 9 + i);
       });
       registerChapterRest('programs', (0.34 + 0.7) / 2 / 3);
+
+      // ---------- UI-10: turn the station in view ----------
+      const proxy = c.panel?.querySelector<HTMLElement>('.drag-proxy') ?? null;
+      const station = (): number => Math.min(2, Math.max(0, Math.floor(tl.progress() * 3)));
+      const settle = (k: number): void => {
+        gsap.to(s.drag, { [k]: 0, duration: dur.slow, ease: ease.settle, overwrite: 'auto' });
+      };
+      if (proxy && device.finePointer && !c.reduced) {
+        // Draggable drives a detached point; its x becomes the station's extra turn.
+        const point = document.createElement('div');
+        let k = 0;
+        const [drag] = Draggable.create(point, {
+          type: 'x',
+          trigger: proxy,
+          inertia: true,
+          cursor: 'none',
+          onPress() {
+            k = station();
+            gsap.killTweensOf(s.drag);
+            gsap.set(point, { x: s.drag[k] / TURN_PER_PX });
+            this.update();
+          },
+          onDrag() {
+            s.drag[k] = this.x * TURN_PER_PX;
+          },
+          onThrowUpdate() {
+            s.drag[k] = this.x * TURN_PER_PX;
+          },
+          onRelease() {
+            if (!this.isThrowing) settle(k);
+          },
+          onThrowComplete() {
+            settle(k);
+          },
+        });
+        offs.push(() => drag.kill());
+      }
+      if (proxy) {
+        const onKey = (e: KeyboardEvent): void => {
+          if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+          e.preventDefault();
+          const k = station();
+          gsap.to(s.drag, { [k]: `${e.key === 'ArrowLeft' ? '-' : '+'}=${TURN_PER_KEY}`, duration: dur.quick, ease: ease.out, overwrite: 'auto' });
+        };
+        const onKeyUp = (e: KeyboardEvent): void => {
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') gsap.delayedCall(dur.quick, () => settle(station()));
+        };
+        proxy.addEventListener('keydown', onKey);
+        proxy.addEventListener('keyup', onKeyUp);
+        offs.push(() => {
+          proxy.removeEventListener('keydown', onKey);
+          proxy.removeEventListener('keyup', onKeyUp);
+        });
+      }
     }, c.section);
   },
   dispose() {
+    offs.forEach((off) => off());
+    offs = [];
     ctx?.revert();
     ctx = null;
     unregisterChapterTrigger('programs');

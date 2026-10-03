@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { device } from '../core/device';
 import { scroll } from '../core/scroll';
 import { store } from '../core/store';
+import { MARK_CIRCLE } from '../motion/shapes';
 import { dur, ease } from '../motion/tokens';
 
 export interface BarRect {
@@ -25,7 +26,6 @@ export interface Preloader {
   readonly exitSeconds: number;
 }
 
-const CIRCLE = 'M12 9.6C13.3 9.6 14.4 10.7 14.4 12C14.4 13.3 13.3 14.4 12 14.4C10.7 14.4 9.6 13.3 9.6 12C9.6 10.7 10.7 9.6 12 9.6Z';
 
 function done(anim: gsap.core.Animation): Promise<void> {
   if (device.qa) anim.progress(1);
@@ -68,7 +68,7 @@ export function createPreloader(): Preloader {
       if (count) tl.add(gsap.effects.counter(count, { to: index * 20, duration: dur.quick }), 0);
       const plate = plates[index - 1];
       if (plate) tl.fromTo(plate, { drawSVG: '50% 50%' }, { drawSVG: '0% 100%', duration: dur.quick, ease: ease.settle }, 0);
-      if (index === 5 && star) tl.to(star, { morphSVG: CIRCLE, duration: dur.base, ease: ease.inOut }, 0);
+      if (index === 5 && star) tl.to(star, { morphSVG: MARK_CIRCLE, duration: dur.base, ease: ease.inOut }, 0);
       await done(tl);
     },
     placeBar(r: BarRect) {
