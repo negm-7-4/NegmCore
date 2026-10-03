@@ -13,6 +13,9 @@ export function mountWorld(): () => void {
 
   const ctx = gsap.context(() => {
     const sections = [...document.querySelectorAll<HTMLElement>('section.chapter')];
+    // GL chapters overlap by 100svh and report their own chapter from their master timeline;
+    // only the static layout tracks the chapter from section boxes.
+    if (!store.get('staticMode')) return;
     for (const section of sections) {
       ScrollTrigger.create({
         trigger: section,
@@ -23,8 +26,6 @@ export function mountWorld(): () => void {
         },
       });
     }
-    if (!store.get('staticMode')) return;
-
     // Static mode: the world under the fixed chrome. Gradient sections flip after their
     // solid head (45 % of the section), matching where the CSS gradient starts to turn.
     const proxy = { w: store.get('world') };

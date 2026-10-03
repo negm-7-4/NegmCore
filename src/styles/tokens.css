@@ -23,8 +23,10 @@
   --color-ink-mid: #1ca045;
 
   --font-*: initial;
-  --font-ar: 'Alexandria Variable', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
-  --font-num: 'Big Shoulders Variable', 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
+  /* ui-ux-pro-max sports/fitness pairing (brief 1.2). */
+  --font-ar: 'Barlow', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+  --font-num: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
   --text-*: initial;
   --text-display: clamp(3.5rem, 14vw, 13rem);
@@ -41,6 +43,14 @@
   --text-numeral--line-height: 1;
 
   --spacing-gutter: clamp(16px, 5vw, 96px);
+  /* Spacious scale (density 3): 8 16 24 32 48 64 96. */
+  --spacing-s1: 8px;
+  --spacing-s2: 16px;
+  --spacing-s3: 24px;
+  --spacing-s4: 32px;
+  --spacing-s5: 48px;
+  --spacing-s6: 64px;
+  --spacing-s7: 96px;
 }
 
 :root {
@@ -48,6 +58,16 @@
   --world: 0;
   --gutter: var(--spacing-gutter);
   --chrome-h: 4.5rem;
+  --radius: 0px;
+  --hair: 1px;
+  /* Layered z-index scale (ui-ux-pro-max z-index-management). */
+  --z-canvas: 0;
+  --z-panel: 10;
+  --z-chrome: 20;
+  --z-overlay: 40;
+  --z-preloader: 100;
+  --z-skip: 900;
+  --z-cursor: 1000;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-s: env(safe-area-inset-left, 0px); /* inline-start in LTR */

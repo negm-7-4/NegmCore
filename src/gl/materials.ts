@@ -70,7 +70,25 @@ export const envUniforms: { uEnvMix: IUniform<number>; envMap2: IUniform<Texture
  * Patches a lit material so it samples DARK (envMap) and LIGHT (envMap2) and mixes them by
  * uEnvMix. Both PMREM textures share one size, so the CUBEUV defines hold for both.
  */
+const lit = new Set<MeshPhysicalMaterial>();
+
+/** Gives every patched material the DARK map and LIGHT as envMap2 (milestone 3 of the preloader). */
+export function applyEnvironment(dark: Texture, light: Texture): void {
+  envUniforms.envMap2.value = light;
+  lit.forEach((material) => {
+    material.envMap = dark;
+    material.needsUpdate = true;
+  });
+}
+
 export function patchEnvBlend(material: MeshPhysicalMaterial): MeshPhysicalMaterial {
+  lit.add(material);
+  if (envUniforms.envMap2.value && !material.envMap) {
+    // Created after the environments exist (e.g. a lettering variant): use the DARK map.
+    lit.forEach((m) => {
+      if (m.envMap && !material.envMap) material.envMap = m.envMap;
+    });
+  }
   material.onBeforeCompile = (shader: WebGLProgramParametersWithUniforms) => {
     shader.uniforms.uEnvMix = envUniforms.uEnvMix;
     shader.uniforms.envMap2 = envUniforms.envMap2;
@@ -154,23 +172,23 @@ function blobTexture(): CanvasTexture {
   return new CanvasTexture(canvas);
 }
 
-export function createMaterials(envDark: Texture): Materials {
+export function createMaterials(): Materials {
   const plateDark = token(MATERIAL.plate.color);
   const plateWhite = token(MATERIAL.plateWhite.color);
   const knurl = knurlTexture();
   const blob = blobTexture();
 
-  const lit = (params: ConstructorParameters<typeof MeshPhysicalMaterial>[0]): MeshPhysicalMaterial =>
-    patchEnvBlend(new MeshPhysicalMaterial({ envMap: envDark, envMapIntensity: 1, ...params }));
+  const make = (params: ConstructorParameters<typeof MeshPhysicalMaterial>[0]): MeshPhysicalMaterial =>
+    patchEnvBlend(new MeshPhysicalMaterial({ envMapIntensity: 1, ...params }));
 
-  const steel = lit({
+  const steel = make({
     color: token(MATERIAL.steel.color),
     metalness: MATERIAL.steel.metalness,
     roughness: MATERIAL.steel.roughness,
     anisotropy: MATERIAL.steel.anisotropy,
     anisotropyRotation: Math.PI / 2, // along the shaft (cylinder V)
   });
-  const steelKnurl = lit({
+  const steelKnurl = make({
     color: token(MATERIAL.steel.color),
     metalness: MATERIAL.steel.metalness,
     roughness: MATERIAL.steel.roughness,
@@ -179,12 +197,12 @@ export function createMaterials(envDark: Texture): Materials {
     bumpMap: knurl,
     bumpScale: 1.6,
   });
-  const chrome = lit({
+  const chrome = make({
     color: token(MATERIAL.chrome.color),
     metalness: MATERIAL.chrome.metalness,
     roughness: MATERIAL.chrome.roughness,
   });
-  const plate = lit({
+  const plate = make({
     envMapIntensity: 1.5,
     color: plateDark.clone(),
     metalness: MATERIAL.plate.metalness,
@@ -194,7 +212,7 @@ export function createMaterials(envDark: Texture): Materials {
   });
   // Kettlebell and dumbbell heads: the plate's cast-iron finish, carried by vertex colours
   // so each tool stays one draw call (GL-07).
-  const graphite = lit({
+  const graphite = make({
     envMapIntensity: 1.5,
     color: new Color(1, 1, 1),
     vertexColors: true,
@@ -224,7 +242,10 @@ export function createMaterials(envDark: Texture): Materials {
     dispose() {
       knurl.dispose();
       blob.dispose();
-      all.forEach((m) => m.dispose());
+      all.forEach((m) => {
+        if (m instanceof MeshPhysicalMaterial) lit.delete(m);
+        m.dispose();
+      });
     },
   };
 }

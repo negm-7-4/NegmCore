@@ -1,95 +1,77 @@
-# Negm Core — design system
+# Negm Core — design system (brief 1.2, rebuilt with ui-ux-pro-max)
 
-Source of truth for tokens: `src/styles/tokens.css` (BRIEF §6). This file records decisions.
-**Since brief 1.1 the site is English and LTR.** The wireframes below were drawn RTL; every
-inline direction is mirrored: inline-start is now left (copy, wordmark, h1), inline-end is
-right (3D subject, actions, rail), and the camera journey mirrors with it.
+Token source of truth: `src/styles/tokens.css`. This file records the decisions and why.
+
+## How it was derived (ui-ux-pro-max, public copy run from the scratchpad)
+- `--design-system "fitness gym immersive 3D dark landing" --variance 8 --motion 10 --density 3`
+  → pattern Feature-Rich Showcase, style Brutalism, palette orange/green, type Barlow Condensed + Barlow.
+- `--domain style "dark cinematic immersive 3D"` → Parallax Storytelling, 3D & Hyperrealism, Dark OLED.
+- `--domain landing "immersive scroll storytelling"` → Scroll-Triggered Storytelling: chapters,
+  progress indicator, readable without effects, reduced motion renders final states.
+- `--domain gsap` (scrub camera, split text, transitions, magnetic) and `--stack threejs|html-tailwind`.
+- Kept: type pairing, 0 px corners, bold condensed caps, spacious scale, z-index scale, exit faster
+  than enter, chars only on short headlines, scrubbed camera, dispose paths, semantic tokens.
+- Rejected: orange palette (client keeps §6.1), "instant transitions" (client wants everything to
+  move), social proof and logos (BRAND-02), hash deep links (SHIP-03), pinning (ARCH-06).
 
 ## Tokens
-- Worlds: `void` #000 / `flare` #FFF only. Iron ramp 950–100 leans green (h150, c0.006).
-- Green: `signal` on black (primary action, current state, live numerals, focus, Core);
-  `ink` for green text/lines on white; `ink-mid` for non-text marks on white; `core` GL only.
-- Gradients: Ignite (black→white), Collapse (white→black), OKLab, dithered by grain.
+- Worlds `void` #000 / `flare` #FFF; iron ramp for steel and secondary UI; `signal` = action,
+  live state, focus; `ink` for green on white; `core` GL only. Green ≤ 8 % of any frame.
 - Unblended UI reads `--world` (0/1): `--ui-fg`, `--ui-fg-2`, `--ui-line`, `--ui-accent`.
-- Blended type layer (`.stage`): white ink + `mix-blend-mode: difference`, full opacity only.
-  Hierarchy comes from size and weight, never from grey ink (keeps every pair 21:1).
+- Blended type layer: white ink + difference. Hierarchy by size, weight and case — never grey ink.
+- Radius 0 everywhere. Hairline rules (1 px) are the only ornament: Brutalist structure, not decoration.
+- Space (spacious): 8, 16, 24, 32, 48, 64, 96 px. z-index: canvas 0, panels 10, chrome 20,
+  overlay 40, preloader 100, skip link 900, cursor 1000.
 
-## Type roles
-| Role | Family/weight | Token |
+## Type roles (Barlow Condensed for mass, Barlow for reading)
+| Role | Family / weight / case | Size token |
 |---|---|---|
-| h1 | Alexandria 900 (Latin) | `--text-display` lh 1.15 |
-| h2, marquee | Alexandria 900 / Big Shoulders 800 | `--text-title` lh 1.15 |
-| lede, card name | Alexandria 400 / 900 | `--text-lede` lh 1.6 |
-| body | Alexandria 400 | `--text-body` lh 1.7 |
-| label, nav, field | Alexandria 600 | `--text-label` lh 1.4 |
-| numerals + units | Big Shoulders 900, tabular, `dir=ltr`, NBSP | `--text-numeral` or `--text-label` |
+| h1 display | Barlow Condensed 800, caps | `--text-display` lh 1.15 |
+| h2 title, marquee, wordmark | Barlow Condensed 800, caps | `--text-title` / context |
+| lede, card name | Barlow 400 / Barlow Condensed 800 caps | `--text-lede` |
+| body | Barlow 400, 52ch max | `--text-body` lh 1.7 |
+| label, nav, field, button | Barlow 600 | `--text-label` lh 1.4 |
+| numerals + units | Barlow Condensed 700, tabular, `dir=ltr`, NBSP | `--text-numeral` / label |
 
-## Chrome (all chapters)
+## Motion rules (from the skill, mapped to §9.2 tokens)
+- Arrive: `core.out`, `slow` (lines) / `base` (UI). Leave: `core.in`, `quick` (≈ 60 % of enter).
+- Headlines (≤ 3 words) split to chars inside line masks; paragraphs split to lines only.
+- Camera and world move only by scrub; one-shots only for impacts and state changes.
+- Reduced motion: no scrub travel, 0.4 s cuts between key poses, 0.2 s opacity text.
+
+## Chapters (LTR: copy at inline-start = left, 3D subject at inline-end = right)
 ```
-desktop 1440                                      mobile 390
-┌───────────────────────────────────────────┐    ┌──────────────────┐
-│[احجز حصة تجريبية][⏸]          النجم كور ✦│    │[≡][⏸]  النجم كور ✦│
-│◎ rail: 7 plates, pin                      │    │                  │
-│◎ (inline-end edge, centred)               │    │ (rail -> overlay)│
-└───────────────────────────────────────────┘    └──────────────────┘
-```
-
-## Chapters (3D subject | text-safe zone). Drawn RTL (1.0); mirror for LTR.
-```
-HERO  black                                  MASS  black
+HERO black                                   MASS black
 ┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
-│ 20 KG                                 │     │  ╔═ sleeve + plates ═╗   الكتلة        │
-│ EL NEGM CORE / lede                   │     │  ║  knurl, lettering ║   body          │
-│════════════ bar (rolls) ═════════════│     │  ║  3 pairs slide on ║   الوزن  20 KG   │
-│              ████ النجم كور ████      │     │  ╚═══════════════════╝   ... 4 rows    │
-│ مرِّر للنزول          (bar behind h1)  │     │                    الحِمل الآن 140 KG  │
+│◎ NEGM CORE            [BOOK A TRIAL][⏸]│     │ MASS            ╔═ sleeve + plates ═╗ ▮│
+│                   NEGM CORE / lede /20KG│     │ body             ║ knurl, lettering ║ ▮│
+│════════ bar rolls, crosses the h1 ═════│     │ WEIGHT  20 KG    ║ 3 pairs slide on ║ ▮│
+│ NEGM CORE (h1, lower left)        cue  │     │ … 4 rows  LOAD NOW 140 KG ╚══════════╝ ▮│
 └──────────────────────────────────────┘     └──────────────────────────────────────┘
-mobile: bar in top 55 %, h1 + lede below.    mobile: sleeve top 55 %, copy + counter below.
-
-IGNITE black→white (Bore Shot)               PROGRAMS white
-┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
-│          ◎ rings, plate faces cam     │     │ object passes ←            ┌card────┐│
-│          ● Core behind the bore       │     │ (inline-end side)          │القوة    ││
-│ (dolly through bore, sweep ↑ white)   │     │ drag hint under object     │sentence ││
-│                     الاشتعال / body   │     │                            └────────┘│
-└──────────────────────────────────────┘     └──────────────────────────────────────┘
-text leaves before 35 %; nothing over sweep.  intro line only before station 1.
-
-ORBIT white→black (top-down)                 GRAVITY black
-┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
-│   ○ ○ rings + plates, labels pinned   │     │  bar falls 1.2 m, bounces   الجاذبية │
-│  ○  ●  ○   حِمل / تعافٍ / زيادة         │     │                              body    │
-│   ○ ○                     المدار/body │     │  ◎10    ◎15    ◎20   plan plates     │
-│ collapse sweep in last third          │     │ [خفيف] [ثابت] [كامل] cards anchored    │
-└──────────────────────────────────────┘     └──────────────────────────────────────┘
-mobile: system top 55 %, copy below.         mobile: plates top, cards stack vertically.
-
-JOIN black                                   FOOTER black, natural height
-┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐
-│══════ bar + chosen plates + collars ══│     │ EL NEGM CORE ✦ النجم كور ✦ (marquee)  │
-│                                       │     │ concept note · credit   [عُد إلى السطح] │
-│ احمل نصيبك من النجم.     [form panel]  │     └──────────────────────────────────────┘
-└──────────────────────────────────────┘
+IGNITE black→white: rings, Core in the bore, dolly through, white flash. Text gone by 35 %.
+PROGRAMS white: card left, object passes right, intro only before station 1, drag hint.
+ORBIT white→black: top-down rings right, labels pinned, copy left; collapse in last third.
+GRAVITY black: copy top-left, bar drops, plan plates in a row, cards anchored under them.
+JOIN black: bar across the top half, h2 lower left, form lower right. FOOTER: marquee, note.
+mobile (all): 3D subject in the top 55 %, copy and panels in the bottom 45 %, nav = overlay.
 ```
 
 ## Static mode (no WebGL / no JS)
-Sections in flow with their world as CSS background (hero, mass black; ignite Ignite;
-programs white; orbit Collapse; gravity, join black). A line-art SVG bar (`<use>` of one
-symbol) stands in for the scene in hero, mass and join. Panels sit in flow under the copy.
+Sections in flow with their world as CSS background (hero, mass black; ignite Ignite; programs
+white; orbit Collapse; gravity, join black). A line-art SVG bar stands in for the scene in hero,
+mass and join. Panels sit in flow under the copy. Copy is complete without JavaScript.
 
 ## Critique: what read generic, and how it was made specific
-1. "Dark page + neon green CTA" → green is rationed (≤ 8 %) and means one thing: live state
-   or the action. The rest is steel greys that lean toward the same green hue.
-2. "Big hero headline over 3D" → the h1 is cut by the real bar: difference blending
-   inverts the letters where steel passes, so type and object read as one forged piece.
-3. "Scroll-jacked section slides" → no pinning, no slides: one camera, one continuous
-   path; the only cut is hidden inside the white flash of the Bore Shot.
-4. "Feature cards" → each programme card belongs to a physical tool the camera flies past,
-   and arrives from depth with the same vocabulary as the objects.
-5. "Pricing table" → plans are plates standing on the floor; choosing one rolls the plate
-   onto the bar you carry into the form.
-6. "Progress dots" → the chapter rail is a weight stack with a pin, like a machine.
+1. "Dark page + neon CTA" → green is rationed and means one thing: action or live state.
+2. "Big hero headline over 3D" → the bar passes behind the caps and difference blending
+   inverts the letters where steel crosses, so type and object read as one forged piece.
+3. "Scroll-jacked slides" → no pinning: one camera path; the only cut hides in the white flash.
+4. "Feature cards" → each card belongs to a real tool the camera flies past, arriving from depth.
+5. "Pricing table" → plans are plates on the floor; choosing one rolls it onto your bar.
+6. "Progress dots" → the chapter rail is a weight stack with a selector pin.
 7. "Loading spinner" → the preloader loads a bar plate by plate, then match-cuts to 3D.
+8. "Template sports font" → Barlow Condensed is used only in caps for mass and numerals;
+   reading text stays in Barlow at 1.7 line height, 52ch.
 
 ## Removed in the remove-one pass (POLISH-01)
 Filled in P7.

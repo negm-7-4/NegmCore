@@ -108,7 +108,7 @@ export function createDumbbell(materials: Materials): Dumbbell {
       envMapIntensity: 1.8,
       clearcoat: 0.25,
       clearcoatRoughness: 0.4,
-      envMap: materials.plate.envMap,
+      envMap: materials.plate.envMap ?? null,
     }),
   );
   const mesh = new Mesh(geometry, material);

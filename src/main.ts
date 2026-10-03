@@ -1,30 +1,50 @@
 // src/main.ts — boot order only.
+// 1 preloader in -> fonts -> geometry + chapters -> environments -> shaders -> warm-up frames
+// -> DOM components -> preloader match-cut out. Static mode replaces 3-5 when WebGL is absent.
 import './styles/base.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Vector3 } from 'three';
+import { chapterRestY, scrubAmount, type ChapterContext, type ChapterModule } from './chapters/context';
+import { gravity } from './chapters/gravity';
 import { hero } from './chapters/hero';
-import { scrubAmount, type ChapterModule } from './chapters/context';
+import { ignite } from './chapters/ignite';
+import { join } from './chapters/join';
+import { mass } from './chapters/mass';
+import { orbit } from './chapters/orbit';
+import { createPreloader, type BarRect } from './chapters/preloader';
+import { programs } from './chapters/programs';
 import { device, supportsWebGL2 } from './core/device';
-import { loop } from './core/loop';
+import { clock, loop } from './core/loop';
 import { chooseTier, QualityController, TIERS } from './core/quality';
 import { scroll } from './core/scroll';
 import { store } from './core/store';
 import { mountNav } from './dom/nav';
 import { mountPanels } from './dom/panels';
+import { mountParallax } from './dom/parallax';
 import { mountRail } from './dom/rail';
 import { mountWorld } from './dom/world';
+import { createProps, ZONE, type Props } from './gl/props';
 import { createWorld, type World } from './gl/world';
-import { clock } from './core/loop';
+import { registerEffects } from './motion/effects';
+import { mountVelocitySkew } from './motion/text';
 import { registerMotion } from './motion/tokens';
 import { installErrorCollector, installQAHook, reportError } from './qa/hook';
-import { showroom, type ShowroomModel } from './chapters/showroom';
 
 installErrorCollector();
 registerMotion();
+registerEffects();
 
 const root = document.documentElement;
-const chapters: ChapterModule[] = [hero];
+const chapters: ChapterModule[] = [hero, mass, ignite, programs, orbit, gravity, join];
 let gl: World | null = null;
+let props: Props | null = null;
+let rootMedia: gsap.MatchMedia | null = null;
+let forcedReduced = false;
+let frameDt = 1 / 60;
+let rebuild: () => void = () => undefined;
+let unmountPanels: () => void = () => undefined;
+let unmountWorld: () => void = () => undefined;
 
 function enterStaticMode(): void {
   if (store.get('staticMode')) return;
@@ -32,10 +52,13 @@ function enterStaticMode(): void {
   rootMedia?.revert(); // disposes every chapter through the matchMedia cleanup
   chapters.forEach((chapter) => chapter.dispose());
   loop.setRenderer(null);
+  props?.dispose();
   gl?.dispose();
+  props = null;
   gl = null;
   root.classList.remove('is-gl');
   root.classList.add('is-static');
+  store.set('world', 0);
   unmountPanels();
   unmountPanels = () => undefined;
   unmountWorld();
@@ -43,15 +66,22 @@ function enterStaticMode(): void {
   ScrollTrigger.refresh();
 }
 
-let unmountPanels: () => void = () => undefined;
-let unmountWorld: () => void = () => undefined;
-
-function buildChapters(core: World): void {
+function buildChapters(world: World, p: Props, reduced: boolean, portrait: boolean): void {
   for (const chapter of chapters) {
     const section = document.getElementById(chapter.id);
     const stage = section?.querySelector<HTMLElement>('.stage');
     if (!section || !stage) throw new Error(`missing section #${chapter.id}`);
-    chapter.build({ world: core, section, stage, panel: section.querySelector<HTMLElement>('.panel'), scrub: scrubAmount() });
+    const ctx: ChapterContext = {
+      world,
+      props: p,
+      section,
+      stage,
+      panel: section.querySelector<HTMLElement>('.panel'),
+      scrub: reduced ? true : scrubAmount(),
+      reduced,
+      portrait,
+    };
+    chapter.build(ctx);
   }
 }
 
@@ -59,31 +89,58 @@ function buildChapters(core: World): void {
  * The root gsap.matchMedia (ARCH-08): when reduced motion or the pointer/orientation class
  * changes, every chapter is disposed and rebuilt for the new conditions.
  */
-function mountChapters(core: World): void {
+function mountChapters(world: World, p: Props): void {
   const mm = gsap.matchMedia();
   rootMedia = mm;
-  mm.add(
-    { reduce: device.reducedMotionQuery, fine: device.finePointerQuery, portrait: device.portraitQuery },
-    (context) => {
-      if (store.get('staticMode')) return;
-      store.set('reducedMotion', Boolean(context.conditions?.reduce) || forcedReduced);
-      buildChapters(core);
-      ScrollTrigger.refresh();
-      return () => chapters.forEach((chapter) => chapter.dispose());
-    },
-  );
+  mm.add({ reduce: device.reducedMotionQuery, fine: device.finePointerQuery, portrait: device.portraitQuery }, (context) => {
+    if (store.get('staticMode')) return;
+    const reduced = Boolean(context.conditions?.reduce) || forcedReduced;
+    store.set('reducedMotion', reduced);
+    buildChapters(world, p, reduced, Boolean(context.conditions?.portrait));
+    ScrollTrigger.refresh();
+    return () => chapters.forEach((chapter) => chapter.dispose());
+  });
   rebuild = () => {
     mm.revert();
-    mountChapters(core);
+    mountChapters(world, p);
   };
 }
 
-let rootMedia: gsap.MatchMedia | null = null;
-let frameDt = 1 / 60;
-let forcedReduced = false;
-let rebuild: () => void = () => undefined;
+/** The hero bar's screen rectangle, for the preloader's match cut (FX-05). */
+function heroBarRect(world: World): BarRect {
+  world.rig.update(0);
+  world.camera.updateMatrixWorld();
+  const a = new Vector3(-1.1, 0, 0).add(ZONE.origin).project(world.camera);
+  const b = new Vector3(1.1, 0, 0).add(ZONE.origin).project(world.camera);
+  const { width, height } = world.size;
+  const x1 = ((a.x + 1) / 2) * width;
+  const x2 = ((b.x + 1) / 2) * width;
+  const yc = ((1 - a.y) / 2) * height;
+  const w = Math.abs(x2 - x1);
+  const h = (w * 240) / 1100;
+  return { x: Math.min(x1, x2), y: yc - h / 2, w, h };
+}
+
+/** Renders every chapter's resting frame once behind the preloader (SCENE-07). */
+async function warmUp(): Promise<void> {
+  for (const chapter of chapters) {
+    scroll.to(chapterRestY(chapter.id), { immediate: true });
+    ScrollTrigger.update();
+    await loop.nextFrame();
+  }
+  scroll.to(0, { immediate: true });
+  ScrollTrigger.update();
+  await loop.nextFrame();
+}
+
+/** Boot milestones in ms since start, exposed through __qa.debug for the SCENE-10 check. */
+const timings: Record<string, number> = {};
 
 async function boot(): Promise<void> {
+  const t0 = performance.now();
+  const mark = (name: string): void => {
+    timings[name] = Math.round(performance.now() - t0);
+  };
   const tier = chooseTier();
   store.set('tier', tier);
   store.set('reducedMotion', device.prefersReducedMotion);
@@ -92,18 +149,45 @@ async function boot(): Promise<void> {
   loop.init(scroll.init());
   root.classList.add('is-enhanced');
 
+  const preloader = createPreloader();
+  await preloader.enter();
+  await document.fonts.ready;
+  mark('fonts');
+  await preloader.milestone(1);
+
   const canvas = document.getElementById('gl') as HTMLCanvasElement;
   if (supportsWebGL2()) {
     try {
-      gl = createWorld(canvas, TIERS[tier], quality.live.dpr, enterStaticMode);
+      const world = createWorld(canvas, TIERS[tier], quality.live.dpr, enterStaticMode);
+      const p = createProps(world);
+      gl = world;
+      props = p;
       root.classList.add('is-gl');
-      const core = gl;
-      quality.onChange((q) => core.applyQuality(q));
-      loop.setRenderer(() => core.frame(frameDt, clock.ambientTime, clock.ambientScale, scroll.velocity));
-      loop.onUpdate((dt) => {
+      quality.onChange((q) => world.applyQuality(q));
+      loop.onUpdate((dt, ambientTime) => {
         frameDt = dt;
+        world.rig.update(dt);
+        p.update(dt, ambientTime, clock.ambientScale, store.get('reducedMotion') ? 0 : scroll.velocity, store.get('world'));
       });
-      mountChapters(core);
+      loop.setRenderer(() => world.frame(frameDt, clock.ambientTime, clock.ambientScale, scroll.velocity));
+      ScrollTrigger.refresh();
+      mountChapters(world, p);
+      mark('geometry');
+      await preloader.milestone(2);
+      preloader.placeBar(heroBarRect(world));
+
+      world.buildEnvironment();
+      mark('environment');
+      await preloader.milestone(3);
+
+      [p.origin.group, p.programs.group, p.orbit.group, p.gravity.group].forEach((g) => (g.visible = true));
+      await world.renderer.compileAsync(world.scene, world.camera);
+      mark('shaders');
+      await preloader.milestone(4);
+
+      await warmUp();
+      mark('firstFrame');
+      await preloader.milestone(5);
     } catch (error) {
       reportError(error);
       enterStaticMode();
@@ -111,28 +195,35 @@ async function boot(): Promise<void> {
   } else {
     enterStaticMode();
   }
+  if (store.get('staticMode')) {
+    for (const k of [2, 3, 4, 5] as const) await preloader.milestone(k);
+  }
 
   mountNav();
   mountRail();
-  if (!store.get('staticMode')) {
+  if (!store.get('staticMode') && gl) {
     unmountWorld = mountWorld();
     unmountPanels = mountPanels();
+    mountParallax(gl.rig);
   }
-
-  await document.fonts.ready;
+  mountVelocitySkew();
   ScrollTrigger.refresh();
   await loop.nextFrame();
-  root.classList.add('is-ready'); // replaced by the preloader exit in P3
+  mark('ready');
+  await preloader.exit();
+  mark('exit');
+  document.dispatchEvent(new Event('negm:ready'));
 }
 
 const ready = boot().catch((error: unknown) => {
   reportError(error);
   enterStaticMode();
+  root.classList.add('is-ready');
 });
 
 installQAHook({
   ready: ready.then(() => undefined),
-  debug: () => ({ triggers: ScrollTrigger.getAll().length, tweens: gsap.globalTimeline.getChildren(true, true, true).length }),
+  debug: () => ({ triggers: ScrollTrigger.getAll().length, tweens: gsap.globalTimeline.getChildren(true, true, true).length, timings }),
   renderStats: () => {
     const info = gl?.renderer.info;
     return {
@@ -154,10 +245,3 @@ installQAHook({
     }
   },
 });
-
-// TEMPORARY (P2 showroom): removed in P3.
-(window as unknown as { __showroom: (n: ShowroomModel, w: boolean, f: boolean) => Promise<void> }).__showroom = async (n, w, f) => {
-  if (!gl) return;
-  showroom(gl, n, w, f);
-  await window.__qa.seek(0);
-};

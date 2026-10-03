@@ -1,6 +1,8 @@
 # NEGM CORE — Master Build Brief
 
-Version 1.1 · 2026-10-03 · Client and art director: Mohammed Negm · Executor: Claude
+Version 1.2 · 2026-10-03 · Client and art director: Mohammed Negm · Executor: Claude
+
+**Change 1.2 (client, mid-build):** the `ui-ux-pro-max` skill leads the design layer, which is rebuilt from scratch on the existing engine (3D, GSAP scroll, QA). The client kept the §6.1 palette and adopted the skill's typography: Barlow Condensed and Barlow (§6.2).
 
 **Change 1.1 (client, mid-build):** the name is Negm Core and the site is English throughout. §2 now selects the `en` alternative and the new brand; the English column of §7.2 ships, with brand cells set to Negm Core and the two form placeholders translated. GSAP stays the engine of the camera scroll, the animation, the scrubbed 3D sequences and every transition.
 
@@ -42,6 +44,8 @@ These are requirements, not suggestions. Each has one stated alternative; switch
 **3.4 Evidence.** Never write "done", "works" or "verified" without evidence produced in this session: a screenshot you opened, a command's output, or file:line. What cannot be checked in this environment is recorded as `user-check` with the exact steps for the user; it is never reported as verified.
 
 **3.5 Skills and sources.** Before designing, load the `frontend-design` skill. Before publishing an Artifact, load `artifact-design`. If any of these are listed as available, load them when their topic comes up: the official GSAP skills (`gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, `gsap-plugins`, `gsap-utils`, `gsap-performance`), `web-design-guidelines`, `ui-ux-pro-max`, `caveman`. If they are not installed, do not try to install them: their load-bearing rules are already embedded in §3.3, §9, §11 and §13. When sources disagree, the order is: this brief's explicit specifications, then official library documentation for API correctness, then design skills' defaults.
+
+Since 1.2, `ui-ux-pro-max` is the primary design source. It is not installed in this environment, so its public copy (nextlevelbuilder/ui-ux-pro-max-skill) runs from the scratchpad: `--design-system` for the direction, `--domain ux|gsap|style|landing` and `--stack threejs|html-tailwind` for focused rules, and its pre-delivery checklist before shipping. Its palette proposal (orange and green, Brutalism) was rejected by the client in favour of §6.1; its typography was adopted. Its social-proof and logo sections are rejected because they contradict BRAND-02, and its deep-link advice yields to SHIP-03.
 
 One conflict is already resolved: the design skills flag "black with a single bright green accent" and "motion on everything" as generic defaults. Here both are the client's explicit direction, so they stay. The skills' job is to make the execution specific to this subject, not to remove them.
 
@@ -151,23 +155,23 @@ The greys are not neutral: they lean slightly toward the green (OKLCH chroma 0.0
 
 ### 6.2 Typography
 
-Two families, chosen by rendering "النجم كور" in nine Arabic display candidates and comparing the results. **Alexandria** (variable, 100–900) carries Arabic and running Latin: at weight 900 its letters read as dense forged blocks, which is the idea of mass. **Big Shoulders** (variable) carries the Latin wordmark, numerals and units: condensed industrial figures that look stamped into a plate.
+Two families, from the `ui-ux-pro-max` design system for sports and fitness (1.2). **Barlow Condensed** carries display, titles, the wordmark, numerals and units: condensed athletic capitals that read like stencilled plate markings. **Barlow** carries ledes, body, labels and controls.
 
 | Role | Family, weight | Size | Line height |
 |---|---|---|---|
-| Display (h1) | Alexandria 900 | `clamp(3.5rem, 14vw, 13rem)` | 1.15 |
-| Chapter title (h2) | Alexandria 900 | `clamp(2.5rem, 9vw, 8rem)` | 1.15 |
-| Lede | Alexandria 400 | `clamp(1.125rem, 1.6vw, 1.5rem)` | 1.6 |
-| Body | Alexandria 400 | 1rem to 1.125rem | 1.7 |
-| Label | Alexandria 600 | 0.875rem | 1.4 |
-| Numerals, units | Big Shoulders 900 | `clamp(2rem, 6vw, 6rem)` and label sizes | 1.0 |
-| Latin wordmark | Big Shoulders 800 | follows context | 1.0 |
+| Display (h1) | Barlow Condensed 800 | `clamp(3.5rem, 14vw, 13rem)` | 1.15 |
+| Chapter title (h2) | Barlow Condensed 800 | `clamp(2.5rem, 9vw, 8rem)` | 1.15 |
+| Lede | Barlow 400 | `clamp(1.125rem, 1.6vw, 1.5rem)` | 1.6 |
+| Body | Barlow 400 | 1rem to 1.125rem | 1.7 |
+| Label | Barlow 600 | 0.875rem | 1.4 |
+| Numerals, units | Barlow Condensed 700 | `clamp(2rem, 6vw, 6rem)` and label sizes | 1.0 |
+| Latin wordmark | Barlow Condensed 800 | follows context | 1.0 |
 
-- [TYPE-01] Exactly these two families, self-hosted from `@fontsource-variable/alexandria` and `@fontsource-variable/big-shoulders`; only three files are inlined (Alexandria arabic and latin, Big Shoulders latin, about 98 KB of woff2 together).
+- [TYPE-01] Exactly these two families, self-hosted from `@fontsource/barlow-condensed` and `@fontsource/barlow`; only four files are inlined (Barlow Condensed latin 700 and 800, Barlow latin 400 and 600, about 90 KB of woff2 together).
 - [TYPE-02] Each family has a real fallback stack and `font-display: swap`, and anything that measures text (splits, docking rectangles) waits for `document.fonts.ready`.
 - [TYPE-03] The scale is exactly the table above; no other font size appears.
 - [TYPE-04] Arabic text has `letter-spacing: 0`, is never upper-cased, is never split into characters, and keeps the line heights above.
-- [TYPE-05] Numerals are Latin digits in Big Shoulders with `tabular-nums`, wrapped in `dir="ltr"`, with a no-break space before the unit; Arabic-Indic digits never appear.
+- [TYPE-05] Numerals are Latin digits in Barlow Condensed with `tabular-nums`, wrapped in `dir="ltr"`, with a no-break space before the unit; Arabic-Indic digits never appear.
 - [TYPE-06] `text-wrap: balance` is used on headings that are not split and never on elements SplitText touches; ledes are at most 34 characters wide.
 - [TYPE-07] Brand names carry `translate="no"`.
 
@@ -443,7 +447,7 @@ Verified to install, typecheck and build together on 2026-10-03. Exact versions 
 | Animation | GSAP 3.15 with the plugins of §9.3 (all free in the public package) |
 | Scroll | Lenis 1.3 |
 | 3D | three 0.186, postprocessing 6.39 |
-| Fonts | `@fontsource-variable/alexandria`, `@fontsource-variable/big-shoulders` |
+| Fonts | `@fontsource/barlow-condensed`, `@fontsource/barlow` |
 | QA only | `playwright-core`, pinned to the preinstalled Chromium; never run `playwright install`; on a local machine set `CHROME_PATH` to an installed Chrome |
 
 Why nothing else: two scroll engines or two clocks fight each other, and in a single-file build every extra library is weight every visitor downloads. Framer Motion, anime.js, AOS, Locomotive Scroll, ScrollSmoother, Theatre.js, Lottie, React and drei are excluded for that reason.
@@ -625,8 +629,8 @@ Pinned versions, because a build that is rerun months later must produce the sam
     "three": "0.186.1"
   },
   "devDependencies": {
-    "@fontsource-variable/alexandria": "5.3.0",
-    "@fontsource-variable/big-shoulders": "5.3.0",
+    "@fontsource/barlow": "5.3.0",
+    "@fontsource/barlow-condensed": "5.3.0",
     "@tailwindcss/vite": "4.3.3",
     "@types/three": "0.186.0",
     "playwright-core": "1.56.0",

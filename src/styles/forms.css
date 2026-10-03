@@ -1,19 +1,94 @@
-/* src/styles/forms.css — the join form, the footer and the cursor. */
+/*
+ * src/styles/forms.css — plan cards, the join form and the footer.
+ * ui-ux-pro-max forms rules: visible labels, a required marker that is not text, errors under
+ * their field with reserved space (no layout shift), 44 px targets, feedback on submit.
+ */
+
+/* ---------- gravity: plan cards ---------- */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-s2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.plans-label {
+  float: inline-start;
+  inline-size: 100%;
+  padding: 0;
+  margin-block-end: var(--spacing-s1);
+  color: var(--ui-fg-2);
+}
+.plan {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-s1);
+  min-block-size: 44px;
+  padding: var(--spacing-s2) var(--spacing-s3) var(--spacing-s3);
+  border: var(--hair) solid var(--ui-line);
+  border-radius: var(--radius);
+  background: var(--ui-raised);
+  cursor: pointer;
+}
+.plan-ring {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border: var(--hair) solid var(--ui-fg-2);
+  border-radius: 50%;
+}
+.plan-name {
+  font-size: var(--text-lede);
+  line-height: var(--text-lede--line-height);
+  letter-spacing: 0.02em;
+}
+.plan-detail {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  color: var(--ui-fg-2);
+}
+.plan-state {
+  display: grid;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.plan-choose,
+.plan-chosen {
+  grid-area: 1 / 1;
+}
+.plan-chosen {
+  opacity: 0;
+  color: var(--ui-accent);
+}
+.plan-marker {
+  position: absolute;
+  inset-block-start: calc(-1 * var(--hair));
+  inset-inline: calc(-1 * var(--hair));
+  block-size: 3px;
+  background: var(--ui-accent-mark);
+  pointer-events: none;
+}
+.plan:has(input:focus-visible) {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 3px;
+}
 
 /* ---------- join: form ---------- */
-.join-title {
-  grid-column: 1 / span 7;
-}
 .join-form {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--spacing-s2);
   max-inline-size: 26rem;
 }
 .field {
   position: relative;
   display: grid;
   margin: 0;
-  padding: 1.25rem 0 0;
+  padding: var(--spacing-s3) 0 0;
   border: 0;
   min-inline-size: 0;
 }
@@ -24,17 +99,28 @@
   color: var(--ui-fg-2);
   pointer-events: none;
 }
+/* Required marker: a mark, not text, so the copy deck stays exact (COPY-01). */
+.field-label::after {
+  content: '';
+  display: inline-block;
+  inline-size: 5px;
+  block-size: 5px;
+  margin-inline-start: 6px;
+  vertical-align: 0.3em;
+  background: var(--ui-accent-mark);
+}
 .field-plan .field-label {
   position: static;
   float: inline-start;
   inline-size: 100%;
   padding: 0;
-  margin-block-end: 0.5rem;
+  margin-block-end: var(--spacing-s1);
 }
 .field-input {
   min-block-size: 44px;
-  padding: 0.5rem 0;
+  padding: var(--spacing-s1) 0;
   border: 0;
+  border-radius: var(--radius);
   background: transparent;
   color: var(--ui-fg);
   font-size: var(--text-body);
@@ -43,18 +129,14 @@
 }
 .field-input-num {
   font-family: var(--font-num), var(--font-ar);
-  font-weight: 800;
-  text-align: match-parent;
-  /* Typed digits run left to right; the Arabic placeholder keeps its own direction. */
-  unicode-bidi: plaintext;
-}
-.field-input-num::placeholder {
-  unicode-bidi: plaintext;
-  font-family: var(--font-ar);
-  font-weight: 400;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 .field-input::placeholder {
   color: var(--ui-fg-2);
+  font-family: var(--font-ar);
+  font-weight: 400;
   opacity: 1;
 }
 .field-input:focus-visible {
@@ -63,7 +145,7 @@
 .field-bar {
   position: relative;
   display: block;
-  block-size: 1px;
+  block-size: var(--hair);
   background: var(--ui-line);
 }
 .field-bar-fill {
@@ -74,7 +156,7 @@
 }
 .field-error {
   min-block-size: 1.4em;
-  padding-block-start: 0.375rem;
+  padding-block-start: var(--spacing-s1);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
@@ -86,8 +168,8 @@
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--ui-line);
-  border-radius: 2px;
+  border: var(--hair) solid var(--ui-line);
+  border-radius: var(--radius);
 }
 .seg-option {
   position: relative;
@@ -98,6 +180,8 @@
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .seg-option:has(input:focus-visible) {
@@ -117,7 +201,7 @@
 }
 .submit {
   justify-self: start;
-  margin-block-start: 0.5rem;
+  margin-block-start: var(--spacing-s1);
 }
 .submit-icon {
   inline-size: 1.125rem;
@@ -137,8 +221,8 @@
 .footer {
   position: relative;
   display: grid;
-  gap: 2rem;
-  padding: 4rem calc(var(--gutter) + var(--safe-s)) calc(2rem + var(--safe-b)) calc(var(--gutter) + var(--safe-e));
+  gap: var(--spacing-s4);
+  padding: var(--spacing-s6) calc(var(--gutter) + var(--safe-e)) calc(var(--spacing-s4) + var(--safe-b)) calc(var(--gutter) + var(--safe-s));
   background: var(--color-void);
   color: var(--color-flare);
   overflow: clip;
@@ -150,6 +234,7 @@
   overflow: clip;
   mix-blend-mode: difference;
   color: var(--color-flare);
+  border-block: var(--hair) solid currentColor;
 }
 .marquee-track {
   display: flex;
@@ -158,17 +243,19 @@
 .marquee-item {
   display: inline-flex;
   align-items: center;
-  gap: 0.25em;
+  gap: 0.3em;
   padding-inline-end: 0.5em;
+  font-family: var(--font-display);
   font-size: var(--text-title);
   line-height: var(--text-title--line-height);
-  font-weight: 900;
+  font-weight: 800;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 .marquee-item .latin {
   font-size: inherit;
   line-height: inherit;
-  font-weight: 800;
+  letter-spacing: 0;
 }
 .marquee-item .mark {
   inline-size: 0.6em;
@@ -178,7 +265,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem 2rem;
+  gap: var(--spacing-s2) var(--spacing-s4);
 }
 .footer-note,
 .footer-credit {
@@ -193,51 +280,14 @@
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
-  padding-inline: 1rem;
-  border: 1px solid var(--ui-line);
-  border-radius: 2px;
+  padding-inline: var(--spacing-s3);
+  border: var(--hair) solid var(--ui-line);
+  border-radius: var(--radius);
   color: var(--ui-fg);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-decoration: none;
-}
-
-/* ---------- cursor (fine pointers only, set by script) ---------- */
-.cursor {
-  display: none;
-}
-.has-cursor .cursor {
-  position: fixed;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  z-index: 100;
-  display: block;
-  pointer-events: none;
-  color: var(--color-flare);
-  mix-blend-mode: difference;
-}
-.has-cursor,
-.has-cursor a,
-.has-cursor button,
-.has-cursor label,
-.has-cursor input {
-  cursor: none;
-}
-.cursor-ring {
-  position: absolute;
-  inset-block-start: -24px;
-  inset-inline-start: -24px;
-  inline-size: 48px;
-  block-size: 48px;
-  overflow: visible;
-}
-.cursor-dot {
-  position: absolute;
-  inset-block-start: -3px;
-  inset-inline-start: -3px;
-  inline-size: 6px;
-  block-size: 6px;
-  border-radius: 50%;
-  background: currentColor;
 }

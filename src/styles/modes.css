@@ -1,4 +1,4 @@
-/* src/styles/modes.css — static and no-JS worlds, GL sticky stages, narrow screens. */
+/* src/styles/modes.css — static and no-JS worlds, GL sticky stages and panels, narrow screens. */
 
 /* ---------- static and no-JS worlds (ACCESS-07, COLOR-09) ---------- */
 html:not(.is-gl) .chapter {
@@ -6,7 +6,7 @@ html:not(.is-gl) .chapter {
 }
 html:not(.is-gl) .stage {
   min-block-size: 0;
-  padding-block: calc(var(--chrome-h) + var(--safe-t) + 3rem) 3rem;
+  padding-block: calc(var(--chrome-h) + var(--safe-t) + var(--spacing-s5)) var(--spacing-s5);
 }
 html:not(.is-gl) #hero .stage {
   min-block-size: 100svh;
@@ -34,38 +34,44 @@ html:not(.is-gl) #ignite .stage,
 html:not(.is-gl) #orbit .stage {
   align-content: start;
 }
-/* A fine grain over the two gradients, dithering the OKLab ramp (COLOR-03). */
+/* A fine grain over the two sweeps dithers the OKLab ramp (COLOR-03); heads stay pure. */
 html:not(.is-gl) #ignite::before,
 html:not(.is-gl) #orbit::before {
   content: '';
   position: absolute;
-  inset: 45% 0 0; /* only over the sweep: the solid heads stay true #000 / #FFF (COLOR-02) */
+  inset: 45% 0 0;
   opacity: 0.07;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- GL mode: sticky stages over the canvas, fixed panels ---------- */
+/* ---------- GL mode ---------- */
+/* Each section is its scroll length + 100svh and overlaps the previous one by 100svh, so
+   every sticky stage is stuck for exactly its chapter's length (SCENE-01) and the chapter
+   timelines are contiguous. The outgoing stage is empty when it scrolls away. */
 .is-gl #hero {
-  block-size: 150svh;
+  block-size: 250svh;
 }
 .is-gl #mass {
-  block-size: 220svh;
+  block-size: 320svh;
 }
 .is-gl #ignite {
-  block-size: 150svh;
+  block-size: 250svh;
 }
 .is-gl #programs {
-  block-size: 270svh;
+  block-size: 370svh;
 }
 .is-gl #orbit {
-  block-size: 180svh;
+  block-size: 280svh;
 }
 .is-gl #gravity {
-  block-size: 220svh;
+  block-size: 320svh;
 }
 .is-gl #join {
-  block-size: 130svh;
+  block-size: 230svh;
+}
+.is-gl .chapter + .chapter {
+  margin-block-start: -100svh;
 }
 .is-gl .stage {
   position: sticky;
@@ -75,7 +81,7 @@ html:not(.is-gl) #orbit::before {
 }
 .is-gl .panel {
   position: fixed;
-  z-index: 5;
+  z-index: var(--z-panel);
   margin: 0;
   padding: 0;
   opacity: 0;
@@ -84,23 +90,29 @@ html:not(.is-gl) #orbit::before {
 .is-gl .panel.is-active {
   pointer-events: auto;
 }
+.is-gl #mass .stage {
+  grid-template-rows: 1fr auto;
+}
 .is-gl #mass .panel {
-  inset-block-end: calc(2.5rem + var(--safe-b));
+  inset-block-end: calc(var(--spacing-s5) + var(--safe-b));
   inset-inline-start: calc(var(--gutter) + var(--safe-s));
 }
-.is-gl .programs {
+.is-gl #mass .counter-label {
+  margin-block-end: calc(var(--text-numeral) + var(--spacing-s2));
+}
+.is-gl .programs,
+.is-gl .programs-intro {
   grid-area: 1 / 1 / 2 / span 5;
   align-self: center;
 }
-.is-gl .programs-intro {
-  grid-area: 1 / 1 / 2 / span 5;
+.is-gl .programs {
+  display: grid;
+  grid-template: 1fr / 1fr;
+  perspective: 900px;
 }
 .is-gl .program {
   grid-area: 1 / 1;
-}
-.is-gl #programs .programs {
-  display: grid;
-  grid-template: 1fr / 1fr;
+  align-self: center;
 }
 .is-gl #programs .panel {
   inset-block: 18svh 14svh;
@@ -114,7 +126,6 @@ html:not(.is-gl) #orbit::before {
   display: block;
   position: absolute;
   inset: 0;
-  border-radius: 2px;
 }
 .is-gl .drag-hint {
   display: block;
@@ -143,25 +154,25 @@ html:not(.is-gl) #orbit::before {
 }
 .is-gl #gravity .panel {
   inset-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e) + 3.5rem);
-  inset-block-end: calc(2rem + var(--safe-b));
+  inset-block-end: calc(var(--spacing-s4) + var(--safe-b));
 }
 .is-gl #join .stage {
   align-content: end;
 }
 .is-gl #join .panel {
-  inset-block-end: calc(2.5rem + var(--safe-b));
+  inset-block-end: calc(var(--spacing-s5) + var(--safe-b));
   inset-inline-end: calc(var(--gutter) + var(--safe-e) + 3.5rem);
   inline-size: min(26rem, 40vw);
 }
 
-/* ---------- narrow screens ---------- */
+/* ---------- narrow screens (mobile-first breakpoints 375 / 768) ---------- */
 @media (max-width: 47.99rem) {
   :root {
     --chrome-h: 4rem;
   }
   .stage {
     padding-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e));
-    row-gap: 1rem;
+    row-gap: var(--spacing-s2);
   }
   .panel {
     padding-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e));
@@ -174,8 +185,7 @@ html:not(.is-gl) #orbit::before {
   .cue {
     grid-column: 1 / -1;
   }
-  .wordmark-text,
-  .is-gl .wordmark-text {
+  .wordmark-text {
     font-size: var(--text-label);
   }
   .chrome-actions .action {
@@ -201,13 +211,13 @@ html:not(.is-gl) #orbit::before {
   }
   .plans {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: var(--spacing-s1);
   }
   .plan {
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    column-gap: 0.75rem;
-    padding: 0.625rem 0.875rem;
+    column-gap: var(--spacing-s2);
+    padding: var(--spacing-s1) var(--spacing-s2);
   }
   .plan-detail {
     grid-column: 2 / -1;
@@ -241,9 +251,15 @@ html:not(.is-gl) #orbit::before {
   .is-gl #hero .cue {
     grid-row: 4;
   }
+  .is-gl #mass .stage {
+    grid-template-rows: 55svh auto;
+  }
+  .is-gl #mass .counter-label {
+    margin-block-end: 0;
+  }
   .is-gl #mass .panel {
     inset-block-end: auto;
-    inset-block-start: calc(55svh - 4.5rem);
+    inset-block-start: calc(55svh - var(--spacing-s6));
     inset-inline-start: calc(var(--gutter) + var(--safe-s));
   }
   .is-gl #programs .panel {
@@ -262,14 +278,14 @@ html:not(.is-gl) #orbit::before {
     inset-inline: var(--gutter);
   }
   .is-gl #join .stage {
-    grid-template-rows: 50svh auto;
+    grid-template-rows: 46svh auto;
   }
   .is-gl #join .panel {
     inset-inline: var(--gutter);
     inline-size: auto;
-    inset-block-end: calc(1rem + var(--safe-b));
+    inset-block-end: calc(var(--spacing-s2) + var(--safe-b));
   }
   .join-form {
-    gap: 0.25rem;
+    gap: var(--spacing-s1);
   }
 }

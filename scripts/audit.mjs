@@ -256,8 +256,10 @@ if (want('source')) {
   const dist = readFileSync(file, 'utf8');
   record('MOTION-01 no CSS motion', motionCss.length === 0 && !/@keyframes/.test(dist), motionCss.join(', ') || 'no @keyframes, transition or animation in src or dist');
   const fonts = (dist.match(/data:font\/woff2/g) ?? []).length;
-  // ar ships Alexandria arabic + latin and Big Shoulders latin; en drops the Arabic subset.
-  const expected = /\| LANGUAGE \| `en`/.test(readFileSync('docs/BRIEF.md', 'utf8')) ? 2 : 3;
+  // The brief's TYPE-01 states how many files ship ("only four files are inlined").
+  const words = { two: 2, three: 3, four: 4, five: 5, six: 6 };
+  const stated = readFileSync('docs/BRIEF.md', 'utf8').match(/\[TYPE-01\][^\n]*only (\w+) files/);
+  const expected = stated ? words[stated[1]] : 0;
   record('TYPE-01 font files', fonts === expected, `${fonts} woff2 data URIs in dist (expected ${expected})`);
   const lines = src.map((f) => [f, read(f).split('\n').length]).sort((a, b) => b[1] - a[1]);
   record('ARCH-03 file length', lines[0][1] <= 400, `largest ${lines[0][0]} ${lines[0][1]} lines`);

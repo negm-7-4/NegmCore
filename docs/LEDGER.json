@@ -412,7 +412,7 @@
       "id": "TYPE-01",
       "phase": 1,
       "userCheckAllowed": false,
-      "summary": "Exactly these two families, self-hosted from @fontsource-variable/alexandria and @fontsource-variable/big-shoulders; only three files are in"
+      "summary": "Exactly these two families, self-hosted from @fontsource/barlow-condensed and @fontsource/barlow; only four files are inlined (Barlow Conden"
     },
     "TYPE-02": {
       "status": "verified",
@@ -448,7 +448,7 @@
       "id": "TYPE-05",
       "phase": 1,
       "userCheckAllowed": false,
-      "summary": "Numerals are Latin digits in Big Shoulders with tabular-nums, wrapped in dir=\"ltr\", with a no-break space before the unit; Arabic-Indic digi"
+      "summary": "Numerals are Latin digits in Barlow Condensed with tabular-nums, wrapped in dir=\"ltr\", with a no-break space before the unit; Arabic-Indic d"
     },
     "TYPE-06": {
       "status": "verified",
@@ -775,18 +775,18 @@
       "summary": "Black screen, the brand mark, the label and a counter in kilograms from 0 to 100 bound to five real milestones (fonts ready, geometry built,"
     },
     "SCENE-11": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/hero.ts heroShot: (0,0.28,3.3) FOV 32 hold 0-13, drift to three-quarter (1.3,0.62,2.95); props roll (ambient + velocity); h1 lower inline-start with the bar crossing the caps, inverted by difference (qa/desktop/hero-10.png); meta + cue in the inline-end zone; parallax ±0.04 rad dom/parallax.ts; portrait qa/mobile/hero-10.png",
+      "updated": "2026-10-03T15:35:38.124Z",
       "id": "SCENE-11",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "Camera starts at (0, 0.28, 3.3) looking at the origin, FOV 32, and drifts to a slight three-quarter angle; an unloaded bar floats level and "
     },
     "SCENE-12": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "hero.ts: Flip.fit(h1, wordmark) measured on refreshInit, scrubbed 55-88, crossfade 88-92; measured h1 rect [108,28,72,21] = wordmark rect at 95 % (flipdbg); cue exits at 14 (qa/desktop/hero-50.png), wordmark visible qa/desktop/hero-90.png",
+      "updated": "2026-10-03T15:35:38.218Z",
       "id": "SCENE-12",
       "phase": 3,
       "userCheckAllowed": false,

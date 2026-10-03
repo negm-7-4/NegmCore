@@ -133,8 +133,8 @@ function drawStrip(g: CanvasRenderingContext2D, weight: PlateWeight, highlight: 
   };
   // The run: wordmark, star, weight, star; twice around the ring. Measured, so nothing
   // overlaps across the seam.
-  const brandFont = (px: number): string => `900 ${px}px "Alexandria Variable", sans-serif`;
-  const numFont = (px: number): string => `900 ${px}px "Big Shoulders Variable", sans-serif`;
+  const brandFont = (px: number): string => `800 ${px}px "Barlow Condensed", sans-serif`;
+  const numFont = (px: number): string => `700 ${px}px "Barlow Condensed", sans-serif`;
   const brand = 'NEGM CORE';
   const label = `${weight} KG`;
   const gap = 40;
@@ -199,7 +199,7 @@ export function letteringMaterial(weight: PlateWeight, highlight: boolean, mater
         bumpScale: 2.5,
         metalness: MATERIAL.plate.metalness,
         roughness: 0.42,
-        envMap: materials.plate.envMap,
+        envMap: materials.plate.envMap ?? null,
       }),
     );
     entry = { material, texture };

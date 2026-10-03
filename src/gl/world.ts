@@ -5,7 +5,7 @@ import { MathUtils } from 'three';
 import type { LiveQuality, TierSettings } from '../core/quality';
 import { store } from '../core/store';
 import { createEnvironments, type Environments } from './environment';
-import { createMaterials, envUniforms, type Materials } from './materials';
+import { applyEnvironment, createMaterials, type Materials } from './materials';
 import { createMotes, type Motes } from './models/motes';
 import { disposePlateResources } from './models/plate';
 import { createPost, type Post } from './post';
@@ -13,7 +13,7 @@ import { createRenderer, type GLCore } from './renderer';
 import { Rig } from './rig';
 
 export interface World extends GLCore {
-  env: Environments;
+  env: Environments | null;
   materials: Materials;
   post: Post;
   rig: Rig;
@@ -21,15 +21,16 @@ export interface World extends GLCore {
   tier: TierSettings;
   /** 0 = black world, 1 = white world. Drives backdrop, env blend, materials, post. */
   setWorld(value: number, direction?: 1 | -1): void;
+  /** Renders one frame. The rig and props are updated earlier in the tick (main.ts). */
   frame(dt: number, ambientTime: number, ambientScale: number, velocity: number): void;
   applyQuality(quality: LiveQuality): void;
+  /** Builds the two studios and lights every material with them (preloader milestone 3). */
+  buildEnvironment(): void;
 }
 
 export function createWorld(canvas: HTMLCanvasElement, tier: TierSettings, dpr: number, onLost: () => void): World {
   const core = createRenderer(canvas, dpr, onLost);
-  const env = createEnvironments(core.renderer);
-  envUniforms.envMap2.value = env.light;
-  const materials = createMaterials(env.dark);
+  const materials = createMaterials();
   const post = createPost(core.renderer, core.scene, core.camera, tier);
   const rig = new Rig(core.camera);
   const motes = createMotes(tier.motes, dpr);
@@ -50,7 +51,7 @@ export function createWorld(canvas: HTMLCanvasElement, tier: TierSettings, dpr: 
 
   const world: World = {
     ...core,
-    env,
+    env: null,
     materials,
     post,
     rig,
@@ -66,11 +67,15 @@ export function createWorld(canvas: HTMLCanvasElement, tier: TierSettings, dpr: 
     },
     frame(dt, _ambientTime, ambientScale, velocity) {
       sizeTo();
-      rig.update(dt);
       motes.update(dt, ambientScale, core.camera.position, velocity, post.fx.world);
       post.fx.velocity = velocity;
       core.renderer.info.reset();
       post.render(dt);
+    },
+    buildEnvironment() {
+      if (world.env) return;
+      world.env = createEnvironments(core.renderer);
+      applyEnvironment(world.env.dark, world.env.light);
     },
     applyQuality(quality: LiveQuality) {
       core.setPixelRatio(quality.dpr);
@@ -82,7 +87,7 @@ export function createWorld(canvas: HTMLCanvasElement, tier: TierSettings, dpr: 
       motes.dispose();
       materials.dispose();
       disposePlateResources();
-      env.dispose();
+      world.env?.dispose();
       core.dispose();
     },
   };

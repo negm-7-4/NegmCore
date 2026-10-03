@@ -1,7 +1,9 @@
 /*
- * src/styles/components.css — utilities, canvas, preloader, chrome and the chapter rail.
- * Three modes: no JS (html without .js), static (JS, no WebGL: .is-static) and GL (.is-gl).
- * GSAP is the only animation engine: there are no transitions or keyframes in any stylesheet.
+ * src/styles/components.css — utilities, canvas, preloader, chrome, chapter rail and cursor.
+ * Rebuilt for brief 1.2 from the ui-ux-pro-max system: 0 px corners, hairline structure,
+ * condensed caps for mass, 44 px targets. Three modes: no JS (html without .js), static
+ * (.is-static) and GL (.is-gl). GSAP is the only animation engine: no transitions or
+ * keyframes in any stylesheet.
  */
 
 /* ---------- utilities ---------- */
@@ -25,12 +27,12 @@
 .num,
 .unit {
   font-family: var(--font-num);
-  font-weight: 900;
+  font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
   letter-spacing: 0;
 }
 .unit {
-  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 .is-scroll-locked {
   overflow: clip;
@@ -43,7 +45,7 @@
   inset-inline-start: 0;
   inline-size: 100vw;
   block-size: 100lvh;
-  z-index: 0;
+  z-index: var(--z-canvas);
   display: none;
 }
 .is-gl #gl {
@@ -53,11 +55,13 @@
 /* ---------- skip link ---------- */
 .skip-link {
   position: fixed;
-  inset-block-start: calc(var(--safe-t) + 0.75rem);
+  inset-block-start: calc(var(--safe-t) + var(--spacing-s2));
   inset-inline-start: calc(var(--gutter) + var(--safe-s));
-  z-index: 90;
-  padding: 0.75rem 1rem;
+  z-index: var(--z-skip);
+  display: inline-flex;
+  align-items: center;
   min-block-size: 44px;
+  padding-inline: var(--spacing-s3);
   background: var(--color-signal);
   color: var(--color-void);
   font-size: var(--text-label);
@@ -82,11 +86,11 @@ html:not(.js) .skip-link:focus-visible {
 .js .preloader {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: var(--z-preloader);
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 1rem;
+  gap: var(--spacing-s2);
   background: var(--color-void);
   color: var(--color-flare);
   -webkit-mask: radial-gradient(circle at var(--iris-x, 50%) var(--iris-y, 50%), transparent var(--iris, 0px), var(--color-void) calc(var(--iris, 0px) + 1px));
@@ -96,13 +100,15 @@ html:not(.js) .skip-link:focus-visible {
   display: none;
 }
 .preloader-mark {
-  inline-size: 3rem;
-  block-size: 3rem;
+  inline-size: var(--spacing-s5);
+  block-size: var(--spacing-s5);
 }
 .preloader-label {
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--color-iron-400);
 }
 .preloader-count {
@@ -124,12 +130,12 @@ html:not(.js) .skip-link:focus-visible {
 /* ---------- chrome ---------- */
 .wordmark {
   position: fixed;
-  inset-block-start: calc(var(--safe-t) + 1rem);
+  inset-block-start: calc(var(--safe-t) + var(--spacing-s2));
   inset-inline-start: calc(var(--gutter) + var(--safe-s));
-  z-index: 20;
+  z-index: var(--z-chrome);
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: var(--spacing-s1);
   min-block-size: 44px;
   color: var(--color-flare);
   text-decoration: none;
@@ -141,35 +147,39 @@ html:not(.js) .skip-link:focus-visible {
   flex: none;
 }
 .wordmark-text {
-  font-size: var(--text-label);
-  line-height: 1;
-  font-weight: 900;
-}
-.is-gl .wordmark-text {
+  display: block;
+  font-family: var(--font-display);
   font-size: 1.125rem;
+  /* Same line-height ratio as the h1, so Flip.fit docks it with a uniform scale. */
+  line-height: var(--text-display--line-height);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
 }
 .chrome-actions {
   position: fixed;
-  inset-block-start: calc(var(--safe-t) + 1rem);
+  inset-block-start: calc(var(--safe-t) + var(--spacing-s2));
   inset-inline-end: calc(var(--gutter) + var(--safe-e));
-  z-index: 20;
+  z-index: var(--z-chrome);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-s1);
 }
 .action {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-s1);
   min-block-size: 44px;
-  padding-inline: 1.125rem;
+  padding-inline: var(--spacing-s3);
   border: 0;
-  border-radius: 2px;
+  border-radius: var(--radius);
   background: var(--ui-accent-fill);
   color: var(--ui-on-accent);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
 }
@@ -181,12 +191,12 @@ html:not(.js) .skip-link:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.375rem;
+  gap: var(--spacing-s1);
   min-inline-size: 44px;
   min-block-size: 44px;
   padding: 0;
-  border: 1px solid var(--ui-line);
-  border-radius: 2px;
+  border: var(--hair) solid var(--ui-line);
+  border-radius: var(--radius);
   background: transparent;
   color: var(--ui-fg);
   cursor: pointer;
@@ -198,25 +208,27 @@ html:not(.js) .skip-link:focus-visible {
 }
 .menu-btn {
   display: none;
-  padding-inline: 0.75rem;
+  padding-inline: var(--spacing-s2);
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 html:not(.js) .ambient-btn,
 html:not(.js) .menu-btn {
   display: none;
 }
 
-/* ---------- chapter rail (desktop, fine pointer) / overlay nav (narrow or touch) ---------- */
+/* ---------- chapter rail: a weight stack on the inline-end edge (fine pointers) ---------- */
 .rail {
   display: none;
 }
 .js .rail {
   position: fixed;
   inset-block-start: 50%;
-  inset-inline-end: calc(var(--safe-e) + 0.5rem);
-  z-index: 20;
+  inset-inline-end: calc(var(--safe-e) + var(--spacing-s1));
+  z-index: var(--z-chrome);
   display: block;
   translate: 0 -50%;
   color: var(--ui-fg-2);
@@ -234,7 +246,6 @@ html:not(.js) .menu-btn {
   inset-inline-end: calc(1.375rem + 1px);
   inline-size: 10px;
   block-size: 10px;
-  border-radius: 50%;
   background: var(--ui-accent-mark);
   pointer-events: none;
 }
@@ -244,20 +255,19 @@ html:not(.js) .menu-btn {
 .rail-link {
   position: relative;
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: flex-start;
+  gap: var(--spacing-s2);
   min-block-size: 44px;
-  padding-inline-end: 0.5rem;
+  padding-inline-end: var(--spacing-s1);
   color: var(--ui-fg);
   text-decoration: none;
-  flex-direction: row-reverse;
-  justify-content: flex-start;
 }
 .rail-plate {
   inline-size: 2.25rem;
   block-size: 0.5rem;
-  border: 1px solid var(--ui-fg-2);
-  border-radius: 1px;
+  border: var(--hair) solid var(--ui-fg-2);
   flex: none;
 }
 .rail-link[aria-current='true'] .rail-plate {
@@ -268,6 +278,8 @@ html:not(.js) .menu-btn {
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
 }
@@ -285,6 +297,7 @@ html:not(.js) .menu-btn {
   opacity: 0;
 }
 
+/* Narrow screens and touch: the rail becomes a full-screen overlay menu (RESP-03, RESP-05). */
 @media (max-width: 47.99rem), (pointer: coarse) {
   .menu-btn {
     display: inline-flex;
@@ -294,12 +307,12 @@ html:not(.js) .menu-btn {
     translate: none;
     display: grid;
     align-content: center;
-    padding: calc(var(--chrome-h) + var(--safe-t)) calc(var(--gutter) + var(--safe-s)) calc(2rem + var(--safe-b));
+    padding: calc(var(--chrome-h) + var(--safe-t)) calc(var(--gutter) + var(--safe-e)) calc(var(--spacing-s4) + var(--safe-b)) calc(var(--gutter) + var(--safe-s));
     background: var(--ui-bg);
     color: var(--ui-fg);
     visibility: hidden;
     opacity: 0;
-    z-index: 15;
+    z-index: var(--z-overlay);
   }
   .rail-spine,
   .rail-pin,
@@ -307,7 +320,7 @@ html:not(.js) .menu-btn {
     display: none;
   }
   .rail-list {
-    gap: 0.25rem;
+    gap: var(--spacing-s1);
   }
   .rail-link {
     flex-direction: row;
@@ -317,13 +330,53 @@ html:not(.js) .menu-btn {
   }
   .rail-label {
     opacity: 1;
+    font-family: var(--font-display);
     font-size: var(--text-title);
     line-height: var(--text-title--line-height);
-    font-weight: 900;
+    font-weight: 800;
+    letter-spacing: 0;
   }
   .rail-underline {
     inset-inline-start: 0;
     inset-inline-end: auto;
     inset-block-end: 0.25rem;
   }
+}
+
+/* ---------- cursor (fine pointers only, enabled by script) ---------- */
+.cursor {
+  display: none;
+}
+.has-cursor .cursor {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--z-cursor);
+  display: block;
+  pointer-events: none;
+  color: var(--color-flare);
+  mix-blend-mode: difference;
+}
+.has-cursor,
+.has-cursor a,
+.has-cursor button,
+.has-cursor label,
+.has-cursor input {
+  cursor: none;
+}
+.cursor-ring {
+  position: absolute;
+  inset-block-start: -24px;
+  inset-inline-start: -24px;
+  inline-size: 48px;
+  block-size: 48px;
+  overflow: visible;
+}
+.cursor-dot {
+  position: absolute;
+  inset-block-start: -3px;
+  inset-inline-start: -3px;
+  inline-size: 6px;
+  block-size: 6px;
+  background: currentColor;
 }
