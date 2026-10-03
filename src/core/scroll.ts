@@ -3,6 +3,7 @@
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { device } from './device';
 
 let lenis: Lenis | null = null;
 let velocity = 0;
@@ -55,7 +56,8 @@ export const scroll = {
 
   /** Called once per frame by the loop. */
   updateVelocity(dt: number): void {
-    const raw = lenis ? lenis.velocity : 0;
+    // QA seeks are jumps, not scrolling: frames show the rest state (QA-02).
+    const raw = lenis && !device.qa ? lenis.velocity : 0;
     const target = gsap.utils.clamp(-1, 1, raw / 40);
     velocity += (target - velocity) * Math.min(1, dt * 8);
     if (Math.abs(velocity) < 1e-3 && Math.abs(target) < 1e-3) velocity = 0;

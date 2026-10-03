@@ -5,6 +5,7 @@
 //
 //   node scripts/interact.mjs [dist/index.html] [qa/interact]
 import { chromium } from 'playwright-core';
+import { PerspectiveCamera, Vector3 } from 'three';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -68,6 +69,28 @@ const center = async (page, sel) => {
   const pose = () => page.evaluate(() => ({ pos: window.__qa.debug().pose.pos, world: window.__qa.stats().world, chapter: window.__qa.stats().chapter }));
   const near = (a, b) => a.every((v, i) => Math.abs(v - b[i]) < 0.02);
   const atLoad = await pose();
+  // FX-05: the preloader's SVG bar sat exactly on the 3D bar's screen rectangle at the swap.
+  const cut = await page.evaluate(() => {
+    const svg = document.querySelector('.preloader-bar');
+    const v = (n) => parseFloat(svg.style.getPropertyValue(n));
+    const gl = document.getElementById('gl');
+    return { x: v('--bar-x'), y: v('--bar-y'), w: v('--bar-w'), h: v('--bar-h'), pose: window.__qa.debug().pose, size: [gl.clientWidth, gl.clientHeight] };
+  });
+  {
+    const [cw, ch] = cut.size;
+    const cam = new PerspectiveCamera(cut.pose.fov, cw / ch, 0.1, 100);
+    cam.position.fromArray(cut.pose.pos);
+    cam.lookAt(new Vector3().fromArray(cut.pose.look));
+    cam.updateProjectionMatrix();
+    cam.updateMatrixWorld();
+    const end = (x) => {
+      const p = new Vector3(x, 0, 0).project(cam);
+      return [((p.x + 1) / 2) * cw, ((1 - p.y) / 2) * ch];
+    };
+    const [l, r] = [end(-1.1), end(1.1)];
+    const diff = Math.max(Math.abs(l[0] - cut.x), Math.abs(r[0] - (cut.x + cut.w)), Math.abs(l[1] - (cut.y + cut.h / 2)));
+    check('FX-05', 'match cut: SVG bar on the 3D bar within 4 px', diff <= 4, `${diff.toFixed(2)} px`);
+  }
   check('SCENE-05', 'first view: hero camera, black world', near(atLoad.pos, [0, 0.28, 3.3]) && atLoad.world === 0 && atLoad.chapter === 'hero', JSON.stringify(atLoad));
   await page.screenshot({ path: `${out}/desktop-load.png` });
   await seekTo(page, 'join', 80);

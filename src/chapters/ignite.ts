@@ -77,7 +77,7 @@ export const ignite: ChapterModule = {
       track(tl, flash, { white: 1, ease: ease.in }, 63, 70);
       track(tl, flash, { white: 0, ease: ease.out }, 74, 84);
       track(tl, flash, { ca: 0.006 }, 54, 59);
-      track(tl, flash, { ca: 0 }, 59, 68);
+      track(tl, flash, { ca: 0 }, 59, 64); // a short tail: the pulse frames the crossing, not the motes
       // The Core brightens with the bore shot (FX-07) and returns after the cut.
       core.intensity.value = 1;
       track(tl, core.intensity, { value: 3 }, 50, 66);
