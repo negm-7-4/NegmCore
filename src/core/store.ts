@@ -5,6 +5,7 @@
 
 export type Tier = 'HIGH' | 'MED' | 'LOW';
 export type PlanId = '10' | '15' | '20';
+export const PLAN_IDS: readonly PlanId[] = ['10', '15', '20'];
 export type ChapterId = 'hero' | 'mass' | 'ignite' | 'programs' | 'orbit' | 'gravity' | 'join';
 
 export interface State {
@@ -14,6 +15,8 @@ export interface State {
   reducedMotion: boolean;
   ambientPaused: boolean;
   selectedPlan: PlanId | null;
+  /** The plan under the pointer or keyboard focus (SCENE-23: its plate tips forward). */
+  planFocus: PlanId | null;
   chapter: ChapterId;
   staticMode: boolean;
 }
@@ -26,6 +29,7 @@ const state: State = {
   reducedMotion: false,
   ambientPaused: false,
   selectedPlan: null,
+  planFocus: null,
   chapter: 'hero',
   staticMode: false,
 };

@@ -161,8 +161,12 @@ html:not(.is-gl) #orbit::before {
 .is-gl #gravity .stage {
   align-content: start;
 }
+/* The plan cards sit under their plates: the plates are 17 % of the width apart (gravity.ts
+   frames them so), and gravity.ts fine-tunes each card to its projected plate. */
 .is-gl #gravity .panel {
-  inset-inline: calc(var(--gutter) + var(--safe-s)) calc(var(--gutter) + var(--safe-e) + 3.5rem);
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: 51vw;
   inset-block-end: calc(var(--spacing-s4) + var(--safe-b));
 }
 .is-gl #join .stage {
@@ -285,15 +289,11 @@ html:not(.is-gl) #orbit::before {
     inset-inline: var(--gutter);
     inline-size: auto;
   }
-  .is-gl #gravity .stage {
-    grid-template-rows: auto;
-    padding-block-start: calc(var(--chrome-h) + var(--safe-t));
-  }
-  .is-gl #gravity .stage > * {
-    grid-row: 1;
-  }
+  /* Portrait: the copy owns the bottom 45 % during the fall; the cards replace it there. */
   .is-gl #gravity .panel {
     inset-inline: var(--gutter);
+    inline-size: auto;
+    margin-inline: 0;
   }
   .is-gl #join .stage {
     grid-template-rows: 46svh auto;

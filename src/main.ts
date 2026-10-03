@@ -21,6 +21,7 @@ import { scroll } from './core/scroll';
 import { store } from './core/store';
 import { mountNav } from './dom/nav';
 import { mountPanels } from './dom/panels';
+import { mountPlans } from './dom/plans';
 import { mountParallax } from './dom/parallax';
 import { mountRail } from './dom/rail';
 import { mountWorld } from './dom/world';
@@ -201,6 +202,7 @@ async function boot(): Promise<void> {
 
   mountNav();
   mountRail();
+  mountPlans();
   if (!store.get('staticMode') && gl) {
     unmountWorld = mountWorld();
     unmountPanels = mountPanels();

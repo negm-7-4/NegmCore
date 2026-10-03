@@ -4,7 +4,7 @@
 // same transforms they would overwrite each other when scrubbed backwards. Instead each
 // chapter tweens its own numbers in `state`, and `update()` derives the transforms once a frame.
 import { Group, MathUtils, Mesh, MeshBasicMaterial, AdditiveBlending, PlaneGeometry, Vector3, type Object3D } from 'three';
-import type { PlanId } from '../core/store';
+import { PLAN_IDS, type PlanId } from '../core/store';
 import { token } from './materials';
 import { BAR, createBarbell, type Barbell } from './models/barbell';
 import { createCore, type CoreObject } from './models/core';
@@ -25,7 +25,11 @@ const T20 = PLATE.thickness[20];
 export const slotX = (k: number, t = T20): number => BAR.sleeveStart + T20 * k + t / 2;
 
 export const PLAN_WEIGHT: Record<PlanId, PlateWeight> = { '10': 10, '15': 15, '20': 20 };
-const PLANS: PlanId[] = ['10', '15', '20'];
+
+/** Where the three plan plates stand in the gravity zone (local X per plan, local Z). */
+export const PLAN_STAND = { x: [-0.62, 0, 0.62] as const, z: 1.45 } as const;
+
+const PLANS = PLAN_IDS;
 
 export interface Props {
   origin: {
@@ -233,8 +237,8 @@ export function createProps(world: World): Props {
   const cam = world.camera.position;
   const tmp = new Vector3();
   const outer = BAR.sleeveEnd + 0.36;
-  const STAND_Z = 1.45;
-  const standX = (i: number): number => -0.62 + i * 0.62;
+  const STAND_Z = PLAN_STAND.z;
+  const standX = (i: number): number => PLAN_STAND.x[i];
 
   props.update = (dt, ambientTime, ambientScale, velocity, w) => {
     // Zones draw only near the camera, so draw calls stay inside the budget (PERF-02).
@@ -297,7 +301,8 @@ export function createProps(world: World): Props {
     if (gravity.visible) {
       const s = props.gravity.state;
       const rest = PLATE.radius;
-      barGroup.position.y = MathUtils.lerp(rest + 1.2, rest, s.fall) + s.bounce + s.lift * 0.68;
+      // `fall` is scrubbed linearly; the drop itself follows gravity (y = h0 - h * fall²).
+      barGroup.position.y = rest + 1.2 * (1 - s.fall * s.fall) + s.bounce + s.lift * 0.68;
       barGroup.rotation.x += (0.22 * ambientScale + velocity * 1.6) * s.roll * dt;
       barB.lockCollars.forEach((c, i) => {
         const sign = i === 0 ? 1 : -1;
@@ -317,12 +322,13 @@ export function createProps(world: World): Props {
         mounted.items[1].visible = c >= 0.999 && s.mirror > 0.001;
         mounted.items[1].position.x = -MathUtils.lerp(outer + 0.3, slotX(2, t), s.mirror);
         standing.visible = c < 0.999;
-        // Standing in the row, facing the camera; tipped forward on hover/focus (SCENE-23).
-        const sink = s.dim[id] * 0.06;
+        // Standing in the row, facing the camera; tipped forward and its ring lit on hover or
+        // focus; dimmed when another plan is chosen (SCENE-23).
+        planStanding[id].tint(0, s.dim[id], s.tip[id]);
         // Euler YXZ: yaw (Y) of the roll (local X, the plate axis) of the tip (local Z).
         standing.rotation.order = 'YXZ';
         if (c <= 0) {
-          standing.position.set(standX(i), rest - sink, STAND_Z);
+          standing.position.set(standX(i), rest, STAND_Z);
           standing.rotation.set(0, Math.PI / 2, 0.32 * s.tip[id]);
         } else {
           // Roll along the floor toward the +X sleeve end, turn, then slide onto the sleeve.
@@ -344,7 +350,7 @@ export function createProps(world: World): Props {
         planStanding[id].sync();
         mounted.sync();
       });
-      (pool.material as MeshBasicMaterial).opacity = s.pool;
+      (pool.material as MeshBasicMaterial).opacity = s.pool * 0.2; // a pool, not a floodlight
       pool.scale.set(1 + s.pool * 0.4, 1, 1 + s.pool * 0.4);
       coreJ.group.scale.setScalar(Math.max(0.0001, s.coreOn));
       coreJ.update(ambientTime, ambientScale, w);

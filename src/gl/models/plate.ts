@@ -214,11 +214,16 @@ export interface PlateSet {
   weight: PlateWeight;
   thickness: number;
   setHighlight(on: boolean): void;
+  /** Darkens plate `index` by `dim` (0..1) and lights its lettering ring by `glow` (0..1). */
+  tint(index: number, dim: number, glow: number): void;
   sync(): void;
   dispose(): void;
 }
 
 const HIDDEN = new Matrix4().makeScale(0, 0, 0);
+const WHITE = new Color(1, 1, 1);
+const tintColor = new Color();
+let signal: Color | null = null;
 
 export function createPlateSet(weight: PlateWeight, count: number, materials: Materials, segments: number): PlateSet {
   const group = new Group();
@@ -231,6 +236,12 @@ export function createPlateSet(weight: PlateWeight, count: number, materials: Ma
   const front = new Matrix4().makeTranslation(lift, 0, 0);
   const back = new Matrix4().makeRotationY(Math.PI).premultiply(new Matrix4().makeTranslation(-lift, 0, 0));
   const m = new Matrix4();
+  // Every set carries instance colours, so tinting adds no shader variant (PERF-02).
+  for (let i = 0; i < count; i += 1) {
+    body.setColorAt(i, WHITE);
+    letters.setColorAt(i * 2, WHITE);
+    letters.setColorAt(i * 2 + 1, WHITE);
+  }
 
   const sync = (): void => {
     items.forEach((item, i) => {
@@ -259,6 +270,17 @@ export function createPlateSet(weight: PlateWeight, count: number, materials: Ma
     thickness: t,
     setHighlight(on: boolean) {
       letters.material = letteringMaterial(weight, on, materials);
+    },
+    tint(index: number, dim: number, glow: number) {
+      signal ??= new Color().setStyle(tokenCss('signal'), SRGBColorSpace);
+      const k = 1 - 0.7 * dim;
+      body.setColorAt(index, tintColor.setScalar(k));
+      // Above 1 the ring reads as lit, not just recoloured; bloom stays on the Core (FX-03).
+      tintColor.copy(WHITE).lerp(signal, glow).multiplyScalar(k * (1 + 0.6 * glow));
+      letters.setColorAt(index * 2, tintColor);
+      letters.setColorAt(index * 2 + 1, tintColor);
+      if (body.instanceColor) body.instanceColor.needsUpdate = true;
+      if (letters.instanceColor) letters.instanceColor.needsUpdate = true;
     },
     sync,
     dispose() {

@@ -874,18 +874,18 @@
       "summary": "In the last third the Collapse sweep takes the world from white to black, the black returning from the bottom so that mid-sweep the frame re"
     },
     "SCENE-22": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/gravity.ts: camera comes down from orbitEnd (top-down, 6 m) to low over the floor 0-30 (landscape y 1.2, portrait 1.75); fall scrubbed linearly 0-30 and mapped y = h0 - 1.2 m * fall² in props (gravity curve, SCENE-03 linear track); impact beat at 30: plate.drop started at its first touch-down (two rebounds, first ~4.5 cm), shake 0.008, chalk burst 0.9, pool of light; reverse resets bounce and dims the pool: qa/desktop/gravity-{20,35}.png, qa/mobile/gravity-20.png",
+      "updated": "2026-10-03T16:28:30.133Z",
       "id": "SCENE-22",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "The camera drops to floor level; a loaded bar falls 1.2 m on a gravity curve over the first 30 % of the chapter; crossing the impact label f"
     },
     "SCENE-23": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "gravity.ts + dom/plans.ts: three plan plates (10/15/20) stand at x -0.62/0/0.62, z 1.45 facing the camera; cards arrive 36-46 and, in landscape, follow their projected plates every frame (whole px, max 64 px; panel 51vw so the pitch matches); portrait stacks them in the same order (RESP-05). Hover/focus -> store.planFocus -> tip + lettering ring lit in signal (instance colour, no new shader); choose -> store.selectedPlan -> plate rolls onto the +X sleeve (one-shot, impact on landing), the other two dim, card shows Plan chosen: qa/interact/plans-hover.png, qa/interact/plans-chosen.png, qa/desktop/gravity-60.png, qa/mobile/gravity-60.png",
+      "updated": "2026-10-03T16:28:30.188Z",
       "id": "SCENE-23",
       "phase": 3,
       "userCheckAllowed": false,
