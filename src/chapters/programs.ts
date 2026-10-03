@@ -74,7 +74,7 @@ export const programs: ChapterModule = {
       if (hint) gsap.set(hint, { autoAlpha: 0 });
       // Depth and tilt stay inside the motion tokens (DOM tilt <= 8°, distances <= 64 px); a
       // short perspective makes 64 px of depth read clearly.
-      gsap.set(cards, { opacity: 0, z: -distance.lg, rotationY: distance.tiltMaxDeg, rotationX: distance.tiltMaxDeg / 2, transformOrigin: '0% 50%', transformPerspective: 400 });
+      gsap.set(cards, { opacity: 0, z: -distance.lg, rotationY: distance.tiltMaxDeg, transformOrigin: '0% 50%', transformPerspective: 400 });
       for (let k = 0; k < 3; k += 1) {
         const t0 = k * THIRD;
         const at = (f: number): number => t0 + f * THIRD;
@@ -86,7 +86,7 @@ export const programs: ChapterModule = {
         // The card arrives from depth with a 3D tilt, holds, and leaves toward the camera.
         const card = cards[k];
         if (card) {
-          track(tl, card, { opacity: 1, z: 0, rotationY: 0, rotationX: 0 }, at(0.16), at(0.34));
+          track(tl, card, { opacity: 1, z: 0, rotationY: 0 }, at(0.16), at(0.34));
           track(tl, card, { opacity: 0, z: distance.lg, rotationY: -distance.tiltMaxDeg }, at(0.7), at(0.84));
         }
         // The drag hint belongs to the hold only.

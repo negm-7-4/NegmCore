@@ -30,14 +30,18 @@ export function mountPlans(): () => void {
 
   // ---------- hover and focus: one shared state ----------
   for (const card of cards) {
-    listen(card, 'pointerenter', () => store.set('planFocus', planOf(card)));
+    // The card's box is read once per hover, not per pointer move (PERF-05).
+    let r = card.getBoundingClientRect();
+    listen(card, 'pointerenter', () => {
+      if (tiltable) r = card.getBoundingClientRect();
+      store.set('planFocus', planOf(card));
+    });
     listen(card, 'pointerleave', () => {
       if (!card.contains(document.activeElement)) store.set('planFocus', null);
       if (tiltable) gsap.effects.tilt(card, { rx: 0, ry: 0 });
     });
     if (tiltable) {
       listen(card, 'pointermove', (e) => {
-        const r = card.getBoundingClientRect();
         const px = ((e as PointerEvent).clientX - r.left) / r.width - 0.5;
         const py = ((e as PointerEvent).clientY - r.top) / r.height - 0.5;
         gsap.effects.tilt(card, { rx: -py * 2 * distance.tiltMaxDeg, ry: px * 2 * distance.tiltMaxDeg });
@@ -55,7 +59,7 @@ export function mountPlans(): () => void {
       const on = id === plan;
       const ring = card.querySelector('.plan-ring');
       // The ring's colours are mixed in CSS from --hot and --chosen (PERF-04).
-      if (ring) gsap.to(ring, { '--hot': on ? 1 : 0, scale: on ? 1.15 : 1, duration: dur.quick, ease: on ? ease.out : ease.in, overwrite: 'auto' });
+      if (ring) gsap.to(ring, { '--hot': on ? 1 : 0, duration: dur.quick, ease: on ? ease.out : ease.in, overwrite: 'auto' });
       // Keyboard focus tilts a little toward the reader, the same state the pointer reaches.
       if (tiltable && document.activeElement && card.contains(document.activeElement)) gsap.effects.tilt(card, { rx: on ? -distance.tiltMaxDeg / 2 : 0, ry: 0 });
     }

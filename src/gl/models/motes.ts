@@ -125,7 +125,8 @@ export function createMotes(count: number, pixelRatio: number): Motes {
       (u.uCenter.value as Vector3).copy(camera);
       u.uStreak.value = Math.min(1, Math.abs(velocity) * 1.4);
       (u.uColor.value as Color).copy(dark).lerp(light, world);
-      u.uOpacity.value = (0.5 - 0.34 * world) * (1 + burst.value * 1.5);
+      // White chalk on a white world is invisible: the motes fade out with the world (POLISH-01).
+      u.uOpacity.value = 0.5 * (1 - world) * (1 + burst.value * 1.5);
     },
     setCount(n: number) {
       geometry.setDrawRange(0, Math.min(count, n));

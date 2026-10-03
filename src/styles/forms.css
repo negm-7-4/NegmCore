@@ -1,7 +1,7 @@
 /*
  * src/styles/forms.css — plan cards, the join form and the footer.
- * ui-ux-pro-max forms rules: visible labels, a required marker that is not text, errors under
- * their field with reserved space (no layout shift), 44 px targets, feedback on submit.
+ * ui-ux-pro-max forms rules: visible labels, errors under their field with reserved space (no
+ * layout shift), 44 px targets, feedback on submit. Every field is required, so none is marked.
  */
 
 /* ---------- gravity: plan cards ---------- */
@@ -111,16 +111,6 @@ html:not(.js) .plan:has(input:checked) .plan-chosen {
   inset-inline-start: 0;
   color: var(--ui-fg-2);
   pointer-events: none;
-}
-/* Required marker: a mark, not text, so the copy deck stays exact (COPY-01). */
-.field-label::after {
-  content: '';
-  display: inline-block;
-  inline-size: 5px;
-  block-size: 5px;
-  margin-inline-start: 6px;
-  vertical-align: 0.3em;
-  background: var(--ui-accent-mark);
 }
 .field-plan .field-label {
   position: static;

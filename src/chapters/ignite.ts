@@ -85,7 +85,8 @@ export const ignite: ChapterModule = {
       // 72-86: settle in the white world; 86-100: hold (SCENE-02).
       track(tl, cam, { b: 1 }, CUT, 86);
 
-      revealAt(ct, title, 3, true);
+      // A line reveal, not characters: the title is gone before the plate is released (POLISH-01).
+      revealAt(ct, title, 3);
       revealAt(ct, body, 5);
       exitAt(ct, title, 24);
       exitAt(ct, body, 25);

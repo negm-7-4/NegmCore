@@ -35,7 +35,9 @@ Token source of truth: `src/styles/tokens.css`. This file records the decisions 
 
 ## Motion rules (from the skill, mapped to §9.2 tokens)
 - Arrive: `core.out`, `slow` (lines) / `base` (UI). Leave: `core.in`, `quick` (≈ 60 % of enter).
-- Headlines (≤ 3 words) split to chars inside line masks; paragraphs split to lines only.
+- Headlines (≤ 3 words) split to chars inside line masks and rise flat; paragraphs split to lines
+  only. Ignition's title is the exception: it leaves before the plate is released, so it reveals
+  as a line.
 - Camera and world move only by scrub; one-shots only for impacts and state changes.
 - Reduced motion: no scrub travel, 0.4 s cuts between key poses, 0.2 s opacity text.
 
@@ -74,4 +76,14 @@ mass and join. Panels sit in flow under the copy. Copy is complete without JavaS
    reading text stays in Barlow at 1.7 line height, 52ch.
 
 ## Removed in the remove-one pass (POLISH-01)
-Filled in P7.
+One decorative element per chapter that did not serve the story, removed in P7:
+
+| Chapter | Removed | Why it went |
+|---|---|---|
+| Hero | The 40° tumble on the headline characters (`rotationX` in the char reveal) | Iron does not flip. The caps now rise straight out of their masks, so the first motion on the page is weight, not a trick. |
+| Mass | The top hairline over the first spec row | The rows already sit on their own rules; the extra line opened the column with a stray stroke and trailed the rows when they left. |
+| Ignition | The character split on the "Ignition" title | The title is gone by 24 % while the plate is released; a per-letter cascade competed with the one motion that matters there. It reveals as a line now. |
+| Programs | The second tilt axis on the cards (`rotationX` 4°) | One hinge reads as a page turning toward the reader; two axes read as wobble. The 3D arrival from depth (SCENE-19) is unchanged. |
+| Orbit | Grey chalk motes over the white world | Chalk is white; on a white field the darkened specks read as dirt on the lens. The motes fade out with the world and return with the Collapse. |
+| Gravity | The 1.15 scale on a hovered plan ring | Hover already lights the ring and tips the plate; a third signal for one state was noise. |
+| Join | The green required markers after every field label | Every field is required, so the mark said nothing, and it spent green on something that is neither an action nor live state. Errors still name what is missing. |

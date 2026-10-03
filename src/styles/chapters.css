@@ -143,9 +143,6 @@ dt,
   display: grid;
   max-inline-size: 26rem;
 }
-.spec:first-child {
-  border-block-start: var(--hair) solid currentColor;
-}
 .spec {
   display: flex;
   justify-content: space-between;

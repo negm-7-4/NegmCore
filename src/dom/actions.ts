@@ -68,9 +68,12 @@ export function mountActions(): () => void {
   // panels keep them valid between refreshes.
   if (device.finePointer && !device.qa) {
     let rects = actions.map((el) => el.getBoundingClientRect());
+    // Display changes only with the layout (narrow screens hide the header action).
+    let shown = actions.map((el) => el.offsetParent !== null);
     const measure = (): void => {
       gsap.set(actions, { x: 0, y: 0 });
       rects = actions.map((el) => el.getBoundingClientRect());
+      shown = actions.map((el) => el.offsetParent !== null);
     };
     ScrollTrigger.addEventListener('refresh', measure);
     offs.push(() => ScrollTrigger.removeEventListener('refresh', measure));
@@ -81,8 +84,7 @@ export function mountActions(): () => void {
         const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
         const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
         const d = Math.hypot(dx, dy);
-        const visible = el.offsetParent !== null;
-        if (d < REACH && visible) {
+        if (d < REACH && shown[i]) {
           const k = 1 - d / REACH;
           gsap.effects.magnet(el, { x: (e.clientX - (r.left + r.width / 2)) * 0.25 * k, y: (e.clientY - (r.top + r.height / 2)) * 0.25 * k });
           pulled[i] = true;
