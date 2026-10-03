@@ -105,8 +105,10 @@ export const programs: ChapterModule = {
       // ---------- UI-10: turn the station in view ----------
       const proxy = c.panel?.querySelector<HTMLElement>('.drag-proxy') ?? null;
       const station = (): number => Math.min(2, Math.max(0, Math.floor(tl.progress() * 3)));
+      // The proxy is a slider for assistive technology: its value is the turn in degrees.
+      const report = (k: number): void => proxy?.setAttribute('aria-valuenow', String(Math.round((s.drag[k] * 180) / Math.PI)));
       const settle = (k: number): void => {
-        gsap.to(s.drag, { [k]: 0, duration: dur.slow, ease: ease.settle, overwrite: 'auto' });
+        gsap.to(s.drag, { [k]: 0, duration: dur.slow, ease: ease.settle, overwrite: 'auto', onComplete: () => report(k) });
       };
       if (proxy && device.finePointer && !c.reduced) {
         // Draggable drives a detached point; its x becomes the station's extra turn.
@@ -125,6 +127,7 @@ export const programs: ChapterModule = {
           },
           onDrag() {
             s.drag[k] = this.x * TURN_PER_PX;
+            report(k);
           },
           onThrowUpdate() {
             s.drag[k] = this.x * TURN_PER_PX;
@@ -143,7 +146,7 @@ export const programs: ChapterModule = {
           if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
           e.preventDefault();
           const k = station();
-          gsap.to(s.drag, { [k]: `${e.key === 'ArrowLeft' ? '-' : '+'}=${TURN_PER_KEY}`, duration: dur.quick, ease: ease.out, overwrite: 'auto' });
+          gsap.to(s.drag, { [k]: `${e.key === 'ArrowLeft' ? '-' : '+'}=${TURN_PER_KEY}`, duration: dur.quick, ease: ease.out, overwrite: 'auto', onComplete: () => report(k) });
         };
         const onKeyUp = (e: KeyboardEvent): void => {
           if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') gsap.delayedCall(dur.quick, () => settle(station()));

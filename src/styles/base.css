@@ -102,6 +102,11 @@
 
   /* The keyboard focus ring is the one instant change allowed (MOTION-01, UI-12).
      It is drawn in unblended colours so it never disappears into the world. */
+  /* Focus scrolling keeps the focused element clear of the fixed chrome (ACCESS-03). */
+  html {
+    scroll-padding-block: calc(var(--chrome-h) + var(--safe-t) + var(--spacing-s2)) var(--spacing-s5);
+  }
+
   :focus {
     outline: none;
   }

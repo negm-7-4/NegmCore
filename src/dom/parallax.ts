@@ -26,7 +26,9 @@ export function mountParallax(rig: Rig): () => void {
   };
   window.addEventListener('pointermove', onMove, { passive: true });
   document.documentElement.addEventListener('pointerleave', onLeave);
+  const offReduced = store.on('reducedMotion', (reduced) => reduced && onLeave());
   return () => {
+    offReduced();
     window.removeEventListener('pointermove', onMove);
     document.documentElement.removeEventListener('pointerleave', onLeave);
     gsap.set(rig.parallax, { x: 0, y: 0 });

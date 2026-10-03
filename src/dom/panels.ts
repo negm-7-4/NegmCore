@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { chapterRestY } from '../chapters/context';
 import { scroll } from '../core/scroll';
 import { store, type ChapterId } from '../core/store';
+import { REDUCED_TEXT } from '../motion/reduced';
 import { dur, ease } from '../motion/tokens';
 
 export function mountPanels(): () => void {
@@ -19,7 +20,7 @@ export function mountPanels(): () => void {
         panel.classList.toggle('is-active', on);
         gsap.to(panel, {
           opacity: on ? 1 : 0,
-          duration: store.get('reducedMotion') ? 0.2 : dur.quick,
+          duration: store.get('reducedMotion') ? REDUCED_TEXT : dur.quick,
           ease: on ? ease.out : ease.in,
           overwrite: 'auto',
         });

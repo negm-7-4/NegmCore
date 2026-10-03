@@ -1,9 +1,12 @@
 // src/gl/world.ts — assembles the GL layer: renderer, environments, materials, post, rig and
 // the shared objects (motes). Chapters add their own objects to `world.scene` and read the
 // shared materials from here. One render per tick, called by the loop after GSAP has run.
+import { gsap } from 'gsap';
 import { MathUtils } from 'three';
+import { device } from '../core/device';
 import type { LiveQuality, TierSettings } from '../core/quality';
 import { store } from '../core/store';
+import { REDUCED_CUT } from '../motion/reduced';
 import { createEnvironments, type Environments } from './environment';
 import { applyEnvironment, createMaterials, type Materials } from './materials';
 import { createMotes, type Motes } from './models/motes';
@@ -35,6 +38,25 @@ export function createWorld(canvas: HTMLCanvasElement, tier: TierSettings, dpr: 
   const rig = new Rig(core.camera);
   const motes = createMotes(tier.motes, dpr);
   core.scene.add(motes.points);
+
+  // Reduced-motion cuts cross-fade from a 2D copy of the last frame (ACCESS-01). The copy is
+  // taken right after a render, in the same task, so the drawing buffer is still valid.
+  const fade = document.createElement('canvas');
+  fade.className = 'gl-fade';
+  fade.setAttribute('aria-hidden', 'true');
+  canvas.after(fade);
+  const fadeCtx = fade.getContext('2d');
+  rig.onCut = () => {
+    // Nothing to fade from before the first sized frame (boot measures poses early).
+    if (!fadeCtx || canvas.width === 0 || canvas.height === 0 || lastW < 0) return;
+    post.render(0); // the camera still holds the old pose here
+
+    fade.width = canvas.width;
+    fade.height = canvas.height;
+    fadeCtx.drawImage(canvas, 0, 0);
+    const t = gsap.fromTo(fade, { opacity: 1 }, { opacity: 0, duration: REDUCED_CUT, ease: 'none', overwrite: 'auto' });
+    if (device.qa) t.progress(1);
+  };
 
   let lastW = -1;
   let lastH = -1;

@@ -166,7 +166,7 @@ export const orbit: ChapterModule = {
     ScrollTrigger.addEventListener('refreshInit', holdCamera);
 
     // Pin the rings and labels to the 3D scene every frame while they are on screen.
-    stopPin = loop.onUpdate(() => {
+    const unpin = loop.onUpdate(() => {
       if (pin.on < 0.5) return;
       camera.updateMatrixWorld();
       measure(camera);
@@ -191,6 +191,13 @@ export const orbit: ChapterModule = {
         setY[i](a.y);
       });
     });
+    // The pinning writes transforms and ring geometry outside the gsap context: undo them here,
+    // so static mode (or a rebuild) never inherits a projected position.
+    stopPin = () => {
+      unpin();
+      gsap.set(labels, { clearProps: 'transform' });
+      rings.forEach((ring) => ['cx', 'cy', 'rx', 'ry'].forEach((a) => ring.removeAttribute(a)));
+    };
   },
   dispose() {
     if (onRefreshInit) ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);

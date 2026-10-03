@@ -285,6 +285,26 @@ const center = async (page, sel) => {
   await settle(page, 4000);
   check('UI-08', 'back-to-top returns to 0', (await page.evaluate(() => window.scrollY)) < 4);
 
+  // ACCESS-03 keyboard: the skip link is the first stop, the ring is 2 px at a 3 px offset.
+  await page.evaluate(() => window.__qa.seek(0));
+  await settle(page, 1500);
+  await page.focus('.skip-link');
+  await page.keyboard.press('Tab');
+  const focusRing = await page.evaluate(() => {
+    const el = document.activeElement;
+    const cs = el ? getComputedStyle(el) : null;
+    return cs ? { style: cs.outlineStyle, width: cs.outlineWidth, offset: cs.outlineOffset, tag: el.className } : null;
+  });
+  check('ACCESS-03', 'focus-visible ring 2 px, offset 3 px', focusRing?.style === 'solid' && focusRing.width === '2px' && focusRing.offset === '3px', JSON.stringify(focusRing));
+
+  // RESP-02: software frames are slow, so the controller must have stepped down, in order,
+  // and must not step back up.
+  const q1 = await page.evaluate(() => window.__qa.debug().quality);
+  await settle(page, 9000);
+  const q2 = await page.evaluate(() => window.__qa.debug().quality);
+  check('RESP-02', 'slow frames lowered quality (dpr floor, then bloom, then aberration)', q1 && q1.bloom === false, JSON.stringify(q1));
+  check('RESP-02', 'quality does not climb back while frames stay slow', JSON.stringify(q1) === JSON.stringify(q2), JSON.stringify(q2));
+
   check('ARCH-02', 'desktop: no errors, no network requests', errors.length === 0, errors.join(' | '));
   await context.close();
 }
@@ -292,6 +312,10 @@ const center = async (page, sel) => {
 // ---------------- mobile, touch: the menu overlay ----------------
 {
   const { context, page, errors } = await open({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  // ACCESS-03: on a fresh page the first Tab lands on the skip link.
+  await page.keyboard.press('Tab');
+  check('ACCESS-03', 'skip link is the first focusable element', await page.evaluate(() => document.activeElement?.classList.contains('skip-link')));
+  await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
   const before = await attr(page, '.menu-icon', 'd');
   await page.tap('.menu-btn');
   await settle(page, 2500);
@@ -299,6 +323,21 @@ const center = async (page, sel) => {
   check('UI-03', 'overlay visible', (await page.$eval('.rail', (el) => getComputedStyle(el).visibility)) === 'visible');
   check('UI-03', 'menu icon morphs', (await attr(page, '.menu-icon', 'd')) !== before);
   check('UI-01', 'no custom cursor on touch', !(await page.evaluate(() => document.documentElement.classList.contains('has-cursor'))));
+  // ACCESS-06: every visible control in the open overlay and the chrome is at least 44 x 44.
+  const small = await page.evaluate(() =>
+    [...document.querySelectorAll('a, button, [role="slider"]')]
+      .filter((el) => {
+        const r = el.getBoundingClientRect();
+        const cs = getComputedStyle(el);
+        const shown = !el.closest('.panel:not(.is-active)'); // inactive panels sit at their arrival depth
+        return shown && r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && r.bottom > 0 && r.top < innerHeight && !el.classList.contains('skip-link');
+      })
+      .map((el) => ({ cls: el.className, w: Math.round(el.getBoundingClientRect().width), h: Math.round(el.getBoundingClientRect().height) }))
+      .filter((r) => r.w < 44 || r.h < 44),
+  );
+  check('ACCESS-06', 'visible controls are at least 44 x 44 px', small.length === 0, JSON.stringify(small));
+  const meta = await page.$eval('meta[name="viewport"]', (el) => el.getAttribute('content'));
+  check('ACCESS-06', 'zoom is not disabled', !/user-scalable\s*=\s*no|maximum-scale\s*=\s*1(\.0)?\b/.test(meta), meta);
   await page.screenshot({ path: `${out}/mobile-menu-open.png` });
   await page.keyboard.press('Escape');
   await settle(page, 2000);

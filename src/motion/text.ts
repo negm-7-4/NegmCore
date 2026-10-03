@@ -7,6 +7,7 @@ import { loop } from '../core/loop';
 import { scroll } from '../core/scroll';
 import { store } from '../core/store';
 import { revealState } from './effects';
+import { REDUCED_TEXT } from './reduced';
 import { distance, dur, ease } from './tokens';
 
 export interface Revealer {
@@ -63,7 +64,7 @@ export function revealer(el: HTMLElement, chars = false): Revealer {
       const t = gsap.to(el, {
         x: store.get('reducedMotion') ? 0 : -distance.lg,
         opacity: 0,
-        duration: store.get('reducedMotion') ? 0.2 : dur.quick,
+        duration: store.get('reducedMotion') ? REDUCED_TEXT : dur.quick,
         ease: ease.in,
         overwrite: 'auto',
       });

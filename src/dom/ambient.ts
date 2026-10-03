@@ -19,15 +19,23 @@ export function mountAmbient(): () => void {
     button.setAttribute('aria-pressed', String(paused));
     if (label) label.textContent = (paused ? button.dataset.labelOn : button.dataset.labelOff) ?? '';
     if (icon) gsap.to(icon, { morphSVG: paused ? AMBIENT_PLAY : AMBIENT_PAUSE, duration: dur.base, ease: ease.inOut, overwrite: 'auto' });
-    // QA keeps the clock frozen for deterministic frames (QA-02).
-    if (!device.qa) gsap.to(clock, { ambientScale: paused ? 0 : 1, duration: dur.slow, ease: ease.inOut, overwrite: 'auto' });
+    run();
+  };
+  // The ambient clock stops when paused, and under reduced motion (ACCESS-01: drift, marquee).
+  // QA keeps it frozen for deterministic frames (QA-02).
+  const run = (): void => {
+    if (device.qa) return;
+    const on = !store.get('ambientPaused') && !store.get('reducedMotion');
+    gsap.to(clock, { ambientScale: on ? 1 : 0, duration: dur.slow, ease: ease.inOut, overwrite: 'auto' });
   };
   const onClick = (): void => store.set('ambientPaused', !store.get('ambientPaused'));
   button.addEventListener('click', onClick);
   const off = store.on('ambientPaused', apply);
+  const offReduced = store.on('reducedMotion', run);
   apply(store.get('ambientPaused'));
   return () => {
     button.removeEventListener('click', onClick);
     off();
+    offReduced();
   };
 }

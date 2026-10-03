@@ -4,6 +4,7 @@
 import { gsap } from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { store } from '../core/store';
+import { REDUCED_TEXT } from './reduced';
 import { distance, dur, ease, stagger } from './tokens';
 
 export interface RevealState {
@@ -59,7 +60,7 @@ export function registerEffects(): void {
         onSplit: (self: SplitText) => {
           const progress = state.anim ? state.anim.progress() : 0;
           const anim = store.get('reducedMotion')
-            ? gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none', paused: true })
+            ? gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: REDUCED_TEXT, ease: 'none', paused: true })
             : config.chars
               ? gsap.fromTo(
                   self.chars,
@@ -95,7 +96,7 @@ export function registerEffects(): void {
       const p = proxy;
       return gsap.to(p, {
         v: config.to,
-        duration: store.get('reducedMotion') ? 0.2 : config.duration,
+        duration: store.get('reducedMotion') ? REDUCED_TEXT : config.duration,
         ease: ease.out,
         snap: { v: 1 },
         overwrite: 'auto',

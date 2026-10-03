@@ -51,6 +51,20 @@
 .is-gl #gl {
   display: block;
 }
+/* The last frame before a reduced-motion cut, faded out over the new pose (ACCESS-01). */
+.gl-fade {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 100vw;
+  block-size: 100lvh;
+  z-index: var(--z-canvas);
+  opacity: 0;
+  pointer-events: none;
+}
+html:not(.is-gl) .gl-fade {
+  display: none;
+}
 
 /* ---------- skip link ---------- */
 .skip-link {

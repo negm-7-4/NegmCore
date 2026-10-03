@@ -8,7 +8,8 @@ import { device } from '../core/device';
 import { scroll } from '../core/scroll';
 import { store } from '../core/store';
 import { MARK_CIRCLE } from '../motion/shapes';
-import { dur, ease } from '../motion/tokens';
+import { REDUCED_CUT, REDUCED_TEXT } from '../motion/reduced';
+import { distance, dur, ease, stagger } from '../motion/tokens';
 
 export interface BarRect {
   x: number;
@@ -60,7 +61,7 @@ export function createPreloader(): Preloader {
       const tl = gsap.timeline({ defaults: { ease: ease.out } });
       tl.fromTo(mark, { scale: 0.6, opacity: 0, transformOrigin: '50% 50%' }, { scale: 1, opacity: 1, duration: dur.base })
         .fromTo([label, countWrap], { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: dur.base, stagger: 0.08 }, '<0.1')
-        .fromTo(bar, { drawSVG: '50% 50%' }, { drawSVG: '0% 100%', duration: reduced ? 0.2 : dur.slow, ease: ease.inOut }, '<');
+        .fromTo(bar, { drawSVG: '50% 50%' }, { drawSVG: '0% 100%', duration: reduced ? REDUCED_TEXT : dur.slow, ease: ease.inOut }, '<');
       await done(tl);
     },
     async milestone(index) {
@@ -82,8 +83,8 @@ export function createPreloader(): Preloader {
       const radius = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy)) + 2;
       const tl = gsap.timeline();
       tl.set(root, { '--iris-x': `${cx}px`, '--iris-y': `${cy}px`, '--iris': '0px' })
-        .to([mark, label, countWrap, ...plates], { opacity: 0, y: -8, duration: dur.quick, ease: ease.in, stagger: 0.02 })
-        .to(root, { '--iris': `${radius}px`, duration: reduced ? 0.4 : dur.cinematic, ease: ease.inOut }, '>-0.05')
+        .to([mark, label, countWrap, ...plates], { opacity: 0, y: -distance.xs, duration: dur.quick, ease: ease.in, stagger: stagger.word / 3 })
+        .to(root, { '--iris': `${radius}px`, duration: reduced ? REDUCED_CUT : dur.cinematic, ease: ease.inOut }, '>-0.05')
         .to(svg, { opacity: 0, duration: dur.quick, ease: ease.in }, '<0.2');
       await done(tl);
       html.classList.add('is-ready');

@@ -52,6 +52,7 @@ let forcedReduced = false;
 let frameDt = 1 / 60;
 let rebuild: () => void = () => undefined;
 let unmountPanels: () => void = () => undefined;
+let qualityRef: QualityController | null = null;
 let unmountWorld: () => void = () => undefined;
 
 function enterStaticMode(): void {
@@ -104,6 +105,7 @@ function mountChapters(world: World, p: Props): void {
     if (store.get('staticMode')) return;
     const reduced = Boolean(context.conditions?.reduce) || forcedReduced;
     store.set('reducedMotion', reduced);
+    world.rig.quantize = reduced; // key poses and cross-faded cuts instead of travel (ACCESS-01)
     buildChapters(world, p, reduced, Boolean(context.conditions?.portrait));
     mountChapterTracker();
     ScrollTrigger.refresh();
@@ -154,6 +156,7 @@ async function boot(): Promise<void> {
   store.set('tier', tier);
   store.set('reducedMotion', device.prefersReducedMotion);
   const quality = new QualityController(tier);
+  qualityRef = quality;
   loop.setSampler((ms, dt) => quality.sample(ms, dt));
   loop.init(scroll.init());
   root.classList.add('is-enhanced');
@@ -247,6 +250,8 @@ installQAHook({
     timings,
     // The camera's current shot pose, for the continuity check at chapter boundaries (SCENE-05).
     pose: gl ? { pos: gl.rig.pose.pos.toArray(), look: gl.rig.pose.look.toArray(), fov: gl.rig.pose.fov, roll: gl.rig.pose.roll } : null,
+    // The adaptive quality state, for the RESP-02 check.
+    quality: qualityRef ? { ...qualityRef.live } : null,
   }),
   renderStats: () => {
     const info = gl?.renderer.info;

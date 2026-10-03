@@ -74,16 +74,33 @@ export class Rig {
   /** Extra FOV added by effects (bore shot), in degrees. */
   readonly fovBoost = { value: 0 };
   portrait = false;
+  /**
+   * Reduced motion (ACCESS-01): the camera does not travel; it holds each shot's nearest key
+   * pose and cuts between them. `onCut` runs before a cut is applied, with the old pose still
+   * on the camera, so the world can cross-fade from the last frame.
+   */
+  quantize = false;
+  onCut: (() => void) | null = null;
   private lastShot: Shot | null = null;
   private lastU = -1;
+  private lastKey = -1;
+  private cutPending = false;
 
   constructor(readonly camera: PerspectiveCamera) {}
 
-  /** Called by the chapter whose timeline just moved. The latest call wins. */
+  /** Called by the chapter that owns the scroll position whenever its timeline moves. */
   set(shot: Shot, u: number): void {
+    let v = u;
+    if (this.quantize) {
+      const n = shot.defs.length - 1;
+      const key = n > 0 ? Math.round(MathUtils.clamp(u, 0, 1) * n) : 0;
+      v = n > 0 ? key / n : 0;
+      if (shot !== this.lastShot || key !== this.lastKey) this.cutPending = this.lastShot !== null;
+      this.lastKey = key;
+    }
     this.lastShot = shot;
     this.lastU = u;
-    shot.evaluate(u, this.pose);
+    shot.evaluate(v, this.pose);
   }
 
   get active(): { shot: Shot | null; u: number } {
@@ -91,6 +108,10 @@ export class Rig {
   }
 
   update(): void {
+    if (this.cutPending) {
+      this.cutPending = false;
+      this.onCut?.();
+    }
     const cam = this.camera;
     const { pos, look, fov, roll } = this.pose;
     cam.position.copy(pos);
