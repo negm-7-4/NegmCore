@@ -23,7 +23,7 @@
   --color-ink-mid: #1ca045;
 
   --font-*: initial;
-  --font-ar: 'Alexandria Variable', 'Noto Kufi Arabic', 'Segoe UI', 'Geeza Pro', Tahoma, sans-serif;
+  --font-ar: 'Alexandria Variable', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
   --font-num: 'Big Shoulders Variable', 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', sans-serif;
 
   --text-*: initial;
@@ -50,8 +50,8 @@
   --chrome-h: 4.5rem;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
-  --safe-s: env(safe-area-inset-right, 0px); /* inline-start in RTL */
-  --safe-e: env(safe-area-inset-left, 0px); /* inline-end in RTL */
+  --safe-s: env(safe-area-inset-left, 0px); /* inline-start in LTR */
+  --safe-e: env(safe-area-inset-right, 0px); /* inline-end in LTR */
 
   /* Named gradients (COLOR-03). OKLab interpolation, dithered by the grain layer.
      Static sections hold the start colour for the first 45 % so copy sits on a solid world. */

@@ -1,6 +1,9 @@
-# النجم كور — design system
+# Negm Core — design system
 
 Source of truth for tokens: `src/styles/tokens.css` (BRIEF §6). This file records decisions.
+**Since brief 1.1 the site is English and LTR.** The wireframes below were drawn RTL; every
+inline direction is mirrored: inline-start is now left (copy, wordmark, h1), inline-end is
+right (3D subject, actions, rail), and the camera journey mirrors with it.
 
 ## Tokens
 - Worlds: `void` #000 / `flare` #FFF only. Iron ramp 950–100 leans green (h150, c0.006).
@@ -14,7 +17,7 @@ Source of truth for tokens: `src/styles/tokens.css` (BRIEF §6). This file recor
 ## Type roles
 | Role | Family/weight | Token |
 |---|---|---|
-| h1 | Alexandria 900 | `--text-display` lh 1.15 |
+| h1 | Alexandria 900 (Latin) | `--text-display` lh 1.15 |
 | h2, marquee | Alexandria 900 / Big Shoulders 800 | `--text-title` lh 1.15 |
 | lede, card name | Alexandria 400 / 900 | `--text-lede` lh 1.6 |
 | body | Alexandria 400 | `--text-body` lh 1.7 |
@@ -31,7 +34,7 @@ desktop 1440                                      mobile 390
 └───────────────────────────────────────────┘    └──────────────────┘
 ```
 
-## Chapters (3D subject | text-safe zone). RTL: inline-start = right.
+## Chapters (3D subject | text-safe zone). Drawn RTL (1.0); mirror for LTR.
 ```
 HERO  black                                  MASS  black
 ┌──────────────────────────────────────┐     ┌──────────────────────────────────────┐

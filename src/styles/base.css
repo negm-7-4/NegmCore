@@ -10,15 +10,8 @@
 @import './forms.css';
 @import './modes.css';
 
-/* Three woff2 files only (TYPE-01). Subset ranges match Fontsource's own. */
-@font-face {
-  font-family: 'Alexandria Variable';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url('../../node_modules/@fontsource-variable/alexandria/files/alexandria-arabic-wght-normal.woff2') format('woff2-variations');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
-}
+/* Latin subsets only: the site is English since brief 1.1, so the Arabic subset is not shipped.
+   Subset ranges match Fontsource's own. */
 @font-face {
   font-family: 'Alexandria Variable';
   font-style: normal;
@@ -58,11 +51,6 @@
     font-weight: 400;
     letter-spacing: 0;
     overflow-x: clip;
-  }
-
-  :lang(ar) {
-    letter-spacing: 0;
-    text-transform: none;
   }
 
   h1,

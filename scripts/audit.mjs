@@ -31,10 +31,15 @@ function deckPieces() {
   const start = brief.indexOf('### 7.2 Copy deck');
   const end = brief.indexOf('### 7.3');
   const rows = brief.slice(start, end).split('\n').filter((l) => l.startsWith('| ') && !l.startsWith('| Where') && !l.startsWith('|---'));
+  // §2 decides which column ships: the English column (index 3) when LANGUAGE is en.
+  const english = /\| LANGUAGE \| `en`/.test(brief);
   const pieces = new Set();
   for (const row of rows) {
-    const arabic = row.split('|')[2].trim();
-    const cleaned = arabic.replace(/\((four label and value rows|three labels)\)/g, '');
+    const cells = row.split('|');
+    // Numerals with units are language-neutral readouts (§7.3); they live in the Arabic cells.
+    for (const m of cells[2].matchAll(/\d+ (?:KG|MM)/g)) pieces.add(m[0]);
+    const arabic = cells[english ? 3 : 2].trim();
+    const cleaned = arabic.replace(/\((four label and value rows|three labels)\)/g, '').replace(/\(reference; ships if LANGUAGE = en\)/, '');
     const placeholder = cleaned.match(/\(placeholder: (.*)\)/);
     if (placeholder) pieces.add(placeholder[1].trim());
     for (const part of cleaned.replace(/\(placeholder: .*\)/, '').split(/ · | \/ | — /)) {
@@ -251,7 +256,9 @@ if (want('source')) {
   const dist = readFileSync(file, 'utf8');
   record('MOTION-01 no CSS motion', motionCss.length === 0 && !/@keyframes/.test(dist), motionCss.join(', ') || 'no @keyframes, transition or animation in src or dist');
   const fonts = (dist.match(/data:font\/woff2/g) ?? []).length;
-  record('TYPE-01 three font files', fonts === 3, `${fonts} woff2 data URIs in dist`);
+  // ar ships Alexandria arabic + latin and Big Shoulders latin; en drops the Arabic subset.
+  const expected = /\| LANGUAGE \| `en`/.test(readFileSync('docs/BRIEF.md', 'utf8')) ? 2 : 3;
+  record('TYPE-01 font files', fonts === expected, `${fonts} woff2 data URIs in dist (expected ${expected})`);
   const lines = src.map((f) => [f, read(f).split('\n').length]).sort((a, b) => b[1] - a[1]);
   record('ARCH-03 file length', lines[0][1] <= 400, `largest ${lines[0][0]} ${lines[0][1]} lines`);
 }

@@ -1,6 +1,8 @@
 # NEGM CORE — Master Build Brief
 
-Version 1.0 · 2026-10-03 · Client and art director: Mohammed Negm · Executor: Claude
+Version 1.1 · 2026-10-03 · Client and art director: Mohammed Negm · Executor: Claude
+
+**Change 1.1 (client, mid-build):** the name is Negm Core and the site is English throughout. §2 now selects the `en` alternative and the new brand; the English column of §7.2 ships, with brand cells set to Negm Core and the two form placeholders translated. GSAP stays the engine of the camera scroll, the animation, the scrubbed 3D sequences and every transition.
 
 To run it: attach this file and write نفّذ الـ brief. To change a default, edit §2 first.
 
@@ -20,9 +22,9 @@ These are requirements, not suggestions. Each has one stated alternative; switch
 
 | Key | Decision | Trade-off and the alternative |
 |---|---|---|
-| LANGUAGE | `ar`: Arabic-first, RTL, simplified Modern Standard Arabic. Latin script only for the wordmark, numerals and units. | `en`: use the English column of §7, LTR, mirror every inline direction, and character-level splitting becomes allowed. |
-| BRAND | Arabic النجم كور, Latin EL NEGM CORE. | Other transliterations (ALNAJM CORE, NEGM CORE): change the string here only. |
-| CREDIT | Footer credit تصميم وتطوير: محمد نجم. | Edit the string. |
+| LANGUAGE | `en` (selected in 1.1): use the English column of §7, LTR, mirror every inline direction, and character-level splitting becomes allowed. | `ar`: Arabic-first, RTL, simplified Modern Standard Arabic. Latin script only for the wordmark, numerals and units. |
+| BRAND | Negm Core (wordmark set as NEGM CORE). | Arabic النجم كور with Latin EL NEGM CORE (the 1.0 default). |
+| CREDIT | Footer credit Design and build: Mohammed Negm. | Edit the string. |
 | FRAMEWORK | Vanilla TypeScript + Vite. GSAP mutates Three.js objects directly, one render loop, smallest bundle. | React + React Three Fiber: only worth it if this page will be merged into a React app; it adds a reconciler and a second scheduling model. |
 | ASSETS | Procedural geometry written in code. No model, texture or HDRI files. Everything here is a surface of revolution, so lathe geometry is exact, tiny and needs no network. | Blender to GLB: more surface detail, but needs the user's computer linked and base64-inlined binaries. |
 | SCROLL | Lenis. The original request said "LaTeX"; LaTeX is a document typesetting system with no role in a web animation stack, so it is read as Lenis. | If something else was meant, name it here. |
@@ -194,8 +196,8 @@ Two families, chosen by rendering "النجم كور" in nine Arabic display can
 | Where | Arabic (ships) | English (reference; ships if LANGUAGE = en) |
 |---|---|---|
 | Preloader label | جارٍ التحميل… | Loading… |
-| Hero h1 | النجم كور | EL NEGM CORE |
-| Hero Latin line | EL NEGM CORE | EL NEGM CORE |
+| Hero h1 | النجم كور | Negm Core |
+| Hero Latin line | EL NEGM CORE | NEGM CORE |
 | Hero lede | الحديد وُلِد في قلب نجم. وهنا، تحمله أنت. | Iron was born in the heart of a star. Here, you carry it. |
 | Hero readout | 20 KG | 20 KG |
 | Scroll cue | مرِّر للنزول إلى القلب | Scroll to descend into the core |
@@ -223,8 +225,8 @@ Two families, chosen by rendering "النجم كور" in nine Arabic display can
 | Plan 20 | كامل — دخول مفتوح وبرنامج شخصي | Full — open access and a personal programme |
 | Plan action / chosen | اختر هذه الباقة / تم اختيار الباقة | Choose this plan / Plan chosen |
 | Join h2 | احمل نصيبك من النجم. | Carry your share of the star. |
-| Field: name | الاسم (placeholder: مثال: أحمد علي…) | Name |
-| Field: phone | رقم الهاتف (placeholder: مثال: 01012345678…) | Phone number |
+| Field: name | الاسم (placeholder: مثال: أحمد علي…) | Name (placeholder: e.g. Ahmed Ali…) |
+| Field: phone | رقم الهاتف (placeholder: مثال: 01012345678…) | Phone number (placeholder: e.g. 01012345678…) |
 | Field: plan | الباقة | Plan |
 | Submit / busy | احجز حصة تجريبية / جارٍ الحجز… | Book a trial session / Booking… |
 | Success | تم الحجز التجريبي. هذا مشروع تصوّري، وبياناتك لم تُرسَل إلى أي مكان. | Trial booked. This is a concept project and your details were not sent anywhere. |
@@ -549,7 +551,7 @@ The client wants everything to move. People who cannot tolerate motion, or whose
 ## 14. Delivery
 
 - [SHIP-01] `dist/index.html` runs unchanged from `file://` and from any static host.
-- [SHIP-02] If the Artifact tool exists: `scripts/make-artifact.mjs` writes `dist/artifact.html` following the page contract in `artifact-design` (content only, with no doctype, `html`, `head` or `body` tags; `<title>النجم كور</title>` at the top; every colour set explicitly with `color-scheme: dark`; fixed chrome padded by the safe-area insets; `lang` and `dir` on the root wrapper), and it is published privately with the icon word `dumbbell` and a one-sentence description.
+- [SHIP-02] If the Artifact tool exists: `scripts/make-artifact.mjs` writes `dist/artifact.html` following the page contract in `artifact-design` (content only, with no doctype, `html`, `head` or `body` tags; `<title>Negm Core</title>` at the top; every colour set explicitly with `color-scheme: dark`; fixed chrome padded by the safe-area insets; `lang` and `dir` on the root wrapper), and it is published privately with the icon word `dumbbell` and a one-sentence description.
 - [SHIP-03] The published page obeys the artifact frame: no external request of any kind, no `mailto:` or `tel:` actions, no `alert` or `confirm`, the form handled in script, and `#qa` as the only use of the URL hash.
 - [SHIP-04] A source zip without `node_modules` and a `README.md` covering run, build, deploy to a static host, where to change copy and tokens, the QA and ledger commands, and the licences: three (MIT), GSAP (standard no-charge licence, free for commercial use), Lenis (MIT), postprocessing (Zlib), Tailwind CSS (MIT), fonts (OFL-1.1).
 - [SHIP-05] The final audit of §4.4 has run and every FAIL is fixed or recorded as a deviation.

@@ -114,7 +114,7 @@ function atlas(): CanvasTexture {
   return atlasTexture;
 }
 
-/** The engraving strip: brand, Latin wordmark and the weight, twice around the ring. */
+/** The engraving strip: the wordmark and the weight, twice around the ring. */
 function drawStrip(g: CanvasRenderingContext2D, weight: PlateWeight, highlight: boolean): void {
   g.textBaseline = 'middle';
   const steel = tokenCss('iron-200');
@@ -131,49 +131,41 @@ function drawStrip(g: CanvasRenderingContext2D, weight: PlateWeight, highlight: 
     g.fill();
     g.restore();
   };
-  // Lay the run out from measured widths so nothing overlaps across the seam.
-  const arabicFont = (px: number): string => `900 ${px}px "Alexandria Variable", sans-serif`;
-  const latinFont = (px: number): string => `800 ${px}px "Big Shoulders Variable", sans-serif`;
+  // The run: wordmark, star, weight, star; twice around the ring. Measured, so nothing
+  // overlaps across the seam.
+  const brandFont = (px: number): string => `900 ${px}px "Alexandria Variable", sans-serif`;
   const numFont = (px: number): string => `900 ${px}px "Big Shoulders Variable", sans-serif`;
-  const label = String(weight);
-  const measure = (scale: number): number[] => {
-    g.font = arabicFont(104 * scale);
-    const a = g.measureText('النجم كور').width;
-    g.font = latinFont(112 * scale);
-    const l = g.measureText('EL NEGM CORE').width;
-    g.font = numFont(132 * scale);
-    const n = g.measureText(label).width;
-    return [a, l, n];
-  };
-  const gap = 34;
+  const brand = 'NEGM CORE';
+  const label = `${weight} KG`;
+  const gap = 40;
   const starW = 56;
+  const measure = (scale: number): [number, number] => {
+    g.font = brandFont(104 * scale);
+    const b = g.measureText(brand).width;
+    g.font = numFont(132 * scale);
+    return [b, g.measureText(label).width];
+  };
   let scale = 1;
-  let [aw, lw, nw] = measure(scale);
-  const run = (): number => aw + lw + nw + starW * 2 + gap * 6;
-  if (run() > W / 2) {
-    scale = (W / 2 - starW * 2 - gap * 6) / (aw + lw + nw);
-    [aw, lw, nw] = measure(scale);
+  let [bw, nw] = measure(scale);
+  if (bw + nw + starW * 2 + gap * 4 > W / 2) {
+    scale = (W / 2 - starW * 2 - gap * 4) / (bw + nw);
+    [bw, nw] = measure(scale);
   }
+  const spare = (W / 2 - (bw + nw + starW * 2)) / 4;
+  g.textAlign = 'left';
   for (let rep = 0; rep < 2; rep += 1) {
-    let x = rep * (W / 2) + gap;
+    let x = rep * (W / 2) + spare / 2;
     g.fillStyle = steel;
-    g.direction = 'rtl';
-    g.textAlign = 'right';
-    g.font = arabicFont(104 * scale);
-    g.fillText('النجم كور', x + aw, H / 2 + 8);
-    x += aw + gap;
+    g.font = brandFont(104 * scale);
+    g.fillText(brand, x, H / 2 + 6);
+    x += bw + spare;
     star(x + starW / 2);
-    x += starW + gap;
-    g.direction = 'ltr';
-    g.textAlign = 'left';
-    g.font = latinFont(112 * scale);
-    g.fillText('EL NEGM CORE', x, H / 2 + 4);
-    x += lw + gap;
-    star(x + starW / 2);
-    x += starW + gap;
+    x += starW + spare;
     g.font = numFont(132 * scale);
     g.fillStyle = highlight ? tokenCss('signal') : steel;
     g.fillText(label, x, H / 2 + 4);
+    x += nw + spare;
+    star(x + starW / 2);
   }
 }
 
