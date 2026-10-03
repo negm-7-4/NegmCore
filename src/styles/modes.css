@@ -128,8 +128,13 @@ html:not(.is-gl) #orbit::before {
   inset: 0;
 }
 .is-gl .drag-hint {
-  display: block;
   position: relative;
+}
+/* Drag is a fine-pointer interaction only (UI-10, RESP-03); keys still rotate the focused proxy. */
+@media (hover: hover) and (pointer: fine) {
+  .is-gl .drag-hint {
+    display: block;
+  }
 }
 .is-gl .orbit-rings {
   display: block;
@@ -261,6 +266,11 @@ html:not(.is-gl) #orbit::before {
     inset-block-end: auto;
     inset-block-start: calc(55svh - var(--spacing-s6));
     inset-inline-start: calc(var(--gutter) + var(--safe-s));
+  }
+  .is-gl .programs,
+  .is-gl .programs-intro {
+    grid-area: 2 / 1 / 3 / -1;
+    align-self: start;
   }
   .is-gl #programs .panel {
     inset-block: calc(var(--chrome-h) + var(--safe-t)) 45svh;

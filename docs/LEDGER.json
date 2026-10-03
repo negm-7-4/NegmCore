@@ -838,18 +838,18 @@
       "summary": "Timing inside the chapter: 0–35 % align and release the plate, 35–75 % the dolly and the sweep, 75–100 % settle; title and body are gone bef"
     },
     "SCENE-18": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/programs.ts: stations x=43/46/49 on the inline-end side (+Z); camera looks down the path so stations ahead stay right of the copy; per third: approach 0-34 (turn into hero pose 4-34), hold 34-70 (36 % of the third), pass 70-100 (object leaves inline-end); graphite/steel on white with blob contact shadows: qa/desktop/programs-{4,17,50,84}.png, qa/mobile/programs-{4,17,84}.png",
+      "updated": "2026-10-03T16:01:05.418Z",
       "id": "SCENE-18",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "Three stations along the camera's path, one third of the chapter each: a barbell (القوة), a kettlebell (التحمّل), a dumbbell (الكور); the ca"
     },
     "SCENE-19": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "deviation",
+      "evidence": "Cards arrive from depth (z -420, rotateY 24, rotateX 6 under perspective 900px) 16-34 of each third, hold, leave toward the camera (z 360) 70-84; intro shows 1-10 % only (before station 1): qa/desktop/programs-17.png, -27.png, -40.png. Deviation: the copy deck (§5) has no separate tool-name string per program and COPY-01 forbids adding copy, so each card carries name + sentence; the tool is named by the 3D object itself.",
+      "updated": "2026-10-03T16:01:05.509Z",
       "id": "SCENE-19",
       "phase": 3,
       "userCheckAllowed": false,

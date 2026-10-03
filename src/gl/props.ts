@@ -269,7 +269,7 @@ export function createProps(world: World): Props {
 
     if (programs.visible) {
       const s = props.programs.state;
-      const heroYaw = [-0.55, 0.65, -0.5];
+      const heroYaw = [-0.08, 1.12, 0.9];
       pivots.forEach((p, k) => {
         const turn = MathUtils.smootherstep(s.turn[k], 0, 1);
         p.rotation.y = MathUtils.lerp(heroYaw[k] - 1.6, heroYaw[k], turn) + s.drag[k] + ambientTime * 0.08 * (k === 2 ? 1 : 0);

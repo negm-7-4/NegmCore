@@ -21,7 +21,7 @@ const CUT = 72;
 export function igniteSettled(portrait: boolean): PoseDef {
   return portrait
     ? { pos: [P - 1.2, 0.36, -0.2], look: [P + 3.4, 0.08, 0.55], fov: 32 }
-    : { pos: [P - 1.4, 0.32, -0.12], look: [P + 3, 0.12, 0.34], fov: 32 };
+    : { pos: [P - 1.4, 0.3, -0.3], look: [P + 3, 0.08, -0.3], fov: 32 };
 }
 
 export const ignite: ChapterModule = {
