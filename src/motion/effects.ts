@@ -64,7 +64,7 @@ export function registerEffects(): void {
               ? gsap.fromTo(
                   self.chars,
                   { yPercent: 112, rotationX: -40, transformOrigin: '50% 100%' },
-                  { yPercent: 0, rotationX: 0, duration: dur.slow, ease: ease.out, stagger: 0.025, paused: true },
+                  { yPercent: 0, rotationX: 0, duration: dur.slow, ease: ease.out, stagger: stagger.word / 2, paused: true },
                 )
               : gsap.fromTo(
                   self.lines,

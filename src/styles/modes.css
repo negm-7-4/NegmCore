@@ -300,9 +300,27 @@ html:not(.is-gl) #orbit::before {
   .is-gl #join .panel {
     inset-inline: var(--gutter);
     inline-size: auto;
-    inset-block-end: calc(var(--spacing-s2) + var(--safe-b));
+    inset-block-end: calc(var(--spacing-s1) + var(--safe-b));
   }
+  /* Portrait: the whole form fits the bottom 45 % (SCENE-06) without dropping below 44 px
+     targets; only the rhythm between rows tightens. */
   .join-form {
-    gap: var(--spacing-s1);
+    gap: 0;
+  }
+  .join-form .field {
+    padding-block-start: var(--spacing-s2);
+  }
+  .join-form .field-error {
+    padding-block-start: 2px;
+  }
+  .join-form .field-plan .field-label {
+    margin-block-end: 2px;
+  }
+  .join-form .submit {
+    margin-block-start: var(--spacing-s1);
+  }
+  .join-form .form-status {
+    min-block-size: 2.5em;
+    padding-block-start: var(--spacing-s1);
   }
 }

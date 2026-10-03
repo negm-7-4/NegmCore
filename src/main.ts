@@ -17,13 +17,15 @@ import { programs } from './chapters/programs';
 import { device, supportsWebGL2 } from './core/device';
 import { clock, loop } from './core/loop';
 import { chooseTier, QualityController, TIERS } from './core/quality';
+import { mountResizeSettle } from './core/resize';
 import { scroll } from './core/scroll';
 import { store } from './core/store';
+import { mountForm } from './dom/form';
+import { mountMarquee } from './dom/marquee';
 import { mountNav } from './dom/nav';
 import { mountPanels } from './dom/panels';
-import { mountForm } from './dom/form';
-import { mountPlans } from './dom/plans';
 import { mountParallax } from './dom/parallax';
+import { mountPlans } from './dom/plans';
 import { mountRail } from './dom/rail';
 import { mountWorld } from './dom/world';
 import { createProps, ZONE, type Props } from './gl/props';
@@ -171,7 +173,8 @@ async function boot(): Promise<void> {
         world.rig.update(dt);
         p.update(dt, ambientTime, clock.ambientScale, store.get('reducedMotion') ? 0 : scroll.velocity, store.get('world'));
       });
-      loop.setRenderer(() => world.frame(frameDt, clock.ambientTime, clock.ambientScale, scroll.velocity));
+      // Velocity effects (chromatic aberration, mote streaks) stop under reduced motion (ACCESS-01).
+      loop.setRenderer(() => world.frame(frameDt, clock.ambientTime, clock.ambientScale, store.get('reducedMotion') ? 0 : scroll.velocity));
       ScrollTrigger.refresh();
       mountChapters(world, p);
       mark('geometry');
@@ -205,10 +208,12 @@ async function boot(): Promise<void> {
   mountRail();
   mountPlans();
   mountForm();
+  mountMarquee();
   if (!store.get('staticMode') && gl) {
     unmountWorld = mountWorld();
     unmountPanels = mountPanels();
     mountParallax(gl.rig);
+    mountResizeSettle(gl.rig);
   }
   mountVelocitySkew();
   ScrollTrigger.refresh();
@@ -227,7 +232,13 @@ const ready = boot().catch((error: unknown) => {
 
 installQAHook({
   ready: ready.then(() => undefined),
-  debug: () => ({ triggers: ScrollTrigger.getAll().length, tweens: gsap.globalTimeline.getChildren(true, true, true).length, timings }),
+  debug: () => ({
+    triggers: ScrollTrigger.getAll().length,
+    tweens: gsap.globalTimeline.getChildren(true, true, true).length,
+    timings,
+    // The camera's current shot pose, for the continuity check at chapter boundaries (SCENE-05).
+    pose: gl ? { pos: gl.rig.pose.pos.toArray(), look: gl.rig.pose.look.toArray(), fov: gl.rig.pose.fov, roll: gl.rig.pose.roll } : null,
+  }),
   renderStats: () => {
     const info = gl?.renderer.info;
     return {
