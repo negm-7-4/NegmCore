@@ -56,7 +56,10 @@ export const programs: ChapterModule = {
     const s = c.props.programs.state;
 
     ctx = gsap.context(() => {
-      const ct = chapterTimeline(c, 'programs', () => c.world.rig.set(shot, cam.u));
+      const ct = chapterTimeline(c, 'programs', () => {
+        c.world.rig.set(shot, cam.u);
+        c.world.setWorld(1); // programs is all white; a jump back from a black chapter lands here
+      });
       const { tl } = ct;
       s.turn.fill(0);
       if (hint) gsap.set(hint, { autoAlpha: 0 });

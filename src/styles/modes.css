@@ -152,7 +152,11 @@ html:not(.is-gl) #orbit::before {
   position: absolute;
   inset-block-start: 0;
   left: 0;
+  translate: 0 -50%;
   white-space: nowrap;
+}
+.is-gl .orbit-label > span {
+  display: inline-block;
 }
 .is-gl #gravity .stage {
   align-content: start;
@@ -266,6 +270,10 @@ html:not(.is-gl) #orbit::before {
     inset-block-end: auto;
     inset-block-start: calc(55svh - var(--spacing-s6));
     inset-inline-start: calc(var(--gutter) + var(--safe-s));
+  }
+  /* Projected overlays position against the whole stage, not a grid row. */
+  .is-gl #orbit .orbit-rings {
+    grid-area: auto;
   }
   .is-gl .programs,
   .is-gl .programs-intro {

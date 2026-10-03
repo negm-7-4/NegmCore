@@ -62,7 +62,8 @@ export class Shot {
   }
 }
 
-const PORTRAIT_FOV = 46 / 32;
+/** Portrait FOV factor: 46 instead of 32 (SCENE-06). */
+export const PORTRAIT_FOV = 46 / 32;
 
 export class Rig {
   readonly pose: Pose = makePose();
@@ -115,10 +116,16 @@ export class Rig {
 
   /** Portrait blocking: the optical centre sits in the middle of the top 55 % (SCENE-06). */
   applyViewport(width: number, height: number): void {
-    this.portrait = height > width * 1.25;
-    if (this.portrait) this.camera.setViewOffset(width, height, 0, height * 0.225, width, height);
-    else this.camera.clearViewOffset();
-    this.camera.aspect = width / Math.max(1, height);
-    this.camera.updateProjectionMatrix();
+    this.portrait = frameViewport(this.camera, width, height);
   }
+}
+
+/** Sizes a camera for the viewport (aspect, portrait view offset); returns whether it is portrait. */
+export function frameViewport(camera: PerspectiveCamera, width: number, height: number): boolean {
+  const portrait = height > width * 1.25;
+  if (portrait) camera.setViewOffset(width, height, 0, height * 0.225, width, height);
+  else camera.clearViewOffset();
+  camera.aspect = width / Math.max(1, height);
+  camera.updateProjectionMatrix();
+  return portrait;
 }

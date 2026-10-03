@@ -856,18 +856,18 @@
       "summary": "Each station's card (name, sentence, tool name) arrives from depth with a 3D tilt under perspective, holds, and leaves toward the camera; th"
     },
     "SCENE-20": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/orbit.ts: crane 0-34 from programsEnd to top-down (screen-up = path +X, no roll); six plates on rings 0.58/1.06/1.54 (1, 2, 3 plates; speeds 0.5/-0.32/0.21 rad/s; spacing 0.48 m > plate 0.45 m so neighbours never intersect); SVG ellipses projected from the 3D rings, drawn with DrawSVG 32-42 (laid out at the hold pose on refreshInit so DrawSVG measures the right length); labels pinned every frame via loop.onUpdate + quickSetter, side away from the Core, clear of copy/rail, collision-nudged: qa/desktop/orbit-{36,48}.png, qa/mobile/orbit-48.png",
+      "updated": "2026-10-03T16:15:54.700Z",
       "id": "SCENE-20",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "The camera cranes to a top-down view; six plates orbit the Core on three concentric rings (one, two and three plates) at different speeds; S"
     },
     "SCENE-21": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "orbit.ts: Collapse sweep 67-93 via setWorld(w, -1) (world 0.692 @75, 0.308 @85, 0 @97 in qa output); mid-sweep reads white top to black bottom; copy exits 54/55, labels gone by 60, rings undrawn by 62 (before 20 % of the sweep, SCENE-04); camera centres the Core 60-93 and the Core stays lit in the centre: qa/desktop/orbit-{75,85,97}.png, qa/mobile/orbit-{80,85,97}.png",
+      "updated": "2026-10-03T16:15:54.756Z",
       "id": "SCENE-21",
       "phase": 3,
       "userCheckAllowed": false,

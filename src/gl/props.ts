@@ -137,7 +137,8 @@ export function createProps(world: World): Props {
   const orbit = new Group();
   orbit.position.copy(ZONE.orbit);
   const coreO = createCore(seg);
-  const radii: [number, number, number] = [0.55, 0.95, 1.35];
+  // Ring spacing (0.48 m) exceeds a plate's diameter (0.45 m): neighbours never intersect.
+  const radii: [number, number, number] = [0.58, 1.06, 1.54];
   const ringSets = [createPlateSet(20, 1, m, seg), createPlateSet(15, 2, m, seg), createPlateSet(10, 3, m, seg)];
   ringSets.forEach((set) => {
     set.items.forEach((item) => (item.rotation.z = Math.PI / 2)); // plate axis X -> Y: faces up
@@ -280,9 +281,10 @@ export function createProps(world: World): Props {
     if (orbit.visible) {
       const s = props.orbit.state;
       const speeds = [0.5, -0.32, 0.21];
+      const phases = [0, 2.3, 3.6]; // at rest the three labelled plates sit far apart
       ringSets.forEach((set, r) => {
         set.items.forEach((item, i) => {
-          const a = (i / set.items.length) * Math.PI * 2 + r * 0.9 + ambientTime * speeds[r];
+          const a = (i / set.items.length) * Math.PI * 2 + phases[r] + ambientTime * speeds[r];
           item.position.set(Math.cos(a) * radii[r], 0, Math.sin(a) * radii[r]);
           item.rotation.y = -a;
           item.scale.setScalar(Math.max(0.0001, MathUtils.clamp(s.show * 3 - r, 0, 1)));
