@@ -84,11 +84,19 @@ export const hero: ChapterModule = {
       registerChapterRest('hero', 0.05);
 
       // Entrance after the preloader's match cut: caps rise, then the meta lines.
+      // Each line only arrives if the visitor has not already scrolled past its exit beat.
       const intro = (): void => {
         if (!h1) return;
         revealer(h1, true).show();
-        meta.forEach((el, i) => gsap.delayedCall(device.qa ? 0 : 0.25 + i * 0.09, () => revealer(el).show()));
-        if (cue) gsap.delayedCall(device.qa ? 0 : 0.6, () => revealer(cue).show());
+        const later = (delay: number, before: number, el: HTMLElement): void => {
+          const run = (): void => {
+            if (tl.time() < before) revealer(el).show();
+          };
+          if (device.qa) run();
+          else gsap.delayedCall(delay, run);
+        };
+        meta.forEach((el, i) => later(0.25 + i * 0.09, 34 + i * 2, el));
+        if (cue) later(0.6, 14, cue);
       };
       document.addEventListener('negm:ready', intro);
       cleanup.push(() => document.removeEventListener('negm:ready', intro));

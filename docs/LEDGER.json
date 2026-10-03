@@ -793,18 +793,18 @@
       "summary": "Leaving the hero, the h1 scales down and docks into the fixed wordmark position (rects measured on refresh), and the scroll cue leaves."
     },
     "SCENE-13": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/mass.ts massShot: hero end -> knurl close-up (qa/desktop/mass-28.png: knurling + lettering readable) -> arc -> outer face hold; three 20 kg pairs slide on in each third (12-26, 36-50, 66-74) with landing one-shots (jolt iron.settle + impact shake/chalk, gl/fx.ts); collar spins on 74-80 and locks with rattle (qa/desktop/mass-90.png)",
+      "updated": "2026-10-03T15:45:31.441Z",
       "id": "SCENE-13",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "The camera trucks to the inline-end sleeve and closes in until knurling and plate lettering are readable; three pairs of 20 kg plates slide "
     },
     "SCENE-14": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "mass.ts: title chars reveal 3, body 5, label 8; spec rows via ScrollTrigger.batch in order (qa/desktop/mass-10.png shows row 1 only); counter forward 20/60/100/140 and reverse 100/60/20 (reverse.mjs: 5%:20 30%:60 55%:100 76%:140 95%:140 60%:100 40%:60 20%:20)",
+      "updated": "2026-10-03T15:45:31.502Z",
       "id": "SCENE-14",
       "phase": 3,
       "userCheckAllowed": false,
