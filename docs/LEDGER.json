@@ -811,27 +811,27 @@
       "summary": "DOM beats: title and body reveal; the four spec rows reveal in order; the load counter reads 20, then 60, 100, 140 exactly as each pair land"
     },
     "SCENE-15": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "chapters/ignite.ts: camera swings onto the bar axis beyond the +X sleeve end (2.4,0,0 looking -X) 0-20; outer plate slides off toward the camera 14-30 and faces it; Core lights behind the bore 20-30: qa/desktop/ignite-30.png",
+      "updated": "2026-10-03T15:49:41.525Z",
       "id": "SCENE-15",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "The camera swings onto the bar's axis beyond the sleeve end so the plates read as concentric rings; the outermost plate slides off the sleev"
     },
     "SCENE-16": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "ignite.ts: dolly 35-72 through the bore (x 2.4 -> 1.7 -> 1.42), FOV 32 -> 40 -> 58; Ignite sweep 48-70 (world 0.09 @50, 0.50 @59, 0.82 @66 in qa.mjs output) mid-sweep at the plate crossing; cut at 72 inside the white-out (qa/desktop/ignite-66.png, ignite-78.png)",
+      "updated": "2026-10-03T15:49:41.587Z",
       "id": "SCENE-16",
       "phase": 3,
       "userCheckAllowed": false,
       "summary": "The camera dollies through the 50 mm bore while FOV opens from 32 to about 58; as it crosses the plate's plane the Ignite sweep takes the wo"
     },
     "SCENE-17": {
-      "status": "todo",
-      "evidence": "",
-      "updated": "",
+      "status": "verified",
+      "evidence": "ignite.ts timing: 0-35 swing + release (14-30) + Core (20-30); 35-72 dolly + sweep; 72-86 settle, 86-100 hold; title/body exit at 24/25 (< 35)",
+      "updated": "2026-10-03T15:49:41.648Z",
       "id": "SCENE-17",
       "phase": 3,
       "userCheckAllowed": false,

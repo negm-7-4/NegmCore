@@ -26,7 +26,7 @@ export interface Post {
   vignette: VignetteEffect;
   noise: NoiseEffect;
   /** Live controls written by chapters and effects every frame. */
-  fx: { bloom: number; aberration: number; exposure: number; world: number; velocity: number };
+  fx: { bloom: number; aberration: number; exposure: number; world: number; velocity: number; flash: number };
   apply(quality: LiveQuality): void;
   render(dt: number): void;
   setSize(width: number, height: number): void;
@@ -75,7 +75,7 @@ export function createPost(renderer: WebGLRenderer, scene: Scene, camera: Perspe
   };
   rebuild();
 
-  const fx = { bloom: 0, aberration: 0, exposure: 1, world: 0, velocity: 0 };
+  const fx = { bloom: 0, aberration: 0, exposure: 1, world: 0, velocity: 0, flash: 0 };
   const caOffset = aberration.offset;
 
   return {
@@ -105,6 +105,7 @@ export function createPost(renderer: WebGLRenderer, scene: Scene, camera: Perspe
       const ca = (fx.aberration + Math.abs(fx.velocity) * 0.0025) * (caOn ? 1 : 0);
       caOffset.set(ca, ca * 0.6);
       renderer.toneMappingExposure = fx.exposure;
+      backdrop.flash.value = fx.flash;
       composer.render(dt);
     },
     setSize(width: number, height: number) {

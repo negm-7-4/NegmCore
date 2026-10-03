@@ -9,6 +9,7 @@ import { BlendFunction, Effect } from 'postprocessing';
 const fragmentShader = /* glsl */ `
 uniform float uMix;        // 0 = black world, 1 = white world, between = gradient sweep
 uniform float uDirection;  // +1: white enters from the bottom, -1: white enters from the top
+uniform float uFlash;      // extension: 0..1 white-out that hides the Bore Shot's cut (FX-01)
 
 float hash12(vec2 p) {
   vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -22,6 +23,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
   vec3 backdrop = vec3(lightness * lightness * lightness);   // L^3 = linear luminance for neutrals
   backdrop += (hash12(gl_FragCoord.xy) - 0.5) / 255.0;       // 1-LSB dither: no banding in the sweep
   outputColor = vec4(inputColor.rgb + backdrop * (1.0 - inputColor.a), 1.0);
+  outputColor.rgb = mix(outputColor.rgb, vec3(1.0), uFlash);
 }`;
 
 export class BackdropEffect extends Effect {
@@ -31,6 +33,7 @@ export class BackdropEffect extends Effect {
       uniforms: new Map<string, Uniform>([
         ['uMix', new Uniform(0)],
         ['uDirection', new Uniform(1)],
+        ['uFlash', new Uniform(0)],
       ]),
     });
   }
@@ -47,5 +50,10 @@ export class BackdropEffect extends Effect {
    */
   get direction(): Uniform<number> {
     return this.uniforms.get('uDirection') as Uniform<number>;
+  }
+
+  /** Extension (FX-01): mixes the final frame toward white; 0 at rest. */
+  get flash(): Uniform<number> {
+    return this.uniforms.get('uFlash') as Uniform<number>;
   }
 }
