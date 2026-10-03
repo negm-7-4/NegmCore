@@ -4,10 +4,10 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { device } from '../core/device';
 import type { ChapterId } from '../core/store';
-import type { GLCore } from '../gl/renderer';
+import type { World } from '../gl/world';
 
 export interface ChapterContext {
-  gl: GLCore;
+  world: World;
   section: HTMLElement;
   stage: HTMLElement;
   panel: HTMLElement | null;

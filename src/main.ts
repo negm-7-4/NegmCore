@@ -6,23 +6,25 @@ import { hero } from './chapters/hero';
 import { scrubAmount, type ChapterModule } from './chapters/context';
 import { device, supportsWebGL2 } from './core/device';
 import { loop } from './core/loop';
-import { chooseTier, QualityController } from './core/quality';
+import { chooseTier, QualityController, TIERS } from './core/quality';
 import { scroll } from './core/scroll';
 import { store } from './core/store';
 import { mountNav } from './dom/nav';
 import { mountPanels } from './dom/panels';
 import { mountRail } from './dom/rail';
 import { mountWorld } from './dom/world';
-import { createRenderer, type GLCore } from './gl/renderer';
+import { createWorld, type World } from './gl/world';
+import { clock } from './core/loop';
 import { registerMotion } from './motion/tokens';
 import { installErrorCollector, installQAHook, reportError } from './qa/hook';
+import { showroom, type ShowroomModel } from './chapters/showroom';
 
 installErrorCollector();
 registerMotion();
 
 const root = document.documentElement;
 const chapters: ChapterModule[] = [hero];
-let gl: GLCore | null = null;
+let gl: World | null = null;
 
 function enterStaticMode(): void {
   if (store.get('staticMode')) return;
@@ -44,12 +46,12 @@ function enterStaticMode(): void {
 let unmountPanels: () => void = () => undefined;
 let unmountWorld: () => void = () => undefined;
 
-function buildChapters(core: GLCore): void {
+function buildChapters(core: World): void {
   for (const chapter of chapters) {
     const section = document.getElementById(chapter.id);
     const stage = section?.querySelector<HTMLElement>('.stage');
     if (!section || !stage) throw new Error(`missing section #${chapter.id}`);
-    chapter.build({ gl: core, section, stage, panel: section.querySelector<HTMLElement>('.panel'), scrub: scrubAmount() });
+    chapter.build({ world: core, section, stage, panel: section.querySelector<HTMLElement>('.panel'), scrub: scrubAmount() });
   }
 }
 
@@ -57,7 +59,7 @@ function buildChapters(core: GLCore): void {
  * The root gsap.matchMedia (ARCH-08): when reduced motion or the pointer/orientation class
  * changes, every chapter is disposed and rebuilt for the new conditions.
  */
-function mountChapters(core: GLCore): void {
+function mountChapters(core: World): void {
   const mm = gsap.matchMedia();
   rootMedia = mm;
   mm.add(
@@ -77,6 +79,7 @@ function mountChapters(core: GLCore): void {
 }
 
 let rootMedia: gsap.MatchMedia | null = null;
+let frameDt = 1 / 60;
 let forcedReduced = false;
 let rebuild: () => void = () => undefined;
 
@@ -92,13 +95,13 @@ async function boot(): Promise<void> {
   const canvas = document.getElementById('gl') as HTMLCanvasElement;
   if (supportsWebGL2()) {
     try {
-      gl = createRenderer(canvas, quality.live.dpr, enterStaticMode);
+      gl = createWorld(canvas, TIERS[tier], quality.live.dpr, enterStaticMode);
       root.classList.add('is-gl');
       const core = gl;
-      loop.setRenderer(() => {
-        core.resize();
-        core.renderer.info.reset();
-        core.renderer.render(core.scene, core.camera);
+      quality.onChange((q) => core.applyQuality(q));
+      loop.setRenderer(() => core.frame(frameDt, clock.ambientTime, clock.ambientScale, scroll.velocity));
+      loop.onUpdate((dt) => {
+        frameDt = dt;
       });
       mountChapters(core);
     } catch (error) {
@@ -151,3 +154,10 @@ installQAHook({
     }
   },
 });
+
+// TEMPORARY (P2 showroom): removed in P3.
+(window as unknown as { __showroom: (n: ShowroomModel, w: boolean, f: boolean) => Promise<void> }).__showroom = async (n, w, f) => {
+  if (!gl) return;
+  showroom(gl, n, w, f);
+  await window.__qa.seek(0);
+};

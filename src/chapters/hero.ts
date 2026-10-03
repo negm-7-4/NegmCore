@@ -2,6 +2,7 @@
 // (Lenis -> ScrollTrigger -> GSAP timeline -> scene -> render). Replaced by the hero in P3.
 import { gsap } from 'gsap';
 import { BoxGeometry, Mesh, MeshNormalMaterial } from 'three';
+import { Shot } from '../gl/rig';
 import { ease } from '../motion/tokens';
 import { registerChapterTrigger, unregisterChapterTrigger, type ChapterContext, type ChapterModule } from './context';
 
@@ -12,9 +13,8 @@ export const hero: ChapterModule = {
   id: 'hero',
   build(c: ChapterContext) {
     cube = new Mesh(new BoxGeometry(0.6, 0.6, 0.6), new MeshNormalMaterial());
-    c.gl.scene.add(cube);
-    c.gl.camera.position.set(0, 0.28, 3.3);
-    c.gl.camera.lookAt(0, 0, 0);
+    c.world.scene.add(cube);
+    c.world.rig.set(new Shot([{ pos: [0, 0.28, 3.3], look: [0, 0, 0], fov: 32 }]), 0);
     const mesh = cube;
     ctx = gsap.context(() => {
       const tl = gsap.timeline({
